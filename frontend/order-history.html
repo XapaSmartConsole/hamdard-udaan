@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Order History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px 60px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      opacity: 0.9;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 6px 0 70px 0;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .summary-card {
+      background: #fff;
+      margin: -40px 16px 16px;
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .summary-row span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .summary-row strong {
+      font-size: 18px;
+      font-weight: 700;
+      color: #b11226;
+    }
+
+    .orders-container {
+      padding: 0 16px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid #b11226;
+    }
+
+    /* ✅ UPDATED: Green for bank transfers */
+    .order-card.bank-transfer {
+      border-left-color: #10b981;
+    }
+
+    .order-card.cashout {
+      border-left-color: #10b981;
+    }
+
+    .order-card.product {
+      border-left-color: #b11226;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .order-id {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .order-date {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .order-status {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .order-items {
+      margin-bottom: 12px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+
+    .item-name {
+      color: #374151;
+      font-weight: 500;
+      flex: 1;
+      padding-right: 10px;
+    }
+
+    .item-points {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .order-card.product .item-points {
+      color: #b11226;
+    }
+
+    /* ✅ UPDATED: Green for bank transfers */
+    .order-card.bank-transfer .item-points {
+      color: #10b981;
+    }
+
+    .order-card.cashout .item-points {
+      color: #10b981;
+    }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    .total-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .total-points {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .order-card.product .total-points {
+      color: #b11226;
+    }
+
+    /* ✅ UPDATED: Green for bank transfers */
+    .order-card.bank-transfer .total-points {
+      color: #10b981;
+    }
+
+    .order-card.cashout .total-points {
+      color: #10b981;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .empty-text {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #b11226;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:active {
+      background: #991b1b;
+      transform: scale(0.98);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f4f6;
+      border-top-color: #b11226;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      position: relative;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+      position: relative;
+      top: 0;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <a href="home.html" class="back-link">← Back</a>
+  <h2>Order History</h2>
+</div>
+
+<div class="content-wrapper">
+
+  <div class="summary-card">
+    <div class="summary-row">
+      <span>Total Orders</span>
+      <strong id="total-orders">0</strong>
+    </div>
+  </div>
+
+  <div id="loading-state" class="loading">
+    <div class="spinner"></div>
+    <div>Loading your orders...</div>
+  </div>
+
+  <div id="orders-container" class="orders-container hidden">
+    <div class="section-title">Your Orders</div>
+    <div id="orders-list"></div>
+  </div>
+
+  <div id="empty-state" class="empty-state hidden">
+    <div class="empty-icon">📦</div>
+    <div class="empty-title">No Orders Yet</div>
+    <div class="empty-text">You haven't placed any orders yet.<br>Start redeeming rewards now!</div>
+    <a href="redeem-catalog.html" class="btn-primary">Browse Catalog</a>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+async function loadOrderHistory() {
+  try {
+    const response = await fetch(`${API}/orders/user?user_id=${userId}`);
+    const orders = await response.json();
+    
+    const loadingState = document.getElementById("loading-state");
+    const ordersContainer = document.getElementById("orders-container");
+    const emptyState = document.getElementById("empty-state");
+    const ordersList = document.getElementById("orders-list");
+    const totalOrdersElement = document.getElementById("total-orders");
+
+    loadingState.classList.add("hidden");
+
+    if (!orders || orders.length === 0) {
+      emptyState.classList.remove("hidden");
+      totalOrdersElement.innerText = "0";
+      return;
+    }
+
+    ordersContainer.classList.remove("hidden");
+    totalOrdersElement.innerText = orders.length;
+
+    ordersList.innerHTML = orders.map(order => {
+      // ✅ Determine transaction type and styling
+      const transactionType = order.transaction_type || "PRODUCT";
+      let transactionClass = "product";
+      
+      // ✅ UPDATED: Bank Transfer and Cashout = Green (no badge)
+      if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
+        transactionClass = "bank-transfer";
+      } else {
+        transactionClass = "product";
+      }
+      
+      // ✅ Build items list based on transaction type
+      let itemsHTML = '';
+      
+      if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
+        // ✅ Just show "Bank Transfer" without any badge
+        itemsHTML = `
+          <div class="order-item">
+            <span class="item-name">Bank Transfer</span>
+            <span class="item-points">${order.total_points} pts</span>
+          </div>
+        `;
+      } else {
+        // Product redemption - show items
+        if (order.items && order.items.length > 0) {
+          itemsHTML = order.items.map(item => `
+            <div class="order-item">
+              <span class="item-name">${item.name}${item.quantity > 1 ? ` (x${item.quantity})` : ''}</span>
+              <span class="item-points">${item.points} pts</span>
+            </div>
+          `).join('');
+        } else {
+          itemsHTML = `
+            <div class="order-item">
+              <span class="item-name">Product Redemption</span>
+              <span class="item-points">${order.total_points} pts</span>
+            </div>
+          `;
+        }
+      }
+
+      return `
+        <div class="order-card ${transactionClass}">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order #${order.id}</div>
+              <div class="order-date">${formatDate(order.date)}</div>
+            </div>
+            <div class="order-status">${capitalizeFirst(order.status)}</div>
+          </div>
+
+          <div class="order-items">
+            ${itemsHTML}
+          </div>
+
+          <div class="order-footer">
+            <span class="total-label">Total Points</span>
+            <span class="total-points">${order.total_points} pts</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+  } catch (err) {
+    console.error("Error loading orders:", err);
+    document.getElementById("loading-state").classList.add("hidden");
+    document.getElementById("empty-state").classList.remove("hidden");
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return date.toLocaleDateString('en-US', options);
+}
+
+function capitalizeFirst(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+loadOrderHistory();
+
+document.body.addEventListener('touchmove', function(e) {
+  if (!e.target.closest('.content-wrapper')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+</script>
+
+</body>
+</html>

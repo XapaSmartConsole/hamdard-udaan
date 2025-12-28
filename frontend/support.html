@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Support</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= HEADER ================= */
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .header-icon {
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    /* ================= HERO SECTION ================= */
+    .hero-section {
+      width: 100%;
+      padding: 30px 20px;
+      background: #fff;
+      border-radius: 0 0 50% 50% / 0 0 15% 15%;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    /* ================= CONTENT ================= */
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 30px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ================= CONTACT SECTION ================= */
+    .contact-section {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .contact-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .contact-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 40px;
+    }
+
+    /* ================= CONTACT CARDS ================= */
+    .contact-card {
+      background: #fff;
+      border: 2px solid #fbbf24;
+      border-radius: 30px;
+      padding: 14px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+    }
+
+    .contact-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    .contact-icon {
+      font-size: 22px;
+      color: #fbbf24;
+    }
+
+    .contact-text {
+      font-size: 15px;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    .contact-card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <h2>Support</h2>
+  <div class="header-icons">
+    <span class="header-icon">🔍</span>
+    <span class="header-icon">🔔</span>
+  </div>
+</div>
+
+<!-- HERO LOGO SECTION -->
+<div class="hero-section">
+  <img src="assests/images/logo.png" alt="Hamdard Logo" class="hero-logo" onerror="this.style.display='none'">
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div class="contact-section">
+    <h1 class="contact-title">Contact us</h1>
+    <p class="contact-subtitle">for more information</p>
+
+    <!-- PHONE CARD -->
+    <div class="contact-card">
+      <a href="tel:+918595616146">
+        <span class="contact-icon">📞</span>
+        <span class="contact-text">+918595616146</span>
+      </a>
+    </div>
+
+    <!-- EMAIL CARD -->
+    <div class="contact-card">
+      <a href="mailto:support@hamdardudaan.com">
+        <span class="contact-icon">✉️</span>
+        <span class="contact-text">support@hamdardudaan.com</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html" class="active">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+</body>
+</html>

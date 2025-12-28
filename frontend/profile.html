@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= HEADER ================= */
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px 60px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      background: #4CAF50;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .language-selector {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-icon {
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    /* ================= PROFILE SECTION ================= */
+    .profile-section {
+      position: relative;
+      margin-top: -40px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: #b11226;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 40px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .camera-icon {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: #b11226;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .camera-icon::before {
+      content: "📷";
+      font-size: 16px;
+    }
+
+    #profile-picture-input {
+      display: none;
+    }
+
+    /* ================= CONTENT ================= */
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ================= PROFILE FIELDS ================= */
+    .profile-field {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .field-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .field-value {
+      font-size: 15px;
+      color: #111827;
+      font-weight: 500;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-value.empty {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .edit-btn {
+      background: #b11226;
+      color: #fff;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .edit-btn:hover {
+      background: #8f0e1e;
+    }
+
+    .edit-btn.hidden {
+      display: none;
+    }
+
+    /* ================= MODAL ================= */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #b11226;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #b11226;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="header-left">
+      <span class="status-badge">● Active</span>
+      <select class="language-selector">
+        <option>🇬🇧 English</option>
+        <option>🇮🇳 हिंदी</option>
+      </select>
+    </div>
+    <div class="header-icons">
+      <span class="header-icon">🔍</span>
+      <span class="header-icon">⚙️</span>
+      <span class="header-icon">🔔</span>
+    </div>
+  </div>
+  <h2>Profile</h2>
+</div>
+
+<!-- PROFILE AVATAR -->
+<div class="profile-section">
+  <div class="profile-avatar-container">
+    <div class="profile-avatar" id="profile-avatar" onclick="document.getElementById('profile-picture-input').click()">
+      <span id="avatar-initial">U</span>
+      <img id="avatar-image" src="" alt="Profile" style="display: none;">
+    </div>
+    <div class="camera-icon" onclick="document.getElementById('profile-picture-input').click()"></div>
+  </div>
+  <input type="file" id="profile-picture-input" accept="image/*">
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  
+  <div class="profile-field">
+    <div class="field-label">HAM Code</div>
+    <div class="field-value" id="ham-code">—</div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Mobile No</div>
+    <div class="field-value" id="mobile-no">—</div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Name</div>
+    <div class="field-value" id="full-name">—</div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">BE Name</div>
+    <div class="field-value" id="be-name">
+      <span class="be-name-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('be_name')">Add</button>
+    </div>
+  </div>
+
+  <!-- ✅ OUTLET NAME FIELD -->
+  <div class="profile-field">
+    <div class="field-label">Outlet Name</div>
+    <div class="field-value" id="outlet-name">
+      <span class="outlet-name-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('outlet_name')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Member Type</div>
+    <div class="field-value" id="member-type">
+      <span class="member-type-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('member_type')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Slab</div>
+    <div class="field-value" id="slab">
+      <span class="slab-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('slab')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Distributor Name</div>
+    <div class="field-value" id="distributor-name">
+      <span class="distributor-name-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('distributor_name')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Target</div>
+    <div class="field-value" id="target">
+      <span class="target-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('target')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Address</div>
+    <div class="field-value" id="address">
+      <span class="address-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('address')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Pincode</div>
+    <div class="field-value" id="pincode">
+      <span class="pincode-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('pincode')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">Region</div>
+    <div class="field-value" id="region">
+      <span class="region-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('region')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">State</div>
+    <div class="field-value" id="state">
+      <span class="state-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('state')">Add</button>
+    </div>
+  </div>
+
+  <div class="profile-field">
+    <div class="field-label">City</div>
+    <div class="field-value" id="city">
+      <span class="city-text">Not set</span>
+      <button class="edit-btn" onclick="openEditModal('city')">Add</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="edit-modal">
+  <div class="modal-content">
+    <div class="modal-header" id="modal-title">Edit Profile</div>
+    
+    <div class="form-group" id="be_name-group" style="display: none;">
+      <label class="form-label">BE Name</label>
+      <input type="text" class="form-input" id="be_name-input" placeholder="Enter BE name">
+    </div>
+
+    <!-- ✅ OUTLET NAME INPUT -->
+    <div class="form-group" id="outlet_name-group" style="display: none;">
+      <label class="form-label">Outlet Name</label>
+      <input type="text" class="form-input" id="outlet_name-input" placeholder="Enter outlet name">
+    </div>
+
+    <div class="form-group" id="address-group" style="display: none;">
+      <label class="form-label">Address</label>
+      <textarea class="form-textarea" id="address-input" placeholder="Enter full address"></textarea>
+    </div>
+
+    <div class="form-group" id="member_type-group" style="display: none;">
+      <label class="form-label">Member Type</label>
+      <select class="form-select" id="member_type-input">
+        <option value="">Select Member Type</option>
+        <option value="Wholesale">Wholesale</option>
+        <option value="Retailer">Retailer</option>
+        <option value="Distributor">Distributor</option>
+        <option value="Dealer">Dealer</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="slab-group" style="display: none;">
+      <label class="form-label">Slab Range</label>
+      <select class="form-select" id="slab-input">
+        <option value="">Select Slab</option>
+        <option value="0.51 - 1.00">Slab 1: 0.51 - 1.00</option>
+        <option value="0.26 - 0.50">Slab 2: 0.26 - 0.50</option>
+        <option value="0.11 - 0.25">Slab 3: 0.11 - 0.25</option>
+        <option value="1.0 - 2.50">Slab 4: 1.0 - 2.50</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="distributor_name-group" style="display: none;">
+      <label class="form-label">Distributor Name</label>
+      <input type="text" class="form-input" id="distributor_name-input" placeholder="Enter distributor name">
+    </div>
+
+    <div class="form-group" id="target-group" style="display: none;">
+      <label class="form-label">Target</label>
+      <input type="number" class="form-input" id="target-input" placeholder="Enter target value" min="0">
+    </div>
+
+    <div class="form-group" id="pincode-group" style="display: none;">
+      <label class="form-label">Pincode</label>
+      <input type="text" class="form-input" id="pincode-input" placeholder="Enter pincode" maxlength="6">
+    </div>
+
+    <div class="form-group" id="region-group" style="display: none;">
+      <label class="form-label">Region</label>
+      <select class="form-select" id="region-input">
+        <option value="">Select Region</option>
+        <option value="North">North</option>
+        <option value="South">South</option>
+        <option value="East">East</option>
+        <option value="West">West</option>
+        <option value="Central">Central</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="state-group" style="display: none;">
+      <label class="form-label">State</label>
+      <input type="text" class="form-input" id="state-input" placeholder="Enter state">
+    </div>
+
+    <div class="form-group" id="city-group" style="display: none;">
+      <label class="form-label">City</label>
+      <input type="text" class="form-input" id="city-input" placeholder="Enter city">
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveField()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html" class="active">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+let currentField = null;
+let userData = null;
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+// Load user profile
+function loadProfile() {
+  fetch(`${API_BASE}/user/profile?user_id=${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      userData = user;
+      
+      document.getElementById("ham-code").innerText = user.ham_code || "N/A";
+      document.getElementById("mobile-no").innerText = user.phone || "N/A";
+      document.getElementById("full-name").innerText = user.full_name || "N/A";
+      
+      // BE Name
+      if (user.be_name) {
+        document.querySelector("#be-name .be-name-text").innerText = user.be_name;
+        document.querySelector("#be-name .edit-btn").innerText = "Edit";
+        document.getElementById("be-name").classList.remove("empty");
+      }
+      
+      // ✅ Outlet Name
+      if (user.outlet_name) {
+        document.querySelector("#outlet-name .outlet-name-text").innerText = user.outlet_name;
+        document.querySelector("#outlet-name .edit-btn").innerText = "Edit";
+        document.getElementById("outlet-name").classList.remove("empty");
+      }
+      
+      // Member Type
+      if (user.member_type) {
+        document.querySelector("#member-type .member-type-text").innerText = user.member_type;
+        document.querySelector("#member-type .edit-btn").innerText = "Edit";
+        document.getElementById("member-type").classList.remove("empty");
+      }
+      
+      // Slab
+      if (user.slab) {
+        document.querySelector("#slab .slab-text").innerText = user.slab;
+        document.querySelector("#slab .edit-btn").innerText = "Edit";
+        document.getElementById("slab").classList.remove("empty");
+      }
+      
+      // Distributor Name
+      if (user.distributor_name) {
+        document.querySelector("#distributor-name .distributor-name-text").innerText = user.distributor_name;
+        document.querySelector("#distributor-name .edit-btn").innerText = "Edit";
+        document.getElementById("distributor-name").classList.remove("empty");
+      }
+      
+      // Target
+      if (user.target) {
+        document.querySelector("#target .target-text").innerText = user.target;
+        document.querySelector("#target .edit-btn").innerText = "Edit";
+        document.getElementById("target").classList.remove("empty");
+      }
+      
+      // Address
+      if (user.address) {
+        document.querySelector("#address .address-text").innerText = user.address;
+        document.querySelector("#address .edit-btn").innerText = "Edit";
+        document.getElementById("address").classList.remove("empty");
+      }
+      
+      // Pincode
+      if (user.pincode) {
+        document.querySelector("#pincode .pincode-text").innerText = user.pincode;
+        document.querySelector("#pincode .edit-btn").innerText = "Edit";
+        document.getElementById("pincode").classList.remove("empty");
+      }
+      
+      // Region
+      if (user.region) {
+        document.querySelector("#region .region-text").innerText = user.region;
+        document.querySelector("#region .edit-btn").innerText = "Edit";
+        document.getElementById("region").classList.remove("empty");
+      }
+      
+      // State
+      if (user.state) {
+        document.querySelector("#state .state-text").innerText = user.state;
+        document.querySelector("#state .edit-btn").innerText = "Edit";
+        document.getElementById("state").classList.remove("empty");
+      }
+      
+      // City
+      if (user.city) {
+        document.querySelector("#city .city-text").innerText = user.city;
+        document.querySelector("#city .edit-btn").innerText = "Edit";
+        document.getElementById("city").classList.remove("empty");
+      }
+      
+      // ✅ Hide all edit buttons if profile is complete
+      if (user.is_profile_complete) {
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.classList.add("hidden");
+        });
+      }
+      
+      // Profile Picture
+      if (user.profile_picture) {
+        document.getElementById("avatar-image").src = user.profile_picture;
+        document.getElementById("avatar-image").style.display = "block";
+        document.getElementById("avatar-initial").style.display = "none";
+        localStorage.setItem("profile_picture", user.profile_picture);
+      } else if (user.full_name) {
+        const firstLetter = user.full_name.charAt(0).toUpperCase();
+        document.getElementById("avatar-initial").innerText = firstLetter;
+      }
+    })
+    .catch(err => {
+      console.error("Error loading profile:", err);
+      alert("Failed to load profile");
+    });
+}
+
+// Handle profile picture upload
+document.getElementById("profile-picture-input").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Image size should be less than 2MB");
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const base64Image = event.target.result;
+    
+    document.getElementById("avatar-image").src = base64Image;
+    document.getElementById("avatar-image").style.display = "block";
+    document.getElementById("avatar-initial").style.display = "none";
+    
+    fetch(`${API_BASE}/user/update-profile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: parseInt(userId),
+        profile_picture: base64Image
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        localStorage.setItem("profile_picture", base64Image);
+        alert("Profile picture updated!");
+      } else {
+        alert("Failed to update profile picture");
+      }
+    })
+    .catch(err => {
+      console.error("Error updating profile picture:", err);
+      alert("Failed to update profile picture");
+    });
+  };
+  
+  reader.readAsDataURL(file);
+});
+
+// Open edit modal
+function openEditModal(field) {
+  currentField = field;
+  
+  // Hide all groups
+  document.getElementById("be_name-group").style.display = "none";
+  document.getElementById("outlet_name-group").style.display = "none";
+  document.getElementById("address-group").style.display = "none";
+  document.getElementById("member_type-group").style.display = "none";
+  document.getElementById("slab-group").style.display = "none";
+  document.getElementById("distributor_name-group").style.display = "none";
+  document.getElementById("target-group").style.display = "none";
+  document.getElementById("pincode-group").style.display = "none";
+  document.getElementById("region-group").style.display = "none";
+  document.getElementById("state-group").style.display = "none";
+  document.getElementById("city-group").style.display = "none";
+  
+  // Show relevant group and set title
+  if (field === "be_name") {
+    document.getElementById("modal-title").innerText = "Edit BE Name";
+    document.getElementById("be_name-group").style.display = "block";
+    document.getElementById("be_name-input").value = userData?.be_name || "";
+  } else if (field === "outlet_name") {
+    document.getElementById("modal-title").innerText = "Edit Outlet Name";
+    document.getElementById("outlet_name-group").style.display = "block";
+    document.getElementById("outlet_name-input").value = userData?.outlet_name || "";
+  } else if (field === "address") {
+    document.getElementById("modal-title").innerText = "Edit Address";
+    document.getElementById("address-group").style.display = "block";
+    document.getElementById("address-input").value = userData?.address || "";
+  } else if (field === "member_type") {
+    document.getElementById("modal-title").innerText = "Edit Member Type";
+    document.getElementById("member_type-group").style.display = "block";
+    document.getElementById("member_type-input").value = userData?.member_type || "";
+  } else if (field === "slab") {
+    document.getElementById("modal-title").innerText = "Edit Slab Range";
+    document.getElementById("slab-group").style.display = "block";
+    document.getElementById("slab-input").value = userData?.slab || "";
+  } else if (field === "distributor_name") {
+    document.getElementById("modal-title").innerText = "Edit Distributor Name";
+    document.getElementById("distributor_name-group").style.display = "block";
+    document.getElementById("distributor_name-input").value = userData?.distributor_name || "";
+  } else if (field === "target") {
+    document.getElementById("modal-title").innerText = "Edit Target";
+    document.getElementById("target-group").style.display = "block";
+    document.getElementById("target-input").value = userData?.target || "";
+  } else if (field === "pincode") {
+    document.getElementById("modal-title").innerText = "Edit Pincode";
+    document.getElementById("pincode-group").style.display = "block";
+    document.getElementById("pincode-input").value = userData?.pincode || "";
+  } else if (field === "region") {
+    document.getElementById("modal-title").innerText = "Edit Region";
+    document.getElementById("region-group").style.display = "block";
+    document.getElementById("region-input").value = userData?.region || "";
+  } else if (field === "state") {
+    document.getElementById("modal-title").innerText = "Edit State";
+    document.getElementById("state-group").style.display = "block";
+    document.getElementById("state-input").value = userData?.state || "";
+  } else if (field === "city") {
+    document.getElementById("modal-title").innerText = "Edit City";
+    document.getElementById("city-group").style.display = "block";
+    document.getElementById("city-input").value = userData?.city || "";
+  }
+  
+  document.getElementById("edit-modal").classList.add("active");
+}
+
+// Close edit modal
+function closeEditModal() {
+  document.getElementById("edit-modal").classList.remove("active");
+  currentField = null;
+}
+
+// Save field
+function saveField() {
+  let value = null;
+  
+  if (currentField === "be_name") {
+    value = document.getElementById("be_name-input").value;
+  } else if (currentField === "outlet_name") {
+    value = document.getElementById("outlet_name-input").value;
+  } else if (currentField === "address") {
+    value = document.getElementById("address-input").value;
+  } else if (currentField === "member_type") {
+    value = document.getElementById("member_type-input").value;
+  } else if (currentField === "slab") {
+    value = document.getElementById("slab-input").value;
+  } else if (currentField === "distributor_name") {
+    value = document.getElementById("distributor_name-input").value;
+  } else if (currentField === "target") {
+    value = document.getElementById("target-input").value;
+  } else if (currentField === "pincode") {
+    value = document.getElementById("pincode-input").value;
+  } else if (currentField === "region") {
+    value = document.getElementById("region-input").value;
+  } else if (currentField === "state") {
+    value = document.getElementById("state-input").value;
+  } else if (currentField === "city") {
+    value = document.getElementById("city-input").value;
+  }
+  
+  if (!value) {
+    alert("Please enter a value");
+    return;
+  }
+  
+  const updateData = {
+    user_id: parseInt(userId)
+  };
+  updateData[currentField] = value;
+  
+  fetch(`${API_BASE}/user/update-profile`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updateData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      closeEditModal();
+      loadProfile();
+    } else {
+      alert("Failed to update profile");
+    }
+  })
+  .catch(err => {
+    console.error("Error updating profile:", err);
+    alert("Failed to update profile");
+  });
+}
+
+// Initial load
+loadProfile();
+</script>
+
+</body>
+</html>

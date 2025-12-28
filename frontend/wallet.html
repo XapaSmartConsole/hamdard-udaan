@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | eGV Wallet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px 60px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      opacity: 0.9;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 6px 0 70px 0;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Wallet Balance Card */
+    .wallet-card {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      margin: -40px 16px 20px;
+      padding: 28px 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(177, 18, 38, 0.3);
+      color: #fff;
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      opacity: 1;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px 16px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .balance-amount {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -2px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Transaction History */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .view-all {
+      font-size: 13px;
+      color: #b11226;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .transaction-list {
+      margin: 0 16px 20px;
+    }
+
+    .voucher-card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 4px solid #fbbf24;
+    }
+
+    .voucher-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .voucher-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .voucher-product {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .voucher-amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ef4444;
+    }
+
+    .voucher-details {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .voucher-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .voucher-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .voucher-label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .voucher-value {
+      color: #111827;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+    }
+
+    .voucher-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .voucher-date {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .voucher-status {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      font-weight: 600;
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      position: relative;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+      position: relative;
+      top: 0;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <a href="home.html" class="back-link">← Back</a>
+  <h2>eGV Wallet</h2>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- Voucher Transactions -->
+  <div class="section-header">
+    <h3 class="section-title">My eGift Vouchers</h3>
+    <a href="#" class="view-all">View All</a>
+  </div>
+
+  <div class="transaction-list" id="transaction-list">
+    <!-- Voucher transactions will be loaded here -->
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+// Load Wallet Balance
+async function loadWalletData() {
+  try {
+    const response = await fetch(`${API}/wallet/balance?user_id=${userId}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+      document.getElementById('wallet-balance').innerText = `₹${data.balance.toFixed(2)}`;
+    } else {
+      document.getElementById('wallet-balance').innerText = '₹0.00';
+    }
+  } catch (error) {
+    console.error('Error loading wallet:', error);
+    document.getElementById('wallet-balance').innerText = '₹0.00';
+  }
+}
+
+// Load ONLY Voucher Transactions
+async function loadTransactions() {
+  try {
+    const response = await fetch(`${API}/wallet/transactions?user_id=${userId}&limit=20`);
+    const transactions = await response.json();
+    
+    const listContainer = document.getElementById('transaction-list');
+    
+    // ✅ Backend already filters, but double-check for vouchers only
+    const voucherTransactions = transactions.filter(txn => txn.voucher_code !== null);
+    
+    if (voucherTransactions.length === 0) {
+      listContainer.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🎁</div>
+          <p style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 8px;">No eGift Vouchers yet</p>
+          <p style="font-size: 14px;">Redeem vouchers from the Rewards Catalogue</p>
+        </div>
+      `;
+      return;
+    }
+    
+    listContainer.innerHTML = voucherTransactions.map(txn => `
+      <div class="voucher-card">
+        <div class="voucher-header">
+          <div>
+            <div class="voucher-title">🎁 eGift Voucher</div>
+            <div class="voucher-product">${txn.product_name}</div>
+          </div>
+        </div>
+        
+        <div class="voucher-details">
+          <div class="voucher-row">
+            <span class="voucher-label">Order No:</span>
+            <span class="voucher-value">${txn.order_id}</span>
+          </div>
+          <div class="voucher-row">
+            <span class="voucher-label">Voucher Code:</span>
+            <span class="voucher-value">${txn.voucher_code}</span>
+          </div>
+          <div class="voucher-row">
+            <span class="voucher-label">PIN:</span>
+            <span class="voucher-value">${txn.pin}</span>
+          </div>
+          <div class="voucher-row">
+            <span class="voucher-label">Date of Redemption:</span>
+            <span class="voucher-value">${txn.date_of_redemption}</span>
+          </div>
+        </div>
+        
+        <div class="voucher-footer">
+          <span class="voucher-date">${new Date(txn.created_at).toLocaleString()}</span>
+          <span class="voucher-status">${txn.status}</span>
+        </div>
+      </div>
+    `).join('');
+    
+  } catch (error) {
+    console.error('Error loading vouchers:', error);
+    document.getElementById('transaction-list').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">❌</div>
+        <p style="font-size: 16px; font-weight: 600; color: #111827;">Failed to load vouchers</p>
+      </div>
+    `;
+  }
+}
+
+// Initialize
+loadWalletData();
+loadTransactions();
+</script>
+
+</body>
+</html>

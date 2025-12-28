@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Complete KYC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f4f6f8;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: white;
+      padding: 18px;
+      border-bottom-left-radius: 26px;
+      border-bottom-right-radius: 26px;
+    }
+
+    .card {
+      background: white;
+      margin: 16px;
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1.5px solid #d1d5db;
+      font-size: 14px;
+    }
+
+    input[readonly] {
+      background: #f9fafb;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 6px;
+      color: #6b7280;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      background: #b11226;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>Complete KYC</h2>
+</div>
+
+<div class="card">
+  <form id="kyc-form">
+
+    <label>Select Document *</label>
+    <select id="docType" required>
+      <option value="">-- Select --</option>
+      <option value="ADDRESS">Address Proof</option>
+      <option value="PAN">PAN Card</option>
+      <option value="GST">GST Number</option>
+    </select>
+
+    <label id="docLabel">Document Number *</label>
+    <input id="docNumber" readonly placeholder="Auto-filled after upload">
+
+    <label>Upload Document *</label>
+    <input type="file" id="docFile" accept=".jpg,.jpeg,.png,.pdf" required>
+    <div id="status" class="status"></div>
+
+    <button class="btn">Submit KYC</button>
+  </form>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+
+const docType = document.getElementById("docType");
+const docNumber = document.getElementById("docNumber");
+const docFile = document.getElementById("docFile");
+const status = document.getElementById("status");
+const form = document.getElementById("kyc-form");
+
+const userId = localStorage.getItem("user_id");
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+// ===============================
+// OCR EXTRACTION
+// ===============================
+docFile.addEventListener("change", async () => {
+  if (!docType.value) {
+    alert("Please select document type first");
+    docFile.value = "";
+    return;
+  }
+
+  const file = docFile.files[0];
+  if (!file) return;
+
+  docNumber.value = "Extracting...";
+  status.innerText = "Uploading document for verification...";
+
+  const formData = new FormData();
+  formData.append("document_type", docType.value);
+  formData.append("file", file);
+
+  try {
+    const res = await fetch(`${API_BASE}/kyc/extract-number`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+
+    docNumber.value = data.document_number || "Not detected";
+    status.innerText = "Document verified successfully";
+
+  } catch (err) {
+    console.error(err);
+    docNumber.value = "Not detected";
+    status.innerText = "Failed to extract document number";
+  }
+});
+
+// ===============================
+// ✅ SUBMIT KYC + REDIRECT
+// ===============================
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!docType.value || !docNumber.value || docNumber.value === "Not detected") {
+    alert("Please complete document verification first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("document_type", docType.value);
+  formData.append("document_number", docNumber.value);
+
+  try {
+    const res = await fetch(`${API_BASE}/kyc/complete`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+
+    status.innerText = "✅ KYC completed successfully";
+
+    // ✅ IMPORTANT: REDIRECT BACK TO KYC PAGE
+    setTimeout(() => {
+      window.location.href = "kyc.html";
+    }, 800);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to complete KYC");
+  }
+});
+</script>
+</body>
+</html>

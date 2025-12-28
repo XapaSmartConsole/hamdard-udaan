@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Redeem Catalog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= HEADER ================= */
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .cart-icon {
+      position: relative;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #000;
+      color: #ff006e;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ================= HERO IMAGE ================= */
+    .hero-image {
+      width: 100%;
+      height: 280px;
+      background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800') center/cover;
+      border-radius: 0 0 50% 50% / 0 0 30% 30%;
+      flex-shrink: 0;
+    }
+
+    /* ================= CONTENT ================= */
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 16px 80px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ================= POINTS BALANCE ================= */
+    .points-balance {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    /* ================= CATEGORY GRID ================= */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .category-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .category-card:active {
+      transform: scale(0.98);
+    }
+
+    .category-image {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .category-name {
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: #111827;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-card.yellow {
+      background: #fbbf24;
+    }
+
+    .category-card.yellow .category-name {
+      color: #000;
+    }
+
+    /* ================= PRODUCTS VIEW ================= */
+    .products-view {
+      display: none;
+    }
+
+    .products-view.active {
+      display: block;
+    }
+
+    /* ================= FILTER DROPDOWN ================= */
+    .filter-section {
+      margin-bottom: 16px;
+    }
+
+    .filter-section label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .filter-select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #d1d5db;
+      font-size: 14px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #b11226;
+    }
+
+    /* ================= PRODUCT CARD ================= */
+    .product-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 0;
+    }
+
+    .product-image-wrapper {
+      width: 140px;
+      height: 140px;
+      background: #f9fafb;
+      padding: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .product-info {
+      flex: 1;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #fbbf24;
+    }
+
+    .product-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .product-points {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .add-to-cart-btn {
+      background: #fff;
+      color: #111827;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: all 0.2s;
+    }
+
+    .add-to-cart-btn:active {
+      transform: scale(0.95);
+      background: #f3f4f6;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .no-products {
+      text-align: center;
+      color: #6b7280;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-content">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <h2 id="page-title">Rewards Catalogue</h2>
+    <div class="cart-icon" onclick="location.href='cart.html'">
+      🛒
+      <span class="cart-badge" id="cart-count">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO IMAGE -->
+<div class="hero-image"></div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+
+  <!-- POINTS BALANCE -->
+  <div class="points-balance" id="points-balance">Pt Balance: 6000 Pts</div>
+
+  <!-- CATEGORY VIEW -->
+  <div id="categoryView" class="category-view">
+    <div class="category-grid">
+      <div class="category-card" onclick="showProducts('Electronics')">
+        <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=200&fit=crop" alt="Electronics" class="category-image">
+        <div class="category-name">Electronics</div>
+      </div>
+
+      <div class="category-card yellow" onclick="showProducts('Vouchers')">
+        <div class="category-name">Vouchers</div>
+      </div>
+
+      <div class="category-card" onclick="showProducts('Laptops')">
+        <img src="https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=400&h=200&fit=crop" alt="Laptops" class="category-image">
+        <div class="category-name">Laptops</div>
+      </div>
+
+      <div class="category-card yellow" onclick="showProducts('Home Appliances')">
+        <div class="category-name">Home Appliances</div>
+      </div>
+
+      <div class="category-card" onclick="showProducts('Health')">
+        <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&h=200&fit=crop" alt="Health" class="category-image">
+        <div class="category-name">Health</div>
+      </div>
+
+      <div class="category-card yellow" onclick="showProducts('Automobile')">
+        <div class="category-name">Automobile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS VIEW -->
+  <div id="productsView" class="products-view">
+    
+    <!-- FILTER -->
+    <div class="filter-section">
+      <label>Select Points Range</label>
+      <select class="filter-select" id="pointsFilter" onchange="filterProducts()">
+        <option value="ALL">All Points</option>
+        <option value="0-1000">0 - 1000</option>
+        <option value="1000-10000">1000 - 10000</option>
+        <option value="10001-20000">10001 - 20000</option>
+        <option value="20001-40000">20001 - 40000</option>
+        <option value="40001-80000">40001 - 80000</option>
+        <option value="80001-150000">80001 - 150000</option>
+        <option value="150001-300000">150001 - 300000</option>
+        <option value="300001-600000">300001 - 600000</option>
+        <option value="600001-1200000">600001 - 1200000</option>
+      </select>
+    </div>
+
+    <!-- PRODUCTS LIST -->
+    <div id="productsList"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+let currentCategory = '';
+let allProducts = [];
+
+// Sample product data with placeholder images
+const productsData = {
+  'Electronics': [
+    { name: 'Onix OC 450 Plastic Vegetable Chopper', points: 250, image: 'assests/images/chopper.png' },
+    { name: 'Zebronics Delight 20 10W Portable Bluetooth Speaker', points: 395, image: 'assests/images/speaker.png' },
+    { name: 'URBN 5000 mAh Wired & Wireless With MagSafe Power', points: 750, image: 'assests/images/powerbank.png' },
+    { name: 'WONDERCHEF Power 1400W Induction Cooktop', points: 1000, image: 'assests/images/induction.png' },
+    { name: 'URBN Beat 900 Snapdragon Wireless TWS Earbuds', points: 1200, image: 'assests/images/earbuds.png' },
+    { name: 'Onix OL 880 12 hrs Lantern Emergency Light', points: 450, image: 'assests/images/lantern.png' },
+  ],
+  'Vouchers': [
+    { name: 'Bikanerwala E-voucher Worth INR 10', points: 5, image: 'assests/images/bikanerwala.png' },
+    { name: 'Zomato E-voucher Worth INR 250', points: 125, image: 'assests/images/zomato.png' },
+    { name: 'Shoppers Stop E-voucher Worth INR 500', points: 250, image: 'assests/images/shoppers-stop.png' },
+    { name: 'Apollo Pharmacy Worth INR 500', points: 250, image: 'assests/images/apollo.png' },
+  ],
+  'Laptops': [
+    { name: 'Camera', points: 1, image: 'assests/images/camera.png' },
+    { name: 'AndroidOne', points: 15, image: 'assests/images/android.png' },
+    { name: 'Lenovo IdeaPad Slim 3 13th Gen Intel Core i3 15.6"', points: 17500, image: 'assests/images/lenovo.png' },
+    { name: 'ASUS Intel Core i3 13th Gen', points: 17500, image: 'assests/images/asus.png' },
+    { name: 'HP 240 G8 - i3 - 1115G4/ 8GB / 512GB SSD / 14" HD', points: 18750, image: 'assests/images/hp.png' },
+  ],
+  'Home Appliances': [
+    { name: 'Nirlep Multi Snackmaker', points: 375, image: 'assests/images/snackmaker.png' },
+    { name: 'My Bento Passion Professional SS Lunch Box', points: 450, image: 'assests/images/lunchbox.png' },
+    { name: 'Prabha Galaxy 1000ml Casserole', points: 550, image: 'assests/images/casserole.png' },
+    { name: 'Wonderchef Crimson Edge 400W Electric Hand Blender', points: 900, image: 'assests/images/blender.png' },
+  ],
+  'Health': [
+    { name: 'Health Product 1', points: 120, image: 'assests/images/health1.png' },
+    { name: 'Health Product 2', points: 150, image: 'assests/images/health2.png' },
+  ],
+  'Automobile': [
+    { name: 'Green Sunny 40kms Range Electric Scooter', points: 14500, image: 'assests/images/scooter-green.png' },
+    { name: 'Yakuza Neu Electric Scooter', points: 19500, image: 'assests/images/scooter-white.png' },
+  ],
+};
+
+// ✅ LOAD WALLET BALANCE FUNCTION
+function loadWalletBalance() {
+  fetch(`${API_BASE}/wallet/balance?user_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      const points = data.points || 6000;
+      document.getElementById('points-balance').innerText = `Pt Balance: ${points} Pts`;
+    })
+    .catch(() => {
+      document.getElementById('points-balance').innerText = 'Pt Balance: 6000 Pts';
+    });
+}
+
+// ✅ Initial load
+loadWalletBalance();
+
+// ✅ Reload when page becomes visible
+window.addEventListener('focus', loadWalletBalance);
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    loadWalletBalance();
+  }
+});
+
+function showProducts(category) {
+  currentCategory = category;
+  document.getElementById('page-title').innerText = category;
+  document.getElementById('categoryView').classList.add('hidden');
+  document.getElementById('productsView').classList.add('active');
+  
+  allProducts = productsData[category] || [];
+  document.getElementById('pointsFilter').value = 'ALL';
+  filterProducts();
+}
+
+function filterProducts() {
+  const filter = document.getElementById('pointsFilter').value;
+  let filtered = allProducts;
+
+  if (filter !== 'ALL') {
+    const [min, max] = filter.split('-').map(Number);
+    filtered = allProducts.filter(p => p.points >= min && p.points <= max);
+  }
+
+  displayProducts(filtered);
+}
+
+function displayProducts(products) {
+  const container = document.getElementById('productsList');
+  
+  if (products.length === 0) {
+    container.innerHTML = '<div class="no-products">No products found in this range</div>';
+    return;
+  }
+
+  container.innerHTML = products.map(product => `
+    <div class="product-card">
+      <div class="product-image-wrapper">
+        <img src="${product.image}" alt="${product.name}" class="product-image">
+      </div>
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-points">Points: ${product.points}</div>
+        <button class="add-to-cart-btn"
+          onclick="addToCart(event, '${product.name.replace(/'/g, "\\'")}', ${product.points})">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addToCart(event, productName, points) {
+  const productImage = event.target
+    .closest('.product-card')
+    .querySelector('img').src;
+
+  const category = currentCategory;
+
+  fetch(`${API_BASE}/cart/add?user_id=${userId}&product_name=${encodeURIComponent(productName)}&points=${points}&product_image=${encodeURIComponent(productImage)}&category=${category}`, {
+    method: "POST"
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.success) {
+      alert(`✅ ${productName} added to cart!`);
+      updateCartBadge();
+    }
+  });
+}
+
+function updateCartBadge() {
+  fetch(`${API_BASE}/cart?user_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("cart-count").innerText = data.count;
+    });
+}
+
+function goBack() {
+  if (document.getElementById('productsView').classList.contains('active')) {
+    document.getElementById('page-title').innerText = 'Rewards Catalogue';
+    document.getElementById('categoryView').classList.remove('hidden');
+    document.getElementById('productsView').classList.remove('active');
+  } else {
+    location.href = 'bank-transfer.html';
+  }
+}
+
+// Load cart count on page load
+updateCartBadge();
+</script>
+
+</body>
+</html>

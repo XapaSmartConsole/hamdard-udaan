@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Performance Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Dashboard Card */
+    .dashboard-card {
+      background: #fff;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f3f4f6;
+    }
+
+    .dashboard-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .achievement-badge {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .achievement-badge.below-target {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 12px;
+      border-left: 4px solid #b11226;
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .info-value {
+      font-size: 20px;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    /* Sales Comparison */
+    .sales-comparison {
+      margin-top: 24px;
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .comparison-label {
+      font-size: 14px;
+      color: #374151;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .comparison-bar-container {
+      flex: 2;
+      position: relative;
+      height: 36px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0 12px;
+    }
+
+    .comparison-bar {
+      position: absolute;
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      transition: width 0.5s ease;
+    }
+
+    .comparison-bar.sfa {
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+    }
+
+    .comparison-bar.deh {
+      background: linear-gradient(90deg, #10b981, #059669);
+    }
+
+    .comparison-value {
+      font-size: 13px;
+      color: #111827;
+      font-weight: 600;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Distributor Chain */
+    .distributor-chain {
+      background: #fff;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .distributor-chain h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    .chain-level {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left: 3px solid #b11226;
+    }
+
+    .chain-level:last-child {
+      margin-bottom: 0;
+    }
+
+    .level-icon {
+      width: 32px;
+      height: 32px;
+      background: #b11226;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .level-info {
+      flex: 1;
+    }
+
+    .level-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .level-details {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    /* Chart Container */
+    .chart-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .chart-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-bottom: 16px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.deh { background: #10b981; }
+    .legend-dot.sfa { background: #3b82f6; }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <button class="back-btn" onclick="location.href='home.html'">←</button>
+  <h2>Performance Dashboard</h2>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- Main Dashboard -->
+  <div class="dashboard-card">
+    <div class="dashboard-header">
+      <h3>Sales Performance</h3>
+      <div class="achievement-badge" id="achievement-badge">58.5% Achieved</div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Target</div>
+        <div class="info-value">₹2.60L</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Slab Range</div>
+        <div class="info-value">1.0 - 2.50</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">SFA Sales</div>
+        <div class="info-value">₹1.49L</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">DEH Sales</div>
+        <div class="info-value">₹1.52L</div>
+      </div>
+    </div>
+
+    <!-- Sales Comparison Bars -->
+    <div class="sales-comparison">
+      <div class="comparison-row">
+        <div class="comparison-label">SFA Sales</div>
+        <div class="comparison-bar-container">
+          <div class="comparison-bar sfa" style="width: 57.45%">₹1.49L</div>
+        </div>
+        <div class="comparison-value">57.45%</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-label">DEH Sales</div>
+        <div class="comparison-bar-container">
+          <div class="comparison-bar deh" style="width: 58.52%">₹1.52L</div>
+        </div>
+        <div class="comparison-value">58.52%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YTD 2025 Chart -->
+  <div class="chart-card">
+    <h3>YTD 2025 - DEH Sales vs SFA Sales</h3>
+    <div class="chart-container">
+      <canvas id="ytdSalesChart"></canvas>
+    </div>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot deh"></div>
+        <span>DEH SALES</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot sfa"></div>
+        <span>SFA SALES</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+// ==================== DASHBOARD DATA ====================
+const performanceData = {
+  // Financial Data
+  target: 260000,        // ₹2.60L
+  slabRange: '1.0-2.50',
+  sfaSales: 149371.443,  // ₹1.49L
+  dehSales: 152147.501,  // ₹1.52L
+  
+  // YTD 2025 Monthly Data (August - December)
+  ytdData: {
+    august: { deh: 50000, sfa: 35000 },
+    september: { deh: 25000, sfa: 40000 },
+    october: { deh: 30000, sfa: 28000 },
+    november: { deh: 25000, sfa: 22000 },
+    december: { deh: 22147.501, sfa: 24371.443 }
+  }
+};
+
+// ==================== CALCULATE ACHIEVEMENT ====================
+function updateDashboard() {
+  const achievement = (performanceData.dehSales / performanceData.target) * 100;
+  const achievementPercent = achievement.toFixed(2);
+  
+  const badge = document.getElementById('achievement-badge');
+  badge.innerText = achievementPercent + '% Achieved';
+  
+  if (achievement >= 90) {
+    badge.classList.remove('below-target');
+  } else {
+    badge.classList.add('below-target');
+  }
+}
+
+updateDashboard();
+
+// ==================== YTD 2025 CHART ====================
+const ytdCtx = document.getElementById('ytdSalesChart').getContext('2d');
+new Chart(ytdCtx, {
+  type: 'bar',
+  data: {
+    labels: ['August', 'September', 'October', 'November', 'December'],
+    datasets: [
+      {
+        label: 'DEH SALES',
+        data: [
+          performanceData.ytdData.august.deh / 1000,
+          performanceData.ytdData.september.deh / 1000,
+          performanceData.ytdData.october.deh / 1000,
+          performanceData.ytdData.november.deh / 1000,
+          performanceData.ytdData.december.deh / 1000
+        ],
+        backgroundColor: '#10b981',
+        borderRadius: 6,
+        barThickness: 40
+      },
+      {
+        label: 'SFA SALES',
+        data: [
+          performanceData.ytdData.august.sfa / 1000,
+          performanceData.ytdData.september.sfa / 1000,
+          performanceData.ytdData.october.sfa / 1000,
+          performanceData.ytdData.november.sfa / 1000,
+          performanceData.ytdData.december.sfa / 1000
+        ],
+        backgroundColor: '#3b82f6',
+        borderRadius: 6,
+        barThickness: 40
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#fff',
+        titleColor: '#111827',
+        bodyColor: '#6b7280',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        padding: 12,
+        displayColors: true,
+        callbacks: {
+          label: function(context) {
+            return context.dataset.label + ': ₹' + context.parsed.y.toFixed(2) + 'K';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: {
+            size: 11
+          },
+          color: '#6b7280'
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          font: {
+            size: 11
+          },
+          color: '#6b7280',
+          callback: function(value) {
+            return '₹' + value + 'K';
+          }
+        },
+        grid: {
+          color: '#f3f4f6'
+        }
+      }
+    }
+  }
+});
+
+// ==================== API INTEGRATION (Optional) ====================
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (userId) {
+  // Fetch real performance data from API if available
+  // fetch(`${API}/performance/dashboard?user_id=${userId}`)
+  //   .then(res => res.json())
+  //   .then(data => {
+  //     // Update with real data
+  //   });
+}
+</script>
+
+</body>
+</html>

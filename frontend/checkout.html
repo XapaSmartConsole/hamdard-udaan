@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 200px;
+      background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800') center/cover;
+      border-radius: 0 0 50% 50% / 0 0 20% 20%;
+      flex-shrink: 0;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .address-text {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .order-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .order-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #f9fafb;
+    }
+
+    .order-item-details {
+      flex: 1;
+    }
+
+    .order-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .order-item-points {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .total-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    .total-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .confirm-btn {
+      width: 100%;
+      padding: 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .confirm-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <h2>Confirm Address</h2>
+</div>
+
+<div class="hero-image"></div>
+
+<div class="content-wrapper">
+  
+  <!-- DELIVERY ADDRESS -->
+  <div class="card">
+    <div class="card-title">Delivery Address</div>
+    <div class="address-text" id="delivery-address">Loading...</div>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="card">
+    <div class="card-title">Order Summary</div>
+    <div id="order-items"></div>
+    
+    <div class="total-row">
+      <span class="total-label">Total Points Required</span>
+      <span class="total-value" id="total-points">0</span>
+    </div>
+  </div>
+
+  <button class="confirm-btn" onclick="confirmOrder()">PROCEED TO CONFIRM</button>
+
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+let cartData = null;
+
+function loadCheckout() {
+  // Load user profile for address
+  fetch(`${API_BASE}/user/profile?user_id=${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      const addressDiv = document.getElementById("delivery-address");
+      addressDiv.innerHTML = `
+        ${user.full_name || "N/A"}<br>
+        ${user.city || ""}, ${user.state || ""}<br>
+        - ${user.pincode || ""}<br>
+        Mobile: ${user.phone || "N/A"}
+      `;
+    });
+
+  // Load cart
+  fetch(`${API_BASE}/cart?user_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      cartData = data;
+      
+      if (data.items.length === 0) {
+        alert("Cart is empty");
+        location.href = "cart.html";
+        return;
+      }
+      
+      const container = document.getElementById("order-items");
+      container.innerHTML = data.items.map(item => `
+        <div class="order-item">
+          <img src="${item.product_image}" onerror="this.src='https://via.placeholder.com/60/b11226/FFFFFF?text=P'">
+          <div class="order-item-details">
+            <div class="order-item-name">${item.product_name}</div>
+            <div class="order-item-points">${item.points} Points × ${item.quantity}</div>
+            <div class="order-item-points">Total: ${item.points * item.quantity} Points</div>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById("total-points").innerText = data.total_points;
+    });
+}
+
+function confirmOrder() {
+  if (!cartData) {
+    alert("Cart data not loaded");
+    return;
+  }
+  
+  // Get user data
+  fetch(`${API_BASE}/user/profile?user_id=${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      const address = `${user.full_name}, ${user.city}, ${user.state} - ${user.pincode}`;
+      const mobile = user.phone;
+      
+      // Checkout
+      fetch(`${API_BASE}/cart/checkout?user_id=${userId}&delivery_address=${encodeURIComponent(address)}&mobile=${mobile}`, {
+        method: "POST"
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            alert(`✅ Order placed successfully!\nOrder ID: ${result.order_id}\nRemaining Points: ${result.remaining_points}`);
+            location.href = "home.html";
+          } else {
+            alert("❌ Order failed: " + (result.detail || "Unknown error"));
+          }
+        })
+        .catch(err => {
+          console.error("Checkout error:", err);
+          alert("Failed to place order");
+        });
+    });
+}
+
+loadCheckout();
+</script>
+
+</body>
+</html>

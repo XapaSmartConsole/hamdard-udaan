@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | KYC Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px 60px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      opacity: 0.9;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      margin: -40px 16px 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+      background: #f3f4f6;
+      color: #6b7280;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .tab.active {
+      background: #b11226;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 6px 0 70px 0;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      margin: 16px;
+      padding: 18px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hidden { 
+      display: none !important; 
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .summary-row:last-child { 
+      border-bottom: none; 
+    }
+
+    .summary-row span {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .summary-row strong {
+      color: #111827;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .verification-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .verification-badge.verified {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .verification-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .verification-badge.failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1.5px solid #d1d5db;
+      font-size: 14px;
+      background: #f9fafb;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #b11226;
+      background: #fff;
+    }
+
+    input[readonly] {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 6px;
+      color: #6b7280;
+    }
+
+    .status.success {
+      color: #059669;
+    }
+
+    .status.error {
+      color: #dc2626;
+    }
+
+    .btn-submit-all {
+      width: 100%;
+      margin-top: 28px;
+      padding: 16px;
+      background: #b11226;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.3);
+    }
+
+    .btn-submit-all:active {
+      background: #991b1b;
+      transform: scale(0.98);
+    }
+
+    .btn-submit-all:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      background: #fff;
+      color: #b11226;
+      border: 2px solid #b11226;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:active {
+      background: #fef2f2;
+    }
+
+    .doc-section {
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .doc-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .doc-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .doc-title .icon {
+      font-size: 20px;
+    }
+
+    .doc-display {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    .doc-display-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .doc-display-label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .doc-display-value {
+      font-size: 13px;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .doc-type-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: #eff6ff;
+      color: #1e40af;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .mandatory {
+      color: #dc2626;
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #b11226;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+
+    .upload-btn:active {
+      background: #991b1b;
+      transform: scale(0.98);
+    }
+
+    .image-preview {
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+    }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .upload-item {
+      text-align: center;
+    }
+
+    .upload-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .bank-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .bank-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit {
+      background: #fff;
+      color: #b11226;
+      border: 2px solid #b11226;
+    }
+
+    .btn-edit:active {
+      background: #fef2f2;
+    }
+
+    .btn-validate {
+      background: #b11226;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-validate:active {
+      background: #991b1b;
+      transform: scale(0.98);
+    }
+
+    .btn-validate:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .validation-status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .validation-status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .validation-status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .validation-status.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      position: relative;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+      position: relative;
+      top: 0;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <a href="home.html" class="back-link">← Back</a>
+  <h2>KYC Details</h2>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('documents')">Upload KYC Documents</button>
+  <button class="tab" onclick="showTab('bank')">Bank Details</button>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- DOCUMENTS SECTION -->
+  <div id="documentsSection" class="card">
+    <h3>Document Verification</h3>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">🏠</span>
+        Address Proof <span class="mandatory">*Mandatory</span>
+        <span class="verification-badge verified hidden" id="address-badge">✓ Submitted</span>
+      </div>
+
+      <div id="address-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">Document Type</span>
+            <span class="doc-type-badge" id="address-type-display">-</span>
+          </div>
+          <div class="doc-display-row">
+            <span class="doc-display-label">Document Number</span>
+            <span class="doc-display-value" id="address-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="address-upload">
+        <label>Select Address Proof Type</label>
+        <select id="addressType" onchange="handleAddressTypeChange()">
+          <option value="">-- Select Document --</option>
+          <option value="AADHAAR">Aadhaar Card</option>
+          <option value="VOTER_ID">Voter ID</option>
+          <option value="PASSPORT">Passport</option>
+          <option value="DRIVING_LICENSE">Driving License</option>
+          <option value="ELECTRICITY_BILL">Electricity Bill</option>
+          <option value="TELEPHONE_BILL">Telephone Bill</option>
+          <option value="RATION_CARD">Ration Card</option>
+        </select>
+
+        <label>Document Number</label>
+        <input id="addressNumber" readonly placeholder="Auto-filled after upload">
+
+        <div id="single-upload" class="hidden">
+          <label>Upload Document Image</label>
+          <input type="file" id="addressFile" accept="image/*,.pdf" style="display: none;">
+          <label for="addressFile" class="upload-btn">📷 Choose Image</label>
+          <div id="addressPreview" class="image-preview hidden">
+            <img id="addressImg" src="" alt="Document">
+          </div>
+        </div>
+
+        <div id="double-upload" class="hidden">
+          <div class="upload-grid">
+            <div class="upload-item">
+              <span class="upload-label">Front Side</span>
+              <input type="file" id="aadhaarFront" accept="image/*" style="display: none;">
+              <label for="aadhaarFront" class="upload-btn">📷 Front</label>
+              <div id="aadhaarFrontPreview" class="image-preview hidden">
+                <img id="aadhaarFrontImg" src="" alt="Aadhaar Front">
+              </div>
+            </div>
+            <div class="upload-item">
+              <span class="upload-label">Back Side</span>
+              <input type="file" id="aadhaarBack" accept="image/*" style="display: none;">
+              <label for="aadhaarBack" class="upload-btn">📷 Back</label>
+              <div id="aadhaarBackPreview" class="image-preview hidden">
+                <img id="aadhaarBackImg" src="" alt="Aadhaar Back">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="addressStatus" class="status"></div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">💳</span>
+        PAN Card <span class="mandatory">*Mandatory</span>
+        <span class="verification-badge verified hidden" id="pan-badge">✓ Submitted</span>
+      </div>
+
+      <div id="pan-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">PAN Number</span>
+            <span class="doc-display-value" id="pan-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="pan-upload">
+        <label>PAN Number</label>
+        <input id="panNumber" readonly placeholder="Auto-filled after upload">
+
+        <label>Upload PAN Card Image</label>
+        <input type="file" id="panFile" accept="image/*,.pdf" style="display: none;">
+        <label for="panFile" class="upload-btn">📷 Choose Image</label>
+        <div id="panPreview" class="image-preview hidden">
+          <img id="panImg" src="" alt="PAN Card">
+        </div>
+        <div id="panStatus" class="status"></div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">📄</span>
+        GST Number <span style="color: #6b7280; font-size: 11px; margin-left: 4px;">(Optional)</span>
+        <span class="verification-badge verified hidden" id="gst-badge">✓ Submitted</span>
+      </div>
+
+      <div id="gst-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">GST Number</span>
+            <span class="doc-display-value" id="gst-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="gst-upload">
+        <label>GST Number</label>
+        <input id="gstNumber" readonly placeholder="Auto-filled after upload">
+
+        <label>Upload GST Certificate Image</label>
+        <input type="file" id="gstFile" accept="image/*,.pdf" style="display: none;">
+        <label for="gstFile" class="upload-btn">📷 Choose Image</label>
+        <div id="gstPreview" class="image-preview hidden">
+          <img id="gstImg" src="" alt="GST Certificate">
+        </div>
+        <div id="gstStatus" class="status"></div>
+      </div>
+    </div>
+
+    <button class="btn-submit-all" id="submitAllBtn" onclick="submitAllDocuments()">
+      Submit Documents
+    </button>
+  </div>
+
+  <!-- BANK SECTION -->
+  <div id="bankSection" class="card hidden">
+    <h3>
+      Bank Account Information
+      <span class="verification-badge verified hidden" id="bank-verified-badge">✓ Verified</span>
+      <span class="verification-badge pending hidden" id="bank-pending-badge">⏳ Pending</span>
+    </h3>
+    
+    <!-- Bank Display (when details exist) -->
+    <div id="bank-display" class="hidden">
+      <div class="summary-row"><span>Account Holder</span><strong id="display-holder-name">-</strong></div>
+      <div class="summary-row"><span>Bank Name</span><strong id="display-bank-name">-</strong></div>
+      <div class="summary-row"><span>Account Number</span><strong id="display-account-number">-</strong></div>
+      <div class="summary-row"><span>IFSC Code</span><strong id="display-ifsc">-</strong></div>
+      
+      <div id="validation-status-display" class="hidden"></div>
+      
+      <div class="bank-actions">
+        <button class="btn-edit" onclick="editBankDetails()">✏️ Edit Details</button>
+        <button class="btn-validate" onclick="validateBankAccount()" id="validate-btn">✓ Validate Account</button>
+      </div>
+    </div>
+
+    <!-- Bank Form (for add/edit) -->
+    <div id="bank-form" class="hidden">
+      <label>Account Holder Name</label>
+      <input type="text" id="accountHolderName" placeholder="Enter full name as per bank">
+
+      <label>Bank Name</label>
+      <select id="bankName">
+        <option value="">-- Select Bank --</option>
+        <option value="State Bank of India">State Bank of India</option>
+        <option value="HDFC Bank">HDFC Bank</option>
+        <option value="ICICI Bank">ICICI Bank</option>
+        <option value="Axis Bank">Axis Bank</option>
+        <option value="Punjab National Bank">Punjab National Bank</option>
+        <option value="Bank of Baroda">Bank of Baroda</option>
+        <option value="Canara Bank">Canara Bank</option>
+        <option value="Union Bank of India">Union Bank of India</option>
+        <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+        <option value="IndusInd Bank">IndusInd Bank</option>
+        <option value="Yes Bank">Yes Bank</option>
+        <option value="IDFC First Bank">IDFC First Bank</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>Account Number</label>
+      <input type="text" id="accountNumber" placeholder="Enter account number" maxlength="18">
+
+      <label>Re-enter Account Number</label>
+      <input type="text" id="confirmAccountNumber" placeholder="Re-enter account number" maxlength="18">
+
+      <label>IFSC Code</label>
+      <input type="text" id="ifscCode" placeholder="Enter IFSC code" maxlength="11" style="text-transform: uppercase;">
+
+      <label>Upload Cancelled Cheque</label>
+      <input type="file" id="chequeFile" accept="image/*,.pdf" style="display: none;">
+      <label for="chequeFile" class="upload-btn">📷 Upload Cheque Image</label>
+      <div id="chequePreview" class="image-preview hidden">
+        <img id="chequeImg" src="" alt="Cancelled Cheque">
+      </div>
+
+      <div id="bank-form-status" class="status"></div>
+
+      <button class="btn-submit-all" onclick="submitBankDetails()" id="submit-bank-btn">
+        Save Bank Details
+      </button>
+      <button class="btn-secondary" onclick="cancelBankEdit()" id="cancel-bank-btn">
+        Cancel
+      </button>
+    </div>
+
+    <!-- No Bank Details -->
+    <div id="bank-empty" class="hidden">
+      <div style="text-align: center; padding: 20px;">
+        <p style="color: #6b7280; margin-bottom: 16px;">No bank details found</p>
+        <button onclick="showBankForm()" class="btn-submit-all">+ Add Bank Details</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+let documentsReady = {
+  address: { uploaded: false, number: null, type: null, submitted: false, hasImages: false },
+  pan: { uploaded: false, number: null, submitted: false, hasImages: false },
+  gst: { uploaded: false, number: null, submitted: false, hasImages: false }
+};
+
+let currentBankData = null;
+let isEditMode = false;
+
+// ============ TAB SWITCHING ============
+function showTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
+
+  if (tab === 'documents') {
+    document.querySelectorAll(".tab")[0].classList.add("active");
+    document.getElementById("documentsSection").classList.remove("hidden");
+    loadSubmittedDocuments();
+  } else if (tab === 'bank') {
+    document.querySelectorAll(".tab")[1].classList.add("active");
+    document.getElementById("bankSection").classList.remove("hidden");
+    loadBankDetails();
+  }
+}
+
+// ============ BANK DETAILS FUNCTIONS ============
+function loadBankDetails() {
+  fetch(`${API}/bank?user_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Bank details not found");
+      return res.json();
+    })
+    .then(data => {
+      currentBankData = data;
+      displayBankDetails(data);
+    })
+    .catch(err => {
+      console.log("No bank details:", err);
+      showEmptyBankState();
+    });
+}
+
+function displayBankDetails(data) {
+  document.getElementById("bank-display").classList.remove("hidden");
+  document.getElementById("bank-form").classList.add("hidden");
+  document.getElementById("bank-empty").classList.add("hidden");
+
+  document.getElementById("display-holder-name").innerText = data.account_holder_name;
+  document.getElementById("display-bank-name").innerText = data.bank_name;
+  document.getElementById("display-account-number").innerText = `****${data.account_number.slice(-4)}`;
+  document.getElementById("display-ifsc").innerText = data.ifsc;
+
+  // Show validation status
+  const isValidated = data.is_validated || false;
+  const validationStatus = data.validation_status || "PENDING";
+  
+  if (isValidated) {
+    document.getElementById("bank-verified-badge").classList.remove("hidden");
+    document.getElementById("bank-pending-badge").classList.add("hidden");
+    document.getElementById("validate-btn").disabled = true;
+    document.getElementById("validate-btn").innerText = "✓ Verified";
+    document.getElementById("validate-btn").style.background = "#10b981";
+    
+    const statusDiv = document.getElementById("validation-status-display");
+    statusDiv.className = "validation-status success";
+    statusDiv.innerText = "✓ Bank account verified successfully";
+    statusDiv.classList.remove("hidden");
+  } else {
+    document.getElementById("bank-verified-badge").classList.add("hidden");
+    
+    if (validationStatus === "FAILED") {
+      document.getElementById("bank-pending-badge").classList.remove("hidden");
+      document.getElementById("bank-pending-badge").className = "verification-badge failed";
+      document.getElementById("bank-pending-badge").innerText = "❌ Failed";
+    } else {
+      document.getElementById("bank-pending-badge").classList.remove("hidden");
+      document.getElementById("bank-pending-badge").className = "verification-badge pending";
+      document.getElementById("bank-pending-badge").innerText = "⏳ Pending";
+    }
+    
+    document.getElementById("validate-btn").disabled = false;
+    document.getElementById("validate-btn").innerText = "✓ Validate Account";
+    document.getElementById("validate-btn").style.background = "#b11226";
+    
+    const statusDiv = document.getElementById("validation-status-display");
+    statusDiv.className = `validation-status ${validationStatus === "FAILED" ? "error" : "pending"}`;
+    statusDiv.innerText = validationStatus === "FAILED" 
+      ? "❌ Validation failed - Please check your details" 
+      : "⏳ Account validation pending - Click 'Validate Account' to verify";
+    statusDiv.classList.remove("hidden");
+  }
+}
+
+function showEmptyBankState() {
+  document.getElementById("bank-display").classList.add("hidden");
+  document.getElementById("bank-form").classList.add("hidden");
+  document.getElementById("bank-empty").classList.remove("hidden");
+}
+
+function showBankForm() {
+  isEditMode = false;
+  document.getElementById("bank-display").classList.add("hidden");
+  document.getElementById("bank-empty").classList.add("hidden");
+  document.getElementById("bank-form").classList.remove("hidden");
+  
+  // Clear form
+  document.getElementById("accountHolderName").value = "";
+  document.getElementById("bankName").value = "";
+  document.getElementById("accountNumber").value = "";
+  document.getElementById("confirmAccountNumber").value = "";
+  document.getElementById("ifscCode").value = "";
+  document.getElementById("chequePreview").classList.add("hidden");
+  document.getElementById("bank-form-status").innerText = "";
+  
+  document.getElementById("submit-bank-btn").innerText = "Save Bank Details";
+}
+
+function editBankDetails() {
+  if (!currentBankData) return;
+  
+  isEditMode = true;
+  document.getElementById("bank-display").classList.add("hidden");
+  document.getElementById("bank-form").classList.remove("hidden");
+  
+  // Pre-fill form with current data
+  document.getElementById("accountHolderName").value = currentBankData.account_holder_name;
+  document.getElementById("bankName").value = currentBankData.bank_name;
+  document.getElementById("accountNumber").value = currentBankData.account_number;
+  document.getElementById("confirmAccountNumber").value = currentBankData.account_number;
+  document.getElementById("ifscCode").value = currentBankData.ifsc;
+  
+  // Show existing cheque if available
+  if (currentBankData.cheque_image) {
+    document.getElementById("chequeImg").src = currentBankData.cheque_image;
+    document.getElementById("chequePreview").classList.remove("hidden");
+  }
+  
+  document.getElementById("submit-bank-btn").innerText = "Update Bank Details";
+}
+
+function cancelBankEdit() {
+  if (currentBankData) {
+    displayBankDetails(currentBankData);
+  } else {
+    showEmptyBankState();
+  }
+}
+
+async function submitBankDetails() {
+  const holderName = document.getElementById("accountHolderName").value.trim();
+  const bankName = document.getElementById("bankName").value;
+  const accountNumber = document.getElementById("accountNumber").value.trim();
+  const confirmAccount = document.getElementById("confirmAccountNumber").value.trim();
+  const ifsc = document.getElementById("ifscCode").value.trim().toUpperCase();
+  const chequeFile = document.getElementById("chequeFile").files[0];
+
+  // Validation
+  if (!holderName || !bankName || !accountNumber || !confirmAccount || !ifsc) {
+    alert("⚠️ Please fill all required fields");
+    return;
+  }
+
+  if (accountNumber !== confirmAccount) {
+    alert("⚠️ Account numbers do not match");
+    return;
+  }
+
+  if (ifsc.length !== 11) {
+    alert("⚠️ IFSC code must be 11 characters");
+    return;
+  }
+
+  if (!chequeFile && !currentBankData) {
+    alert("⚠️ Please upload cancelled cheque image");
+    return;
+  }
+
+  const submitBtn = document.getElementById("submit-bank-btn");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Saving...";
+
+  try {
+    let chequeImage = currentBankData?.cheque_image || "";
+    
+    // If new cheque uploaded, convert to base64
+    if (chequeFile) {
+      chequeImage = await fileToBase64(chequeFile);
+    }
+
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("account_holder_name", holderName);
+    formData.append("bank_name", bankName);
+    formData.append("account_number", accountNumber);
+    formData.append("ifsc", ifsc);
+    formData.append("cheque_image", chequeImage);
+
+    const res = await fetch(`${API}/bank/add`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to save bank details");
+    }
+
+    alert("✅ Bank details saved successfully!");
+    loadBankDetails();
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ " + err.message);
+    submitBtn.disabled = false;
+    submitBtn.innerText = isEditMode ? "Update Bank Details" : "Save Bank Details";
+  }
+}
+
+async function validateBankAccount() {
+  if (!currentBankData) return;
+
+  const validateBtn = document.getElementById("validate-btn");
+  const originalText = validateBtn.innerText;
+  validateBtn.disabled = true;
+  validateBtn.innerText = "🔄 Validating...";
+
+  try {
+    const res = await fetch(`${API}/bank/validate?user_id=${userId}`, {
+      method: "POST"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Validation failed");
+    }
+
+    if (data.is_validated) {
+      alert("✅ Bank account validated successfully!\n\nAll details match with your cancelled cheque.");
+      loadBankDetails();
+    } else {
+      throw new Error(data.message || "Validation unsuccessful. Please check your details.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    
+    // Show detailed error message
+    const errorMsg = err.message.replace(/\\n/g, '\n');
+    alert("❌ Validation Failed\n\n" + errorMsg);
+    
+    validateBtn.disabled = false;
+    validateBtn.innerText = originalText;
+    
+    // Reload to show failed status
+    loadBankDetails();
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Cheque file upload preview
+document.getElementById("chequeFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image size should be less than 2MB");
+      e.target.value = "";
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("chequeImg").src = event.target.result;
+      document.getElementById("chequePreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ============ DOCUMENT FUNCTIONS ============
+function handleAddressTypeChange() {
+  const addressType = document.getElementById("addressType").value;
+  const singleUpload = document.getElementById("single-upload");
+  const doubleUpload = document.getElementById("double-upload");
+  
+  singleUpload.classList.add("hidden");
+  doubleUpload.classList.add("hidden");
+  
+  document.getElementById("addressPreview").classList.add("hidden");
+  document.getElementById("aadhaarFrontPreview").classList.add("hidden");
+  document.getElementById("aadhaarBackPreview").classList.add("hidden");
+  
+  if (addressType === "AADHAAR") {
+    doubleUpload.classList.remove("hidden");
+  } else if (addressType) {
+    singleUpload.classList.remove("hidden");
+  }
+}
+
+function loadSubmittedDocuments() {
+  fetch(`${API}/kyc/documents?user_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
+    .then(docs => {
+      if (!Array.isArray(docs)) {
+        console.error("Expected array, got:", docs);
+        return;
+      }
+      
+      resetAllDocumentSections();
+      
+      docs.forEach(doc => {
+        const docType = doc.document_type.toUpperCase();
+        
+        if (['AADHAAR', 'VOTER_ID', 'PASSPORT', 'DRIVING_LICENSE', 
+             'ELECTRICITY_BILL', 'TELEPHONE_BILL', 'RATION_CARD'].includes(docType)) {
+          documentsReady.address.submitted = true;
+          documentsReady.address.type = doc.document_type;
+          documentsReady.address.number = doc.document_number;
+          showDocumentDisplay('address', doc.document_type, doc.document_number);
+        } 
+        else if (docType === 'PAN') {
+          documentsReady.pan.submitted = true;
+          documentsReady.pan.number = doc.document_number;
+          showDocumentDisplay('pan', null, doc.document_number);
+        }
+        else if (docType === 'GST') {
+          documentsReady.gst.submitted = true;
+          documentsReady.gst.number = doc.document_number;
+          showDocumentDisplay('gst', null, doc.document_number);
+        }
+      });
+      
+      updateSubmitButton();
+    })
+    .catch(err => {
+      console.error("Error loading documents:", err);
+      resetAllDocumentSections();
+    });
+}
+
+function resetAllDocumentSections() {
+  ['address', 'pan', 'gst'].forEach(docKey => {
+    const uploadSection = document.getElementById(`${docKey}-upload`);
+    const displaySection = document.getElementById(`${docKey}-display`);
+    const badge = document.getElementById(`${docKey}-badge`);
+    
+    if (uploadSection) uploadSection.classList.remove("hidden");
+    if (displaySection) displaySection.classList.add("hidden");
+    if (badge) badge.classList.add("hidden");
+    
+    documentsReady[docKey].submitted = false;
+    documentsReady[docKey].uploaded = false;
+    documentsReady[docKey].hasImages = false;
+  });
+}
+
+function showDocumentDisplay(docKey, docType, docNumber) {
+  const uploadSection = document.getElementById(`${docKey}-upload`);
+  const displaySection = document.getElementById(`${docKey}-display`);
+  const badge = document.getElementById(`${docKey}-badge`);
+  
+  if (uploadSection) uploadSection.classList.add("hidden");
+  if (displaySection) displaySection.classList.remove("hidden");
+  if (badge) badge.classList.remove("hidden");
+  
+  if (docKey === 'address') {
+    const typeDisplay = document.getElementById("address-type-display");
+    const numberDisplay = document.getElementById("address-number-display");
+    if (typeDisplay) typeDisplay.innerText = docType;
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  } else if (docKey === 'pan') {
+    const numberDisplay = document.getElementById("pan-number-display");
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  } else if (docKey === 'gst') {
+    const numberDisplay = document.getElementById("gst-number-display");
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  }
+}
+
+async function extractDocument(fileInput, numberInput, statusDiv, badgeId, docKey, docType) {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  numberInput.value = "Extracting...";
+  statusDiv.innerText = "Uploading document for verification...";
+  statusDiv.className = "status";
+
+  const formData = new FormData();
+  formData.append("document_type", docType);
+  formData.append("file", file);
+
+  try {
+    const res = await fetch(`${API}/kyc/extract-number`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+
+    const docNumber = data.document_number || "Not detected";
+    numberInput.value = docNumber;
+    statusDiv.innerText = "✅ Document verified successfully";
+    statusDiv.className = "status success";
+
+    documentsReady[docKey].uploaded = true;
+    documentsReady[docKey].number = docNumber;
+    
+    if (docKey === 'address') {
+      documentsReady[docKey].type = docType;
+    }
+
+    updateSubmitButton();
+
+  } catch (err) {
+    console.error(err);
+    numberInput.value = "Not detected";
+    statusDiv.innerText = "❌ Failed to extract document number";
+    statusDiv.className = "status error";
+    documentsReady[docKey].uploaded = false;
+  }
+}
+
+function updateSubmitButton() {
+  const submitBtn = document.getElementById("submitAllBtn");
+  const pendingDocs = Object.values(documentsReady).filter(doc => doc.uploaded && !doc.submitted);
+  
+  if (pendingDocs.length === 0) {
+    submitBtn.innerText = "No Pending Documents";
+    submitBtn.disabled = true;
+  } else if (pendingDocs.length === 1) {
+    submitBtn.innerText = `Submit ${pendingDocs.length} Document`;
+    submitBtn.disabled = false;
+  } else {
+    submitBtn.innerText = `Submit ${pendingDocs.length} Documents`;
+    submitBtn.disabled = false;
+  }
+}
+
+// Document upload handlers
+document.getElementById("addressFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("addressImg").src = event.target.result;
+      document.getElementById("addressPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    const addressType = document.getElementById("addressType").value;
+    if (!addressType) {
+      alert("Please select address proof type first");
+      e.target.value = "";
+      return;
+    }
+    extractDocument(
+      document.getElementById("addressFile"),
+      document.getElementById("addressNumber"),
+      document.getElementById("addressStatus"),
+      "address-badge",
+      "address",
+      addressType
+    );
+  }
+});
+
+document.getElementById("aadhaarFront")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("aadhaarFrontImg").src = event.target.result;
+      document.getElementById("aadhaarFrontPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("aadhaarFront"),
+      document.getElementById("addressNumber"),
+      document.getElementById("addressStatus"),
+      "address-badge",
+      "address",
+      "AADHAAR"
+    );
+  }
+});
+
+document.getElementById("aadhaarBack")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("aadhaarBackImg").src = event.target.result;
+      document.getElementById("aadhaarBackPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    documentsReady.address.hasImages = true;
+  }
+});
+
+document.getElementById("panFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("panImg").src = event.target.result;
+      document.getElementById("panPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("panFile"),
+      document.getElementById("panNumber"),
+      document.getElementById("panStatus"),
+      "pan-badge",
+      "pan",
+      "PAN"
+    );
+  }
+});
+
+document.getElementById("gstFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("gstImg").src = event.target.result;
+      document.getElementById("gstPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("gstFile"),
+      document.getElementById("gstNumber"),
+      document.getElementById("gstStatus"),
+      "gst-badge",
+      "gst",
+      "GST"
+    );
+  }
+});
+
+async function submitAllDocuments() {
+  if (!documentsReady.address.uploaded) {
+    alert("⚠️ Address Proof is mandatory. Please upload your document.");
+    return;
+  }
+  
+  if (!documentsReady.pan.uploaded) {
+    alert("⚠️ PAN Card is mandatory. Please upload your PAN card.");
+    return;
+  }
+  
+  const pendingDocs = Object.entries(documentsReady).filter(([key, doc]) => doc.uploaded && !doc.submitted);
+  
+  if (pendingDocs.length === 0) {
+    alert("ℹ️ No new documents to submit.");
+    return;
+  }
+
+  const submitBtn = document.getElementById("submitAllBtn");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
+
+  try {
+    const submissions = [];
+    
+    if (documentsReady.address.uploaded && !documentsReady.address.submitted) {
+      submissions.push(submitSingleDocument(
+        documentsReady.address.type, 
+        documentsReady.address.number,
+        'address'
+      ));
+    }
+    
+    if (documentsReady.pan.uploaded && !documentsReady.pan.submitted) {
+      submissions.push(submitSingleDocument("PAN", documentsReady.pan.number, 'pan'));
+    }
+    
+    if (documentsReady.gst.uploaded && !documentsReady.gst.submitted) {
+      submissions.push(submitSingleDocument("GST", documentsReady.gst.number, 'gst'));
+    }
+
+    await Promise.all(submissions);
+
+    const docCount = pendingDocs.length;
+    const docText = docCount === 1 ? "document" : "documents";
+    alert(`✅ ${docCount} ${docText} submitted successfully!`);
+    
+    loadSubmittedDocuments();
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to submit some documents. Please try again.");
+    
+    submitBtn.disabled = false;
+    updateSubmitButton();
+  }
+}
+
+async function submitSingleDocument(docType, docNumber, docKey) {
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("document_type", docType);
+  formData.append("document_number", docNumber);
+
+  const res = await fetch(`${API}/kyc/complete`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.detail || "Submission failed");
+  }
+
+  documentsReady[docKey].submitted = true;
+
+  return res.json();
+}
+
+// Load documents on page load
+loadSubmittedDocuments();
+</script>
+
+</body>
+</html>

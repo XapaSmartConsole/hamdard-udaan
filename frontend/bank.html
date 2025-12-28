@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Bank Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px 60px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      opacity: 0.9;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 6px 0 70px 0;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      margin: -40px 16px 16px;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .info-text {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    label .required {
+      color: #b11226;
+      margin-left: 2px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      background: #fff;
+      color: #111827;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #b11226;
+      box-shadow: 0 0 0 3px rgba(177, 18, 38, 0.1);
+    }
+
+    input::placeholder {
+      color: #9ca3af;
+    }
+
+    .check-icon {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #10b981;
+      font-size: 18px;
+      display: none;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper.valid .check-icon {
+      display: block;
+    }
+
+    .input-wrapper.valid input {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .file-upload-area {
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f9fafb;
+    }
+
+    .file-upload-area:hover {
+      border-color: #b11226;
+      background: #fff;
+    }
+
+    .file-upload-area.has-file {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      color: #9ca3af;
+    }
+
+    .upload-text {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .file-preview {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .file-preview.active {
+      display: block;
+    }
+
+    .file-preview img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .file-name {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #059669;
+      font-weight: 500;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 32px;
+      padding: 16px;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-submit:active {
+      background: #1f2937;
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      position: relative;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+      position: relative;
+      top: 0;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <a href="kyc.html" class="back-link">← Back</a>
+  <h2>Bank Details</h2>
+</div>
+
+<div class="content-wrapper">
+  <div class="card">
+    <p class="info-text">Please verify your bank account details</p>
+
+    <form id="bankForm">
+      <div class="form-group">
+        <label>Enter Bank Details<span class="required">*</span></label>
+        <select id="bankName" required>
+          <option value="">Select Bank</option>
+          <option value="State Bank of India">State Bank of India</option>
+          <option value="HDFC Bank">HDFC Bank</option>
+          <option value="ICICI Bank">ICICI Bank</option>
+          <option value="Axis Bank">Axis Bank</option>
+          <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+          <option value="Punjab National Bank">Punjab National Bank</option>
+          <option value="Bank of Baroda">Bank of Baroda</option>
+          <option value="Canara Bank">Canara Bank</option>
+          <option value="Union Bank of India">Union Bank of India</option>
+          <option value="IDBI Bank">IDBI Bank</option>
+          <option value="Yes Bank">Yes Bank</option>
+          <option value="IndusInd Bank">IndusInd Bank</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Enter Account Holder Name<span class="required">*</span></label>
+        <input type="text" id="accountHolderName" placeholder="Enter full name as per bank" required>
+      </div>
+
+      <div class="form-group">
+        <label>Bank Account Number<span class="required">*</span></label>
+        <div class="input-wrapper" id="accountWrapper">
+          <input type="text" id="accountNumber" placeholder="Enter account number" required pattern="[0-9]{9,18}" maxlength="18">
+          <span class="check-icon">✓</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>IFSC Code<span class="required">*</span></label>
+        <div class="input-wrapper" id="ifscWrapper">
+          <input type="text" id="ifscCode" placeholder="Enter IFSC code" required pattern="[A-Z]{4}0[A-Z0-9]{6}" maxlength="11" style="text-transform: uppercase;">
+          <span class="check-icon">✓</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="chequeFile" class="file-upload-area" id="uploadArea">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">Upload Cancelled Cheque Image</div>
+          <input type="file" id="chequeFile" accept=".jpg,.jpeg,.png,.pdf" required>
+          
+          <div class="file-preview" id="filePreview">
+            <img id="previewImg" src="" alt="Cheque Preview">
+            <div class="file-name" id="fileName"></div>
+          </div>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">SUBMIT</button>
+
+      <div id="message" class="message"></div>
+    </form>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+// Validate account number
+document.getElementById("accountNumber").addEventListener("input", function() {
+  const wrapper = document.getElementById("accountWrapper");
+  const value = this.value.trim();
+  
+  if (value.length >= 9 && /^[0-9]+$/.test(value)) {
+    wrapper.classList.add("valid");
+  } else {
+    wrapper.classList.remove("valid");
+  }
+});
+
+// Validate IFSC code
+document.getElementById("ifscCode").addEventListener("input", function() {
+  const wrapper = document.getElementById("ifscWrapper");
+  const value = this.value.trim().toUpperCase();
+  this.value = value;
+  
+  if (value.length === 11 && /^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
+    wrapper.classList.add("valid");
+  } else {
+    wrapper.classList.remove("valid");
+  }
+});
+
+// Handle file upload
+document.getElementById("chequeFile").addEventListener("change", function() {
+  const file = this.files[0];
+  const uploadArea = document.getElementById("uploadArea");
+  const filePreview = document.getElementById("filePreview");
+  const fileName = document.getElementById("fileName");
+  const previewImg = document.getElementById("previewImg");
+  
+  if (file) {
+    uploadArea.classList.add("has-file");
+    fileName.innerText = `✅ ${file.name}`;
+    
+    // Show preview for images
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        filePreview.classList.add("active");
+      };
+      reader.readAsDataURL(file);
+    } else {
+      filePreview.classList.remove("active");
+    }
+  }
+});
+
+// Convert file to base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// Form submission
+document.getElementById("bankForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById("submitBtn");
+  const message = document.getElementById("message");
+
+  // Disable button
+  submitBtn.disabled = true;
+  submitBtn.innerText = "SUBMITTING...";
+  message.style.display = "none";
+
+  try {
+    // Get form data
+    const accountHolderName = document.getElementById("accountHolderName").value.trim();
+    const bankName = document.getElementById("bankName").value;
+    const accountNumber = document.getElementById("accountNumber").value.trim();
+    const ifscCode = document.getElementById("ifscCode").value.trim().toUpperCase();
+    const chequeFile = document.getElementById("chequeFile").files[0];
+
+    if (!bankName) {
+      throw new Error("Please select a bank");
+    }
+
+    // Convert cheque image to base64
+    const chequeBase64 = await fileToBase64(chequeFile);
+
+    // Prepare data
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("account_holder_name", accountHolderName);
+    formData.append("bank_name", bankName);
+    formData.append("account_number", accountNumber);
+    formData.append("ifsc", ifscCode);
+    formData.append("cheque_image", chequeBase64);
+
+    // Submit to API
+    const response = await fetch(`${API}/bank/add`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Success
+      message.className = "message success";
+      message.innerText = "✅ Bank details added successfully!";
+      message.style.display = "block";
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "kyc.html";
+      }, 2000);
+    } else {
+      throw new Error(data.detail || "Failed to add bank details");
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+    message.className = "message error";
+    message.innerText = `❌ ${error.message}`;
+    message.style.display = "block";
+
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.innerText = "SUBMIT";
+  }
+});
+
+// Prevent body scroll on mobile
+document.body.addEventListener('touchmove', function(e) {
+  if (!e.target.closest('.content-wrapper')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+</script>
+
+</body>
+</html>

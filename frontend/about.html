@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | About Program</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= HEADER ================= */
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 50px 16px 80px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    /* ================= TABS ================= */
+    .tabs-container {
+      margin: -60px 16px 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 14px 8px;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #6b7280;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      position: relative;
+    }
+
+    .tab.active {
+      color: #b11226;
+      background: #fff;
+      font-weight: 600;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #b11226;
+    }
+
+    /* ================= CONTENT ================= */
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ================= PROGRAM CARD ================= */
+    .program-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .program-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .program-logo {
+      max-width: 120px;
+      margin-bottom: 16px;
+    }
+
+    .program-title {
+      max-width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111827;
+      margin: 20px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title::before {
+      content: '•';
+      color: #b11226;
+      font-size: 20px;
+    }
+
+    .section-text {
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    /* ================= TIMELINE ================= */
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .timeline-item {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 3px solid #b11226;
+    }
+
+    .timeline-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .timeline-value {
+      font-size: 12px;
+      color: #111827;
+      font-weight: 500;
+    }
+
+    /* ================= TABLE ================= */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th {
+      background: #b11226;
+      color: #fff;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      color: #374151;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    /* ================= GUIDELINES ================= */
+    .guidelines {
+      background: #1f2937;
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .guidelines ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .guidelines li {
+      font-size: 12px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .guidelines li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <h2>About Program</h2>
+</div>
+
+<!-- TABS -->
+<div class="tabs-container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('wholesale')">Wholesale</button>
+    <button class="tab" onclick="showTab('substockiest')">Sub Stockiest</button>
+    <button class="tab" onclick="showTab('retailer')">Retailer</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+
+  <!-- WHOLESALE TAB -->
+  <div id="wholesale" class="tab-content active">
+    <div class="program-card">
+      <div class="program-header">
+        <img src="assests/images/logo.png" alt="Hamdard Logo" class="program-logo" onerror="this.style.display='none'">
+        <img src="assests/images/banner.png" alt="Hamdard Udaan 2.0" class="program-title" onerror="this.style.display='none'">
+      </div>
+
+      <h3 class="section-title">Objective</h3>
+      <p class="section-text">To drive secondary sales through Wholesalers (W2) by incentivizing performance and ensuring structured participation across the channel. The scheme aims to boost engagement, streamline tracking, and reward consistent performance.</p>
+
+      <h3 class="section-title">Scheme Timeline</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-label">Stakeholder</div>
+          <div class="timeline-value">Wholesalers</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Enrolment Period</div>
+          <div class="timeline-value">Till 30th Sept 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Activity Start</div>
+          <div class="timeline-value">Aug 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Incentive Evaluation Period</div>
+          <div class="timeline-value">Aug 2025 - Dec 2025</div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Slab Structure & Payout % Details</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Slab</th>
+              <th>Slab Range<br>(₹ in Lakhs)</th>
+              <th>Payout %</th>
+              <th>Duration</th>
+              <th>Months</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Slab 1</td>
+              <td>2.51 - 5.00</td>
+              <td>3.00%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Wholesaler</td>
+            </tr>
+            <tr>
+              <td>Slab 2</td>
+              <td>1.00 - 2.50</td>
+              <td>2.80%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Wholesaler</td>
+            </tr>
+            <tr>
+              <td>Slab 3</td>
+              <td>0.51 - 0.99</td>
+              <td>2.60%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Wholesaler</td>
+            </tr>
+            <tr>
+              <td>Slab 4</td>
+              <td>0.26 - 0.50</td>
+              <td>2.40%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Wholesaler</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="guidelines">
+        <h3 class="section-title" style="color: #fff;">Enrolment Guidelines</h3>
+        <ul>
+          <li>This scheme applies only to Hamdard products within the OTC Division.</li>
+          <li>Eligible criteria: Sub stockiest who will purchase the goods from mapped and authorised Super Distributor only.</li>
+          <li>All sub stockiest must be completed through the program and share all required documents like PAN, GST by the sales team. Required documents include the retailer's PAN card, outlet image, address proof, GST certificate of application, and bank details with a cancelled cheque.</li>
+          <li><strong>POS booking:</strong> All user enrolling slabs must be completed the SFA (Sales Force Automation) platform only.</li>
+          <li>Retailer proof of purchase will be retrieved from the DBT software for the relevant period to verify their achievement in the enrolled slab.</li>
+          <li>At the end of each slab, achievements will be validated and locked by respective sales managers before the cut-off date.</li>
+          <li>Enrolments and approvals will be digitally documented and stored for audit purposes.</li>
+          <li>All secondary sales must be recorded in <strong>DBT</strong> to qualify for incentives.</li>
+          <li>SFA use DBT integration for seamless tracking and validation.</li>
+          <li>Achievement payouts to wholesalers will be directly disbursed through <strong>Direct Bank Transfer (DBT)</strong> by the promotion agency.</li>
+          <li>Management reserves the right to revise, modify, or withdraw the program without providing the reason, and the Channel Partners accepts these terms and conditions.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUB STOCKIEST TAB -->
+  <div id="substockiest" class="tab-content">
+    <div class="program-card">
+      <div class="program-header">
+        <img src="assests/images/logo.png" alt="Hamdard Logo" class="program-logo" onerror="this.style.display='none'">
+        <img src="assests/images/banner.png" alt="Hamdard Udaan 2.0" class="program-title" onerror="this.style.display='none'">
+      </div>
+
+      <h3 class="section-title">Objective</h3>
+      <p class="section-text">To drive secondary sales through Sub stockiest by incentivizing performance and ensuring structured participation across the channel. The scheme aims to boost engagement, streamline tracking, and reward consistent performance.</p>
+
+      <h3 class="section-title">Scheme Timeline</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-label">Stakeholder</div>
+          <div class="timeline-value">Sub-stockiest</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Enrolment Period</div>
+          <div class="timeline-value">Till 30th Sept 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Activity Start</div>
+          <div class="timeline-value">Aug 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Incentive Evaluation Period</div>
+          <div class="timeline-value">Aug 2025 - Dec 2025</div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Slab Structure & Payout % Details</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Slab</th>
+              <th>Slab Range<br>(₹ in Lakhs)</th>
+              <th>Payout %</th>
+              <th>Duration</th>
+              <th>Months</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Slab 1</td>
+              <td>5.01 - 10.00</td>
+              <td>3.00%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Sub-stockiest</td>
+            </tr>
+            <tr>
+              <td>Slab 2</td>
+              <td>2.01 - 5.00</td>
+              <td>2.80%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Sub-stockiest</td>
+            </tr>
+            <tr>
+              <td>Slab 3</td>
+              <td>1.01 - 2.00</td>
+              <td>2.60%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Sub-stockiest</td>
+            </tr>
+            <tr>
+              <td>Slab 4</td>
+              <td>0.26 - 0.50</td>
+              <td>2.40%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Sub-stockiest</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="guidelines">
+        <h3 class="section-title" style="color: #fff;">Enrolment Guidelines</h3>
+        <ul>
+          <li>This scheme applies only to Hamdard products within the OTC Division.</li>
+          <li>Eligible criteria: Sub stockiest who will purchase the goods from mapped and authorised Super Distributor only.</li>
+          <li>All sub stockiest must be completed through the program and share all required documents like PAN, GST by the sales team.</li>
+          <li><strong>POS booking:</strong> All user enrolling slabs must be completed the SFA (Sales Force Automation) platform only.</li>
+          <li>Retailer proof of purchase will be retrieved from the DBT software for the relevant period to verify their achievement in the enrolled slab.</li>
+          <li>At the end of each slab must be validated and locked by respective sales managers before the cut-off date.</li>
+          <li>Enrolments and approvals will be digitally documented and stored for audit purposes.</li>
+          <li>All secondary sales must be recorded in <strong>DBT</strong> to qualify for incentives.</li>
+          <li>SFA use <strong>DBT</strong> integration for seamless tracking and validation.</li>
+          <li>Achievement payouts to wholesalers will be directly disbursed through <strong>Direct Bank Transfer (DBT)</strong> by the promotion agency.</li>
+          <li>Management reserves the right to revise, modify, or withdraw the program without providing the reason, and the Channel Partners accepts these terms and conditions.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETAILER TAB -->
+  <div id="retailer" class="tab-content">
+    <div class="program-card">
+      <div class="program-header">
+        <img src="assests/images/logo.png" alt="Hamdard Logo" class="program-logo" onerror="this.style.display='none'">
+        <img src="assests/images/banner.png" alt="Hamdard Udaan 2.0" class="program-title" onerror="this.style.display='none'">
+      </div>
+
+      <h3 class="section-title">Objective</h3>
+      <p class="section-text">To drive secondary sales through Retailers by incentivizing performance and ensuring structured participation across the channel. The scheme aims to boost engagement, streamline tracking, and reward consistent performance.</p>
+
+      <h3 class="section-title">Scheme Timeline</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-label">Stakeholder</div>
+          <div class="timeline-value">Retailers</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Enrolment Period</div>
+          <div class="timeline-value">Till 30th Sept 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Activity Start</div>
+          <div class="timeline-value">Aug 2025</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-label">Incentive Evaluation Period</div>
+          <div class="timeline-value">Aug 2025 - Dec 2025</div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Slab Structure & Payout % Details</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Slab</th>
+              <th>Slab Range<br>(₹ in Lakhs)</th>
+              <th>Payout %</th>
+              <th>Duration</th>
+              <th>Months</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Slab 1</td>
+              <td>0.51 - 1.00</td>
+              <td>3.00%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Retailer</td>
+            </tr>
+            <tr>
+              <td>Slab 2</td>
+              <td>0.26 - 0.50</td>
+              <td>2.80%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Retailer</td>
+            </tr>
+            <tr>
+              <td>Slab 3</td>
+              <td>0.11 - 0.25</td>
+              <td>2.60%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Retailer</td>
+            </tr>
+            <tr>
+              <td>Slab 4</td>
+              <td>0.05 - 0.10</td>
+              <td>2.40%</td>
+              <td>5 Months</td>
+              <td>Aug-Dec 2025</td>
+              <td>Retailer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="guidelines">
+        <h3 class="section-title" style="color: #fff;">Enrolment Guidelines</h3>
+        <ul>
+          <li>This scheme applies only to Hamdard products within the OTC Division.</li>
+          <li>Eligible criteria: Retailers who will purchase the goods from mapped and authorised distributors only.</li>
+          <li>All retailers must be enrolled through the program and share all required documents like PAN, GST by the sales team.</li>
+          <li><strong>POS booking:</strong> All user enrolling slabs must be completed through the SFA (Sales Force Automation) platform only.</li>
+          <li>Retailer proof of purchase will be retrieved from the DBT software for the relevant period to verify their achievement in the enrolled slab.</li>
+          <li>At the end of each slab, achievements must be validated and locked by respective sales managers before the cut-off date.</li>
+          <li>Enrolments and approvals will be digitally documented and stored for audit purposes.</li>
+          <li>All secondary sales must be recorded in <strong>DBT</strong> to qualify for incentives.</li>
+          <li>SFA use <strong>DBT</strong> integration for seamless tracking and validation.</li>
+          <li>Achievement payouts to retailers will be directly disbursed through <strong>Direct Bank Transfer (DBT)</strong> by the promotion agency.</li>
+          <li>Management reserves the right to revise, modify, or withdraw the program without providing the reason, and the Channel Partners accepts these terms and conditions.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html" class="active">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+function showTab(tabName) {
+  // Remove active class from all tabs and content
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+  // Add active class to clicked tab
+  event.target.classList.add('active');
+  
+  // Show corresponding content
+  document.getElementById(tabName).classList.add('active');
+}
+</script>
+
+</body>
+</html>

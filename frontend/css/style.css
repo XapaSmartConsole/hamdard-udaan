@@ -1,0 +1,223 @@
+/* =====================================================
+   CSS VARIABLES (REQUIRED)
+===================================================== */
+:root {
+  --hamdard-red: #c4161c;
+  --hamdard-red-dark: #a81217;
+  --hamdard-bg: #f6f6f6;
+
+  --text-dark: #111827;
+  --text-muted: #6b7280;
+}
+
+/* =====================================================
+   GLOBAL RESET
+===================================================== */
+* {
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   HAMDARD MOBILE AUTH (LOGIN / SIGNUP)
+===================================================== */
+
+body.auth-page {
+  margin: 0;
+  background: var(--hamdard-bg);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+/* Red curved header */
+.auth-header {
+  height: 240px;
+  background: #c4161c;
+  border-bottom-left-radius: 70px;
+  border-bottom-right-radius: 70px;
+
+  display: flex;
+  align-items: center;        /* 👈 vertical center */
+  justify-content: center;    /* 👈 horizontal center */
+}
+
+/* Brand text */
+.auth-brand-text {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+}
+/* White card */
+.auth-container {
+  margin-top: -50px;   /* 👈 NOT -70 */
+  background: white;
+  border-radius: 22px;
+  padding: 28px 22px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+
+/* Title */
+.auth-title {
+  text-align: center;
+  font-size: 20px;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+
+/* Inputs */
+.auth-container input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1.5px solid #ddd;
+  font-size: 15px;
+}
+
+/* Button */
+.btn-primary {
+  width: 100%;
+  background: var(--hamdard-red);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 6px;   /* ✅ space from email field */
+}
+
+
+.btn-primary:hover {
+  background: var(--hamdard-red-dark);
+}
+
+/* Switch text */
+.switch-text {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.switch-text a {
+  color: var(--hamdard-red);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Mobile only */
+@media (min-width: 768px) {
+  body.auth-page {
+    background: #f3f4f6;
+  }
+}
+
+/* =====================================================
+   HAMDARD MOBILE HOME DASHBOARD
+===================================================== */
+
+.home-header {
+  background: var(--hamdard-red);
+  padding: 26px 20px 40px;
+  color: white;
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 22px;
+}
+
+.home-user {
+  margin: 6px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Wallet summary */
+.home-wallet {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  margin-top: -30px;
+}
+
+.wallet-card {
+  flex: 1;
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.wallet-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.wallet-card h2 {
+  margin: 6px 0 0;
+  font-size: 26px;
+  color: var(--hamdard-red);
+}
+
+/* Actions */
+.home-actions {
+  padding: 10px 20px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.action-card {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+
+.action-card h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--text-dark);
+}
+
+.action-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+
+@media (max-width: 360px) {
+  .auth-header {
+    height: 200px;
+    padding-top: 26px;
+  }
+
+  .auth-brand-text {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+
+  .auth-container {
+    margin-top: -30px; /* 👈 critical */
+  }
+}

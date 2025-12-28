@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RSPL | Create Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page">
+
+  <!-- 🔴 HAMDARD HEADER -->
+<div class="auth-header">
+  <div class="auth-brand-text">HAMDARD</div>
+</div>
+
+
+  <!-- WHITE CARD -->
+  <div class="auth-container">
+
+    <h2 class="auth-title">Create Account</h2>
+    <p class="auth-subtitle">
+      Register using your mobile number
+    </p>
+
+    <!-- SIGNUP FORM -->
+    <form id="signup-form">
+
+      <input
+        id="full_name"
+        type="text"
+        placeholder="Full Name"
+        required
+      >
+
+      <input
+        id="phone"
+        type="tel"
+        placeholder="Mobile Number"
+        maxlength="10"
+        required
+      >
+
+      <input
+        id="email"
+        type="email"
+        placeholder="Email Address (Optional)"
+      >
+
+      <button class="btn-primary" type="submit">
+        Create Account
+      </button>
+
+    </form>
+
+    <p class="switch-text">
+      Already registered?
+      <a href="index.html">Login</a>
+    </p>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

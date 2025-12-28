@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | My Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= HEADER ================= */
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    /* ================= HERO IMAGE ================= */
+    .hero-image {
+      width: 100%;
+      height: 200px;
+      background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=800') center/cover;
+      border-radius: 0 0 50% 50% / 0 0 20% 20%;
+      flex-shrink: 0;
+    }
+
+    /* ================= CONTENT ================= */
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ================= CART ITEM ================= */
+    .cart-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 12px;
+    }
+
+    .item-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: contain;
+      background: #f9fafb;
+      flex-shrink: 0;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .item-points {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+
+    .remove-btn {
+      color: #ef4444;
+      font-size: 20px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    /* ================= TOTAL BOX ================= */
+    .total-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .total-points {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    /* ================= CHECKOUT BUTTON ================= */
+    .checkout-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+
+    .checkout-btn:active {
+      transform: scale(0.98);
+    }
+
+    .checkout-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-cart-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <button class="back-btn" onclick="location.href='redeem-catalog.html'">←</button>
+  <h2>Cart Details</h2>
+</div>
+
+<!-- HERO IMAGE -->
+<div class="hero-image"></div>
+
+<!-- CONTENT -->
+<div class="content-wrapper">
+  <div id="cart-items"></div>
+  
+  <div id="cart-summary" style="display:none;">
+    <div class="total-box">
+      <span class="total-label">Total</span>
+      <span class="total-points" id="total-points">0 pts</span>
+    </div>
+    
+    <div class="total-box" style="margin-top: 12px;">
+      <span class="total-points" id="total-display">0</span>
+    </div>
+    
+    <button class="checkout-btn" id="checkout-btn" onclick="proceedToConfirm()">PROCEED TO CHECKOUT</button>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+let cartTotalPoints = 0;
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+function loadCart() {
+  fetch(`${API_BASE}/cart?user_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("cart-items");
+      const summary = document.getElementById("cart-summary");
+      
+      if (data.items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h3>Your cart is empty</h3>
+          </div>
+        `;
+        summary.style.display = "none";
+        return;
+      }
+      
+      container.innerHTML = data.items.map(item => `
+        <div class="cart-item">
+          <img src="${item.product_image}" class="item-image" onerror="this.src='https://via.placeholder.com/80/b11226/FFFFFF?text=P'">
+          <div class="item-details">
+            <div class="item-name">${item.product_name}</div>
+            <div class="item-points">${item.points} pts</div>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${item.id})">🗑️</button>
+        </div>
+      `).join('');
+      
+      cartTotalPoints = data.total_points;
+      document.getElementById("total-points").innerText = `${data.total_points} pts`;
+      document.getElementById("total-display").innerText = data.total_points;
+      summary.style.display = "block";
+    })
+    .catch(err => {
+      console.error("Error loading cart:", err);
+      alert("Failed to load cart");
+    });
+}
+
+function removeItem(itemId) {
+  if (!confirm("Remove this item from cart?")) return;
+  
+  fetch(`${API_BASE}/cart/remove?user_id=${userId}&cart_item_id=${itemId}`, {
+    method: "DELETE"
+  })
+    .then(() => {
+      loadCart();
+    })
+    .catch(err => {
+      console.error("Error removing item:", err);
+      alert("Failed to remove item");
+    });
+}
+
+function proceedToConfirm() {
+  // ✅ Store total points in localStorage for confirm page
+  localStorage.setItem("cart_total_points", cartTotalPoints);
+  
+  // ✅ Navigate to confirmation page
+  location.href = "confirm-address.html";
+}
+
+loadCart();
+</script>
+
+</body>
+</html>

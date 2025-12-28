@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Confirm Address</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 280px;
+      background: url('https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800') center/cover;
+      border-radius: 0 0 50% 50% / 0 0 30% 30%;
+      flex-shrink: 0;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 16px 100px;
+      margin-top: -60px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .address-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #111827;
+      white-space: pre-line;
+    }
+
+    .add-address-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #b11226;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .order-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-image {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .item-points-qty {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .item-total {
+      font-size: 13px;
+      font-weight: 600;
+      color: #b11226;
+    }
+
+    .total-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 2px solid #f3f4f6;
+      margin-top: 16px;
+    }
+
+    .total-label {
+      font-size: 15px;
+      color: #6b7280;
+    }
+
+    .total-points {
+      font-size: 24px;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .bottom-action {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+      z-index: 100;
+    }
+
+    .btn-confirm {
+      width: 100%;
+      padding: 16px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm:active {
+      background: #1f2937;
+      transform: scale(0.98);
+    }
+
+    .btn-confirm:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <button class="back-btn" onclick="location.href='cart.html'">←</button>
+  <h2>Confirm Address</h2>
+</div>
+
+<div class="hero-image"></div>
+
+<div class="content-wrapper">
+
+  <div class="card">
+    <div class="card-title">Delivery Address</div>
+    <div class="address-text" id="delivery-address">Loading...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Order Summary</div>
+    <div id="order-items"></div>
+    
+    <div class="total-section">
+      <span class="total-label">Total Points Required</span>
+      <span class="total-points" id="total-points">0</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-action">
+  <button class="btn-confirm" id="confirmBtn" onclick="confirmOrder()">CONFIRM ORDER</button>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+// Load user profile for address
+fetch(`${API}/user/profile?user_id=${userId}`)
+  .then(res => res.json())
+  .then(user => {
+    let addressHTML = '';
+    
+    // Check if user has address
+    if (!user.address) {
+      addressHTML = `
+        <span style="color: #6b7280;">Address not set</span><br><br>
+        <a href="profile.html" class="add-address-btn">+ Add Address</a>
+      `;
+    } else {
+      // Build address string
+      const addressParts = [];
+      
+      if (user.address) addressParts.push(user.address);
+      if (user.city) addressParts.push(user.city);
+      if (user.state) addressParts.push(user.state);
+      if (user.pincode) addressParts.push(`- ${user.pincode}`);
+      
+      addressHTML = addressParts.join('\n');
+      
+      // Add mobile number
+      if (user.phone) {
+        addressHTML += `\n\nMobile: ${user.phone}`;
+      }
+    }
+    
+    document.getElementById("delivery-address").innerHTML = addressHTML;
+  })
+  .catch(() => {
+    document.getElementById("delivery-address").innerHTML = `
+      <span style="color: #dc2626;">Error loading address</span>
+    `;
+  });
+
+// Load cart items
+fetch(`${API}/cart?user_id=${userId}`)
+  .then(res => res.json())
+  .then(data => {
+    const items = data.items || [];
+    const total = data.total_points || 0;
+
+    if (items.length === 0) {
+      alert("Your cart is empty!");
+      location.href = "redeem-catalog.html";
+      return;
+    }
+
+    // Display items
+    document.getElementById("order-items").innerHTML = items.map(item => `
+      <div class="order-item">
+        <img src="${item.product_image}" alt="${item.product_name}" class="item-image">
+        <div class="item-details">
+          <div class="item-name">${item.product_name}</div>
+          <div class="item-points-qty">${item.points} Points × ${item.quantity}</div>
+          <div class="item-total">Total: ${item.points * item.quantity} Points</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById("total-points").innerText = total;
+  });
+
+function confirmOrder() {
+  const btn = document.getElementById("confirmBtn");
+  
+  // Check if address is set
+  fetch(`${API}/user/profile?user_id=${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      if (!user.address) {
+        alert("⚠️ Please add your delivery address first!");
+        location.href = "profile.html";
+        return;
+      }
+      
+      // Proceed with order creation
+      btn.disabled = true;
+      btn.innerText = "PROCESSING...";
+
+      // Build address string
+      const addressParts = [];
+      if (user.address) addressParts.push(user.address);
+      if (user.city) addressParts.push(user.city);
+      if (user.state) addressParts.push(user.state);
+      if (user.pincode) addressParts.push(user.pincode);
+      const deliveryAddress = addressParts.join(', ');
+      
+      const mobile = user.phone || '';
+
+      // ✅ CRITICAL FIX: Use /cart/checkout endpoint (this deducts points!)
+      fetch(`${API}/cart/checkout?user_id=${userId}&delivery_address=${encodeURIComponent(deliveryAddress)}&mobile=${mobile}`, {
+        method: "POST"
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            alert(`✅ Order placed successfully!\nOrder ID: ${result.order_id}\nRemaining Points: ${result.remaining_points}`);
+            // Redirect to home to see updated balance
+            location.href = "home.html";
+          } else {
+            throw new Error(result.detail || "Order creation failed");
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("❌ " + (err.message || "Failed to place order. Please try again."));
+          btn.disabled = false;
+          btn.innerText = "CONFIRM ORDER";
+        });
+    });
+}
+</script>
+
+</body>
+</html>

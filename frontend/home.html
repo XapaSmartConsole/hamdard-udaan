@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Hamdard | Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<style>
+* { 
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100vh;
+  height: -webkit-fill-available;
+  overflow: hidden;
+  position: fixed;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #f4f6f8;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= HEADER ================= */
+.home-header {
+  background: linear-gradient(135deg, #b11226, #d32f2f);
+  color: #fff;
+  padding: 10px 14px 16px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  flex-shrink: 0;
+}
+
+.top-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+#menu-btn {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
+  margin-right: 30px;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  color: #b11226;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.avatar-initial {
+  position: relative;
+  z-index: 1;
+}
+
+.profile-info {
+  text-align: left;
+}
+
+.profile-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 3px 0;
+  line-height: 1;
+}
+
+.member-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 999px;
+}
+
+.welcome-in-header {
+  text-align: left;
+  padding: 0 4px;
+}
+
+.welcome-in-header strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.welcome-in-header span {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+/* ================= CONTENT WRAPPER ================= */
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0 70px 0;
+}
+
+.content-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================= BANNER ================= */
+.banner-section {
+  margin: 6px 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.banner-section img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* ================= MAIN CARD ================= */
+.home-card {
+  background: #ffffff;
+  margin: 6px 14px 14px;
+  padding: 12px;
+  border-radius: 18px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+/* ================= QUICK ACCESS ================= */
+.quick-access h4 {
+  font-size: 12px;
+  margin: 0 0 10px 0;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.quick-grid {
+  display: flex;
+  gap: 6px;
+  overflow-x: hidden;
+  margin-bottom: 16px;
+}
+
+.quick-item {
+  background: #ffffff;
+  border: 2px solid #b11226;
+  padding: 10px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-item:active {
+  background: #fdecec;
+  transform: scale(0.98);
+}
+
+.quick-item span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.quick-item p {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+/* ================= BALANCE SECTION ================= */
+.balance-section {
+  text-align: center;
+  padding: 8px 0;
+  border-top: 1px solid #f3f4f6;
+}
+
+.balance-circle {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b11226, #d32f2f);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(177, 18, 38, 0.35);
+}
+
+.balance-circle strong {
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+
+.balance-circle span {
+  font-size: 9px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+/* ================= BOTTOM NAV ================= */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 60px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav a {
+  text-decoration: none;
+  font-size: 10px;
+  color: #6b7280;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 10px;
+  flex: 1;
+  position: relative;
+}
+
+.bottom-nav a .icon-wrapper {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  top: 0;
+}
+
+.bottom-nav a span {
+  display: block;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.bottom-nav a.active {
+  color: #b11226;
+  font-weight: 600;
+}
+
+.bottom-nav a.active .icon-wrapper {
+  background: #b11226;
+  box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+  transform: translateY(-8px);
+}
+
+.bottom-nav a.active span {
+  color: #fff;
+}
+
+/* ================= SIDE MENU ================= */
+#menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 998;
+}
+
+#menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#side-menu {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: #fff;
+  padding: 16px;
+  transition: 0.3s;
+  z-index: 999;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  overflow-y: auto;
+}
+
+#side-menu.active {
+  left: 0;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.menu-user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.menu-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #b11226;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.menu-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.menu-user-info {
+  flex: 1;
+}
+
+.menu-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 2px;
+}
+
+.menu-user-phone {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+#side-menu a {
+  display: block;
+  padding: 12px 0;
+  text-decoration: none;
+  color: #111;
+  font-size: 14px;
+}
+
+#side-menu a:hover {
+  color: #b11226;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 14px 0;
+}
+
+.logout {
+  color: #b11226;
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDE MENU -->
+<div id="menu-overlay"></div>
+<div id="side-menu">
+  <div class="menu-header">
+    <strong>Menu</strong>
+    <span class="close-btn" id="close-menu">✕</span>
+  </div>
+  
+  <!-- User Section in Menu -->
+  <div class="menu-user-section">
+    <div class="menu-avatar" id="menu-avatar">
+      <span class="avatar-initial" id="menu-avatar-initial">U</span>
+      <img id="menu-avatar-img" src="" alt="" style="display: none;">
+    </div>
+    <div class="menu-user-info">
+      <div class="menu-user-name" id="menu-name">User</div>
+      <div class="menu-user-phone" id="menu-phone">Loading...</div>
+    </div>
+  </div>
+  
+  <a href="home.html">🏠 Home</a>
+  <a href="profile.html">👤 Profile</a>
+  <a href="about.html">ℹ️ About</a>
+  <a href="support.html">🆘 Support</a>
+  <div class="menu-divider"></div>
+  <a href="logout.html" class="logout">🚪 Logout</a>
+</div>
+
+<!-- HEADER -->
+<div class="home-header">
+  <div class="top-row">
+    <span id="menu-btn">☰</span>
+    <div class="profile-section">
+      <div class="avatar" id="avatar">
+        <span class="avatar-initial" id="avatar-initial">U</span>
+        <img id="avatar-img" src="" alt="" style="display: none;">
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name">User</div>
+        <span class="member-tag">Retailer</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- WELCOME IN HEADER -->
+  <div class="welcome-in-header">
+    <strong id="welcome-text">Welcome, User</strong>
+    <span>Here's your account overview</span>
+  </div>
+</div>
+
+<!-- SCROLLABLE CONTENT -->
+<div class="content-wrapper">
+
+  <!-- BANNER -->
+  <div class="banner-section">
+    <img src="assests/images/banner.png" alt="Hamdard Udaan 2.0 Banner" onerror="this.parentElement.style.display='none'">
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="home-card">
+
+    <div class="quick-access">
+      <h4>Quick Access</h4>
+      <div class="quick-grid">
+        <div class="quick-item" onclick="location.href='kyc.html'">
+          <span>🪪</span>
+          <p>KYC</p>
+        </div>
+        <div class="quick-item" onclick="location.href='bank-transfer.html'">
+          <span>🎁</span>
+          <p>Rewards Catalogue</p>
+        </div>
+        <div class="quick-item" onclick="location.href='order-history.html'">
+          <span>📦</span>
+          <p>Order History</p>
+        </div>
+        <div class="quick-item" onclick="location.href='performance-dashboard.html'">
+          <span>📊</span>
+          <p>Dashboard</p>
+        </div>
+        <div class="quick-item" onclick="location.href='wallet.html'">
+  <span>💰</span>
+  <p>egv.Wallet</p>
+</div>
+      </div>
+    </div>
+
+    <!-- BALANCE POINTS -->
+    <div class="balance-section">
+      <div class="balance-circle">
+        <strong id="balance-points">6000</strong>
+        <span>Balance Points</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="home.html" class="active">
+    <div class="icon-wrapper">
+      <span>🏠</span>
+    </div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper">
+      <span>ℹ️</span>
+    </div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper">
+      <span>🆘</span>
+    </div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper">
+      <span>👤</span>
+    </div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  alert("Please login");
+  location.href = "index.html";
+}
+
+// Function to update all avatars
+function updateAvatars(profilePicture, fullName) {
+  const firstLetter = fullName ? fullName.charAt(0).toUpperCase() : 'U';
+  
+  // Update header avatar
+  const avatarImg = document.getElementById("avatar-img");
+  const avatarInitial = document.getElementById("avatar-initial");
+  
+  // Update menu avatar
+  const menuAvatarImg = document.getElementById("menu-avatar-img");
+  const menuAvatarInitial = document.getElementById("menu-avatar-initial");
+  
+  if (profilePicture) {
+    // Show profile picture
+    avatarImg.src = profilePicture;
+    avatarImg.style.display = "block";
+    avatarInitial.style.display = "none";
+    
+    menuAvatarImg.src = profilePicture;
+    menuAvatarImg.style.display = "block";
+    menuAvatarInitial.style.display = "none";
+  } else {
+    // Show initials
+    avatarInitial.innerText = firstLetter;
+    avatarInitial.style.display = "block";
+    avatarImg.style.display = "none";
+    
+    menuAvatarInitial.innerText = firstLetter;
+    menuAvatarInitial.style.display = "block";
+    menuAvatarImg.style.display = "none";
+  }
+}
+
+// LOAD USER PROFILE
+fetch(`${API_BASE}/user/profile?user_id=${userId}`)
+  .then(res => res.json())
+  .then(user => {
+    const firstName = user.full_name.split(" ")[0];
+    
+    // Update text elements
+    document.getElementById("profile-name").innerText = user.full_name;
+    document.getElementById("menu-name").innerText = user.full_name;
+    document.getElementById("menu-phone").innerText = user.phone || "No phone";
+    document.getElementById("welcome-text").innerText = `Welcome, ${firstName}`;
+    
+    // Update avatars with profile picture or initials
+    updateAvatars(user.profile_picture, user.full_name);
+    
+    // Save profile picture to localStorage for persistence
+    if (user.profile_picture) {
+      localStorage.setItem("profile_picture", user.profile_picture);
+    } else {
+      localStorage.removeItem("profile_picture");
+    }
+  })
+  .catch(err => {
+    console.error("Error loading profile:", err);
+    
+    // Fallback: Try to load from localStorage
+    const cachedPicture = localStorage.getItem("profile_picture");
+    if (cachedPicture) {
+      updateAvatars(cachedPicture, null);
+    }
+  });
+
+// ✅ LOAD WALLET BALANCE FUNCTION
+function loadWalletBalance() {
+  fetch(`${API_BASE}/wallet/balance?user_id=${userId}`)
+    .then(res => res.json())
+    .then(data => {
+      const availablePoints = data.points || 0;
+      document.getElementById("balance-points").innerText = availablePoints;
+    })
+    .catch(err => {
+      console.error("Error loading wallet:", err);
+      document.getElementById("balance-points").innerText = "0";
+    });
+}
+
+// ✅ Initial load
+loadWalletBalance();
+
+// ✅ Reload balance when page becomes visible (returning from order/catalog)
+window.addEventListener('focus', function() {
+  loadWalletBalance();
+  
+  // Also reload profile to get latest picture
+  fetch(`${API_BASE}/user/profile?user_id=${userId}`)
+    .then(res => res.json())
+    .then(user => {
+      updateAvatars(user.profile_picture, user.full_name);
+      if (user.profile_picture) {
+        localStorage.setItem("profile_picture", user.profile_picture);
+      }
+    })
+    .catch(err => console.error("Error reloading profile:", err));
+});
+
+// ✅ Also reload when returning from another page (browser back/forward)
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    loadWalletBalance();
+  }
+});
+
+// ✅ Reload balance every 30 seconds when page is visible
+setInterval(function() {
+  if (document.visibilityState === 'visible') {
+    loadWalletBalance();
+  }
+}, 30000);
+
+// MENU LOGIC
+const menuBtn = document.getElementById("menu-btn");
+const sideMenu = document.getElementById("side-menu");
+const overlay = document.getElementById("menu-overlay");
+const closeMenu = document.getElementById("close-menu");
+
+menuBtn.onclick = () => {
+  sideMenu.classList.add("active");
+  overlay.classList.add("active");
+};
+
+overlay.onclick = closeAll;
+closeMenu.onclick = closeAll;
+
+function closeAll() {
+  sideMenu.classList.remove("active");
+  overlay.classList.remove("active");
+}
+
+// Prevent body scroll on mobile
+document.body.addEventListener('touchmove', function(e) {
+  if (!e.target.closest('.content-wrapper') && !e.target.closest('#side-menu')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+</script>
+
+</body>
+</html>

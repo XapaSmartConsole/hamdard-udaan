@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hamdard | Bank Transfer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow-x: hidden;
+      position: fixed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #b11226, #d32f2f);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .app-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      margin: 0 16px;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 10;
+      margin-top: 12px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+      background: #f3f4f6;
+      color: #6b7280;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .tab.active {
+      background: #b11226;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 80px;
+    }
+
+    .content-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1.5px solid #d1d5db;
+      font-size: 14px;
+      background: #f9fafb;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #b11226;
+      background: #fff;
+    }
+
+    input[readonly] {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .upload-section {
+      margin-top: 16px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 2px dashed #d1d5db;
+      text-align: center;
+    }
+
+    .upload-section input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 12px;
+      border: none;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .cheque-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 28px;
+      padding: 16px;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-submit:active {
+      background: #1f2937;
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .validation-icon {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 18px;
+    }
+
+    .amount-hint {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .conversion-info {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #1e40af;
+      text-align: center;
+    }
+
+    .bank-details-display {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .bank-details-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .bank-details-row:last-child {
+      border-bottom: none;
+    }
+
+    .bank-details-label {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .bank-details-value {
+      font-size: 14px;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 10px;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a .icon-wrapper {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a span {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav a.active {
+      color: #b11226;
+      font-weight: 600;
+    }
+
+    .bottom-nav a.active .icon-wrapper {
+      background: #b11226;
+      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      transform: translateY(-8px);
+    }
+
+    .bottom-nav a.active span {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app-header">
+  <button class="back-btn" onclick="location.href='home.html'">←</button>
+  <h2>Rewards Catalogue</h2>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('transfer')">Bank Transfer</button>
+  <button class="tab" onclick="showTab('rewards')">Rewards Catalogue</button>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- BANK TRANSFER TAB -->
+  <div id="transferSection">
+    <div class="card">
+      <div class="card-title">Bank Details</div>
+      
+      <!-- Saved Bank Details Display -->
+      <div id="bank-details-display" class="hidden">
+        <div class="bank-details-display">
+          <div class="bank-details-row">
+            <span class="bank-details-label">Account Holder</span>
+            <span class="bank-details-value" id="display-account-holder">—</span>
+          </div>
+          <div class="bank-details-row">
+            <span class="bank-details-label">Bank</span>
+            <span class="bank-details-value" id="display-bank-name">—</span>
+          </div>
+          <div class="bank-details-row">
+            <span class="bank-details-label">Account Number</span>
+            <span class="bank-details-value" id="display-account-number">—</span>
+          </div>
+          <div class="bank-details-row">
+            <span class="bank-details-label">IFSC</span>
+            <span class="bank-details-value" id="display-ifsc">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Details Form -->
+      <div id="bank-details-form">
+        <label>Enter Bank Details*</label>
+        <input type="text" id="bank-name-input" placeholder="Bank Name">
+        
+        <label>Enter Account Holder Name*</label>
+        <input type="text" id="account-holder-input" placeholder="Account Holder Name">
+        
+        <label>Bank Account Number*</label>
+        <input type="text" id="account-number-input" placeholder="Account Number">
+        <span class="validation-icon" id="account-validation"></span>
+        
+        <label>IFSC Code*</label>
+        <input type="text" id="ifsc-input" placeholder="IFSC Code">
+        <span class="validation-icon" id="ifsc-validation"></span>
+        
+        <div class="upload-section">
+          <div id="cheque-preview-container" class="hidden">
+            <img id="cheque-preview" class="cheque-preview" src="" alt="Cheque">
+          </div>
+          <div>📷 Upload Cancelled Cheque Image</div>
+          <input type="file" id="cheque-upload" accept="image/*" style="margin-top: 12px;">
+        </div>
+        
+        <button class="btn-submit" id="saveBankBtn" onclick="saveBankDetails()" style="background: #b11226; margin-top: 20px;">
+          Save Bank Details
+        </button>
+      </div>
+
+      <!-- Transfer Amount Section -->
+      <div id="transfer-amount-section" style="margin-top: 24px; padding-top: 24px; border-top: 2px solid #e5e7eb;">
+        <label>Enter amount to be transferred*</label>
+        <input type="number" id="amount-input" placeholder="Enter amount" min="1" step="1">
+        <div class="amount-hint">Available Points: <span id="available-points">—</span> pts</div>
+        <button class="btn-submit" id="submitBtn" onclick="submitTransfer()">SUBMIT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REWARDS TAB -->
+  <div id="rewardsSection" class="hidden">
+    <div class="card">
+      <div class="card-title">Rewards Catalogue</div>
+      <p style="color: #6b7280; text-align: center; padding: 40px 20px;">
+        Redirecting to rewards catalogue...
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="home.html">
+    <div class="icon-wrapper"><span>🏠</span></div>
+    Home
+  </a>
+  <a href="about.html">
+    <div class="icon-wrapper"><span>ℹ️</span></div>
+    About
+  </a>
+  <a href="support.html">
+    <div class="icon-wrapper"><span>🆘</span></div>
+    Support
+  </a>
+  <a href="profile.html">
+    <div class="icon-wrapper"><span>👤</span></div>
+    Profile
+  </a>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8001/api";
+const userId = localStorage.getItem("user_id");
+let bankDetailsExist = false;
+let bankData = null;
+let chequeImageBase64 = null;
+let availablePoints = 0;
+
+if (!userId) {
+  alert("Please login first");
+  location.href = "index.html";
+}
+
+function showTab(tab) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  
+  const transferSection = document.getElementById("transferSection");
+  const rewardsSection = document.getElementById("rewardsSection");
+  
+  if (transferSection) transferSection.classList.add("hidden");
+  if (rewardsSection) rewardsSection.classList.add("hidden");
+
+  if (tab === 'transfer') {
+    document.querySelectorAll(".tab")[0].classList.add("active");
+    if (transferSection) transferSection.classList.remove("hidden");
+  } else if (tab === 'rewards') {
+    document.querySelectorAll(".tab")[1].classList.add("active");
+    if (rewardsSection) rewardsSection.classList.remove("hidden");
+    setTimeout(() => {
+      location.href = 'redeem-catalog.html';
+    }, 1000);
+  }
+}
+
+function loadBankDetails() {
+  fetch(`${API}/bank?user_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Bank details not found");
+      return res.json();
+    })
+    .then(data => {
+      bankDetailsExist = true;
+      bankData = data;
+      
+      document.getElementById("bank-details-display").classList.remove("hidden");
+      document.getElementById("bank-details-form").classList.add("hidden");
+      
+      document.getElementById("display-account-holder").innerText = data.account_holder_name;
+      document.getElementById("display-bank-name").innerText = data.bank_name;
+      document.getElementById("display-account-number").innerText = `****${data.account_number.slice(-4)}`;
+      document.getElementById("display-ifsc").innerText = data.ifsc;
+    })
+    .catch(err => {
+      bankDetailsExist = false;
+      document.getElementById("bank-details-display").classList.add("hidden");
+      document.getElementById("bank-details-form").classList.remove("hidden");
+    });
+}
+
+document.getElementById("cheque-upload")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      chequeImageBase64 = event.target.result;
+      document.getElementById("cheque-preview").src = chequeImageBase64;
+      document.getElementById("cheque-preview-container").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById("account-number-input")?.addEventListener("input", function() {
+  const value = this.value.trim();
+  const validation = document.getElementById("account-validation");
+  if (value.length >= 9 && value.length <= 18) {
+    validation.innerText = "✅";
+  } else {
+    validation.innerText = "";
+  }
+});
+
+document.getElementById("ifsc-input")?.addEventListener("input", function() {
+  const value = this.value.trim().toUpperCase();
+  this.value = value;
+  const validation = document.getElementById("ifsc-validation");
+  if (/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
+    validation.innerText = "✅";
+  } else {
+    validation.innerText = "";
+  }
+});
+
+// ✅ REMOVED OLD CONVERSION - This listener is not needed anymore
+
+function saveBankDetails() {
+  const bankName = document.getElementById("bank-name-input").value.trim();
+  const accountHolder = document.getElementById("account-holder-input").value.trim();
+  const accountNumber = document.getElementById("account-number-input").value.trim();
+  const ifscCode = document.getElementById("ifsc-input").value.trim();
+  
+  if (!bankName || !accountHolder || !accountNumber || !ifscCode) {
+    alert("⚠️ Please fill all bank details");
+    return;
+  }
+  
+  if (accountNumber.length < 9) {
+    alert("⚠️ Please enter valid account number");
+    return;
+  }
+  
+  if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode)) {
+    alert("⚠️ Please enter valid IFSC code");
+    return;
+  }
+  
+  if (!chequeImageBase64) {
+    alert("⚠️ Please upload cancelled cheque image");
+    return;
+  }
+  
+  const saveBtn = document.getElementById("saveBankBtn");
+  saveBtn.disabled = true;
+  saveBtn.innerText = "Saving...";
+  
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("account_holder_name", accountHolder);
+  formData.append("bank_name", bankName);
+  formData.append("account_number", accountNumber);
+  formData.append("ifsc", ifscCode);
+  formData.append("cheque_image", chequeImageBase64);
+  
+  fetch(`${API}/bank/add`, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("✅ Bank details saved successfully!");
+      loadBankDetails();
+    } else {
+      throw new Error(data.detail || "Failed to save");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Failed to save bank details");
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save Bank Details";
+  });
+}
+
+// ✅ LOAD AVAILABLE POINTS
+fetch(`${API}/wallet/balance?user_id=${userId}`)
+  .then(res => res.json())
+  .then(data => {
+    availablePoints = data.points || 6000;
+    document.getElementById("available-points").innerText = availablePoints;
+  })
+  .catch(() => {
+    availablePoints = 6000;
+    document.getElementById("available-points").innerText = "6000";
+  });
+
+function submitTransfer() {
+  if (!bankDetailsExist) {
+    alert("⚠️ Please save your bank details first");
+    return;
+  }
+  
+  const points = parseInt(document.getElementById("amount-input").value);
+  
+  if (!points || points <= 0) {
+    alert("⚠️ Please enter a valid amount");
+    return;
+  }
+  
+  if (points > availablePoints) {
+    alert(`⚠️ Insufficient points! You have ${availablePoints} points available.`);
+    return;
+  }
+  
+  // ✅ FIXED: 1 Point = ₹1 (was using wrong calculation)
+  const rupees = points;  // Direct 1:1 conversion
+  
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "PROCESSING...";
+  
+  // ✅ Use the new bank transfer endpoint
+  fetch(`${API}/wallet/bank-transfer?user_id=${userId}&points=${points}`, {
+    method: "POST"
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.success) {
+      const accountHolder = bankData.account_holder_name;
+      const bank = bankData.bank_name;
+      alert(`✅ Transfer Successful!\n\n${points} points = ₹${rupees}\n\nBank transfer to ${accountHolder} (${bank}) initiated.`);
+      location.href = "order-history.html";
+    } else {
+      throw new Error(result.message || "Transfer failed");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Failed to transfer. Please try again.");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "SUBMIT";
+  });
+}
+
+loadBankDetails();
+</script>
+
+</body>
+</html>
