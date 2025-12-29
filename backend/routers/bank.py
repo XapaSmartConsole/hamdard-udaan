@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Bank
+from backend.database import get_db      # ✅ FIXED
+from backend.models import Bank
 import openai
 import os
 import json

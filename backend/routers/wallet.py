@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Wallet, Order, OrderItem, Transaction, Bank
+from backend.database import get_db      # ✅ FIXED
+from backend.models import Wallet, Order, OrderItem, Bank, Transaction
 import time
 from datetime import datetime
 

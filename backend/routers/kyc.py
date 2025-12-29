@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from database import get_db
-from models import User, KYC
+from backend.database import get_db      # ✅ FIXED
+from backend.models import User, KYC
 from typing import List
 
 router = APIRouter(prefix="/api/kyc", tags=["KYC"])
