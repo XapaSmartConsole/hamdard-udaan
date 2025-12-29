@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from backend.database import Base
+from database import Base
 from datetime import datetime
 
 
@@ -66,18 +66,30 @@ class KYC(Base):
 # =======================
 # BANK
 # =======================
+# =======================
+# BANK
+# =======================
 class Bank(Base):
     __tablename__ = "bank_details"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
 
-    account_holder_name = Column(String(100), nullable=False)
-    bank_name = Column(String(50), nullable=False)
-    account_number = Column(String(20), nullable=False)
-    ifsc = Column(String(15), nullable=False)
-    cheque_image = Column(Text, nullable=False)
+    # Payment method selector
+    payment_method = Column(String(20), default="BANK")  # 'BANK' or 'UPI'
     
+    # Bank fields (nullable for UPI users)
+    account_holder_name = Column(String(100), nullable=True)
+    bank_name = Column(String(50), nullable=True)
+    account_number = Column(String(20), nullable=True)
+    ifsc = Column(String(15), nullable=True)
+    cheque_image = Column(Text, nullable=True)
+    
+    # UPI fields (nullable for bank users)
+    upi_id = Column(String(100), nullable=True)
+    upi_qr_code = Column(Text, nullable=True)
+    
+    # Validation fields
     is_validated = Column(Boolean, default=False)
     validation_status = Column(String(20), default="PENDING")
     created_at = Column(DateTime, default=lambda: datetime.now())
@@ -99,6 +111,9 @@ class Wallet(Base):
 # =======================
 # TRANSACTION
 # =======================
+# =======================
+# TRANSACTION
+# =======================
 class Transaction(Base):
     __tablename__ = "transactions"
 
@@ -108,8 +123,13 @@ class Transaction(Base):
     transaction_type = Column(String(50), nullable=False)
     points = Column(Integer, nullable=False)
     amount = Column(Integer, nullable=True)
-    description = Column(Text, nullable=True)
     
+    # TDS fields (15% TDS)
+    tds_percentage = Column(Integer, default=15)
+    tds_amount = Column(Integer, default=0)
+    net_amount = Column(Integer, default=0)
+    
+    description = Column(Text, nullable=True)
     status = Column(String(20), default="COMPLETED")
     created_at = Column(DateTime, default=lambda: datetime.now())
     

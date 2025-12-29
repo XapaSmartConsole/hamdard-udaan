@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.database import get_db      # ✅ FIXED
-from backend.models import Cart, Order, OrderItem
+from database import get_db
+from models import Order, OrderItem, Cart
 import time
 
 router = APIRouter(prefix="/api/orders", tags=["Orders"])

@@ -167,3 +167,81 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 ALTER TABLE users ADD COLUMN outlet_name VARCHAR(100) AFTER be_name;
+
+
+-- Add UPI columns to bank_details table
+ALTER TABLE bank_details ADD COLUMN upi_id VARCHAR(100) AFTER ifsc;
+ALTER TABLE bank_details ADD COLUMN payment_method VARCHAR(20) DEFAULT 'BANK'; -- 'BANK' or 'UPI'
+ALTER TABLE bank_details ADD COLUMN upi_qr_code LONGTEXT AFTER upi_id; -- Optional: store QR code image
+
+-- Update validation columns to work with both methods
+ALTER TABLE bank_details MODIFY COLUMN account_number VARCHAR(20) NULL;
+ALTER TABLE bank_details MODIFY COLUMN ifsc VARCHAR(15) NULL;
+ALTER TABLE bank_details MODIFY COLUMN cheque_image LONGTEXT NULL;
+
+USE rspl_demo;
+
+-- Add payment_method column
+ALTER TABLE bank_details 
+ADD COLUMN payment_method VARCHAR(20) DEFAULT 'BANK' AFTER user_id;
+
+-- Add UPI columns
+ALTER TABLE bank_details 
+ADD COLUMN upi_id VARCHAR(100) NULL AFTER ifsc;
+
+ALTER TABLE bank_details 
+ADD COLUMN upi_qr_code LONGTEXT NULL AFTER upi_id;
+
+-- Make bank fields nullable (for UPI users)
+ALTER TABLE bank_details 
+MODIFY COLUMN account_holder_name VARCHAR(100) NULL;
+
+ALTER TABLE bank_details 
+MODIFY COLUMN bank_name VARCHAR(50) NULL;
+
+ALTER TABLE bank_details 
+MODIFY COLUMN account_number VARCHAR(20) NULL;
+
+ALTER TABLE bank_details 
+MODIFY COLUMN ifsc VARCHAR(15) NULL;
+
+ALTER TABLE bank_details 
+MODIFY COLUMN cheque_image LONGTEXT NULL;
+
+-- Update existing records to have 'BANK' as payment method
+UPDATE bank_details 
+SET payment_method = 'BANK' 
+WHERE payment_method IS NULL;
+
+-- Verify the changes
+DESCRIBE bank_details;
+
+-- Check existing data
+SELECT id, user_id, payment_method, account_holder_name, bank_name, upi_id 
+FROM bank_details;
+
+-- Only run these if they don't exist
+ALTER TABLE bank_details ADD COLUMN upi_id VARCHAR(100) NULL;
+ALTER TABLE bank_details ADD COLUMN upi_qr_code LONGTEXT NULL;
+
+-- Make fields nullable
+ALTER TABLE bank_details MODIFY COLUMN account_holder_name VARCHAR(100) NULL;
+ALTER TABLE bank_details MODIFY COLUMN bank_name VARCHAR(50) NULL;
+ALTER TABLE bank_details MODIFY COLUMN account_number VARCHAR(20) NULL;
+ALTER TABLE bank_details MODIFY COLUMN ifsc VARCHAR(15) NULL;
+ALTER TABLE bank_details MODIFY COLUMN cheque_image LONGTEXT NULL;
+
+USE rspl_demo;
+
+-- Add TDS columns to transactions table
+ALTER TABLE transactions 
+ADD COLUMN tds_percentage DECIMAL(5,2) DEFAULT 15.00 AFTER amount;
+
+ALTER TABLE transactions 
+ADD COLUMN tds_amount INT DEFAULT 0 AFTER tds_percentage;
+
+ALTER TABLE transactions 
+ADD COLUMN net_amount INT DEFAULT 0 AFTER tds_amount;
+
+-- Verify
+DESCRIBE transactions;

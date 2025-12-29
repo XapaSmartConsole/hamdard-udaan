@@ -1,163 +1,192 @@
 from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
-from backend.database import get_db      # ✅ FIXED
-from backend.models import Bank
+from database import get_db
+from models import Bank
 import openai
 import os
 import json
 import re
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 router = APIRouter(prefix="/api", tags=["Bank"])
-
-# Set OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
 
 # ============================================================
-# ADD / UPDATE BANK DETAILS
+# ADD / UPDATE BANK OR UPI DETAILS
 # ============================================================
 @router.post("/bank/add")
-def add_or_update_bank(
+def add_or_update_payment_method(
     user_id: int = Form(...),
-    account_holder_name: str = Form(...),
-    bank_name: str = Form(...),
-    account_number: str = Form(...),
-    ifsc: str = Form(...),
-    cheque_image: str = Form(...),  # Base64 string
+    payment_method: str = Form(...),  # 'BANK' or 'UPI'
+    
+    # Bank fields (optional if UPI)
+    account_holder_name: str = Form(None),
+    bank_name: str = Form(None),
+    account_number: str = Form(None),
+    ifsc: str = Form(None),
+    cheque_image: str = Form(None),
+    
+    # UPI fields (optional if BANK)
+    upi_id: str = Form(None),
+    upi_qr_code: str = Form(None),  # Optional QR code image
+    
     db: Session = Depends(get_db)
 ):
-    # Check if bank details already exist
+    """
+    Add or update payment method (Bank or UPI)
+    """
+    
+    # Validate based on payment method
+    if payment_method == "BANK":
+        if not all([account_holder_name, bank_name, account_number, ifsc, cheque_image]):
+            raise HTTPException(status_code=400, detail="All bank details are required")
+    elif payment_method == "UPI":
+        if not upi_id:
+            raise HTTPException(status_code=400, detail="UPI ID is required")
+        
+        # Validate UPI ID format (basic validation)
+        if not re.match(r'^[\w\.\-]+@[\w]+$', upi_id):
+            raise HTTPException(status_code=400, detail="Invalid UPI ID format")
+    else:
+        raise HTTPException(status_code=400, detail="Invalid payment method")
+
+    # Check if payment details already exist
     bank = db.query(Bank).filter(Bank.user_id == user_id).first()
 
     if bank:
         # Update existing
-        bank.account_holder_name = account_holder_name
-        bank.bank_name = bank_name
-        bank.account_number = account_number
-        bank.ifsc = ifsc
-        bank.cheque_image = cheque_image
+        bank.payment_method = payment_method
+        
+        if payment_method == "BANK":
+            bank.account_holder_name = account_holder_name
+            bank.bank_name = bank_name
+            bank.account_number = account_number
+            bank.ifsc = ifsc
+            bank.cheque_image = cheque_image
+            # Clear UPI fields
+            bank.upi_id = None
+            bank.upi_qr_code = None
+        else:  # UPI
+            bank.upi_id = upi_id
+            bank.upi_qr_code = upi_qr_code
+            bank.account_holder_name = account_holder_name  # Optional for UPI
+            # Clear bank fields
+            bank.bank_name = None
+            bank.account_number = None
+            bank.ifsc = None
+            bank.cheque_image = None
+        
         # Reset validation status on update
         bank.is_validated = False
         bank.validation_status = "PENDING"
     else:
         # Create new
-        bank = Bank(
-            user_id=user_id,
-            account_holder_name=account_holder_name,
-            bank_name=bank_name,
-            account_number=account_number,
-            ifsc=ifsc,
-            cheque_image=cheque_image,
-            is_validated=False,
-            validation_status="PENDING"
-        )
+        bank_data = {
+            "user_id": user_id,
+            "payment_method": payment_method,
+            "is_validated": False,
+            "validation_status": "PENDING"
+        }
+        
+        if payment_method == "BANK":
+            bank_data.update({
+                "account_holder_name": account_holder_name,
+                "bank_name": bank_name,
+                "account_number": account_number,
+                "ifsc": ifsc,
+                "cheque_image": cheque_image
+            })
+        else:  # UPI
+            bank_data.update({
+                "upi_id": upi_id,
+                "upi_qr_code": upi_qr_code,
+                "account_holder_name": account_holder_name
+            })
+        
+        bank = Bank(**bank_data)
         db.add(bank)
 
     db.commit()
 
     return {
         "success": True,
-        "message": "Bank details saved successfully"
+        "message": f"{payment_method} details saved successfully",
+        "payment_method": payment_method
     }
 
 
 # ============================================================
-# GET BANK DETAILS
+# GET PAYMENT DETAILS (BANK OR UPI)
 # ============================================================
 @router.get("/bank")
-def get_bank_details(
+def get_payment_details(
     user_id: int,
     db: Session = Depends(get_db)
 ):
     bank = db.query(Bank).filter(Bank.user_id == user_id).first()
 
     if not bank:
-        raise HTTPException(status_code=404, detail="Bank details not found")
+        raise HTTPException(status_code=404, detail="Payment details not found")
 
-    return {
+    response = {
         "user_id": bank.user_id,
-        "account_holder_name": bank.account_holder_name,
-        "bank_name": bank.bank_name,
-        "account_number": bank.account_number,
-        "ifsc": bank.ifsc,
-        "cheque_image": bank.cheque_image,
+        "payment_method": bank.payment_method if hasattr(bank, 'payment_method') else "BANK",
         "is_validated": bank.is_validated if hasattr(bank, 'is_validated') else False,
         "validation_status": bank.validation_status if hasattr(bank, 'validation_status') else "PENDING"
     }
+    
+    # Add relevant fields based on payment method
+    if bank.payment_method == "BANK":
+        response.update({
+            "account_holder_name": bank.account_holder_name,
+            "bank_name": bank.bank_name,
+            "account_number": bank.account_number,
+            "ifsc": bank.ifsc,
+            "cheque_image": bank.cheque_image
+        })
+    else:  # UPI
+        response.update({
+            "upi_id": bank.upi_id,
+            "upi_qr_code": bank.upi_qr_code if hasattr(bank, 'upi_qr_code') else None,
+            "account_holder_name": bank.account_holder_name if bank.account_holder_name else None
+        })
+
+    return response
 
 
 # ============================================================
-# VALIDATE BANK ACCOUNT (AI-POWERED)
+# VALIDATE PAYMENT METHOD (BANK OR UPI)
 # ============================================================
 @router.post("/bank/validate")
-async def validate_bank_account(
+async def validate_payment_method(
     user_id: int,
     db: Session = Depends(get_db)
 ):
     """
-    Automatically validate bank account by extracting details from cheque image
-    using OpenAI Vision API and comparing with stored details
+    Validate payment method (Bank with AI OCR or UPI with basic checks)
     """
     bank = db.query(Bank).filter(Bank.user_id == user_id).first()
     
     if not bank:
-        raise HTTPException(status_code=404, detail="Bank details not found")
+        raise HTTPException(status_code=404, detail="Payment details not found")
     
     # Check if already validated
     if hasattr(bank, 'is_validated') and bank.is_validated:
         return {
-            "message": "Bank account already validated",
+            "message": "Payment method already validated",
             "is_validated": True,
             "validation_status": "VALIDATED"
         }
     
     try:
-        # Extract base64 image data
-        if bank.cheque_image.startswith("data:image"):
-            base64_image = bank.cheque_image.split(",")[1]
-        else:
-            base64_image = bank.cheque_image
-        
-        # Call OpenAI Vision API to extract bank details from cheque
-        extracted_details = await extract_bank_details_from_cheque(base64_image)
-        
-        # Compare extracted details with stored details
-        validation_result = validate_extracted_details(
-            extracted_details,
-            {
-                "account_holder_name": bank.account_holder_name,
-                "account_number": bank.account_number,
-                "ifsc": bank.ifsc
-            }
-        )
-        
-        if validation_result["is_valid"]:
-            # Update validation status
-            if hasattr(bank, 'is_validated'):
-                bank.is_validated = True
-                bank.validation_status = "VALIDATED"
-            db.commit()
-            
-            return {
-                "message": "✅ Bank account validated successfully!",
-                "is_validated": True,
-                "validation_status": "VALIDATED",
-                "matched_fields": validation_result.get("matched_fields", [])
-            }
-        else:
-            # Validation failed
-            if hasattr(bank, 'is_validated'):
-                bank.is_validated = False
-                bank.validation_status = "FAILED"
-            db.commit()
-            
-            raise HTTPException(
-                status_code=400,
-                detail=f"Validation failed: {validation_result['reason']}"
-            )
+        if bank.payment_method == "BANK":
+            # Use existing AI-powered bank validation
+            return await validate_bank_account_internal(bank, db)
+        else:  # UPI
+            # Validate UPI ID
+            return await validate_upi_internal(bank, db)
     
     except HTTPException:
         raise
@@ -175,6 +204,97 @@ async def validate_bank_account(
 
 
 # ============================================================
+# INTERNAL: VALIDATE BANK ACCOUNT (AI-POWERED)
+# ============================================================
+async def validate_bank_account_internal(bank, db):
+    """
+    AI-powered bank account validation using cheque image
+    """
+    if not bank.cheque_image:
+        raise HTTPException(status_code=400, detail="Cheque image is required for validation")
+    
+    # Extract base64 image data
+    if bank.cheque_image.startswith("data:image"):
+        base64_image = bank.cheque_image.split(",")[1]
+    else:
+        base64_image = bank.cheque_image
+    
+    # Call OpenAI Vision API
+    extracted_details = await extract_bank_details_from_cheque(base64_image)
+    
+    # Compare extracted details with stored details
+    validation_result = validate_extracted_details(
+        extracted_details,
+        {
+            "account_holder_name": bank.account_holder_name,
+            "account_number": bank.account_number,
+            "ifsc": bank.ifsc
+        }
+    )
+    
+    if validation_result["is_valid"]:
+        bank.is_validated = True
+        bank.validation_status = "VALIDATED"
+        db.commit()
+        
+        return {
+            "message": "✅ Bank account validated successfully!",
+            "is_validated": True,
+            "validation_status": "VALIDATED",
+            "matched_fields": validation_result.get("matched_fields", [])
+        }
+    else:
+        bank.is_validated = False
+        bank.validation_status = "FAILED"
+        db.commit()
+        
+        raise HTTPException(
+            status_code=400,
+            detail=f"Validation failed: {validation_result['reason']}"
+        )
+
+
+# ============================================================
+# INTERNAL: VALIDATE UPI
+# ============================================================
+async def validate_upi_internal(bank, db):
+    """
+    Basic UPI validation (format check)
+    For production, you'd integrate with UPI verification APIs
+    """
+    if not bank.upi_id:
+        raise HTTPException(status_code=400, detail="UPI ID is required")
+    
+    # Validate UPI ID format
+    upi_pattern = r'^[\w\.\-]+@[\w]+$'
+    
+    if not re.match(upi_pattern, bank.upi_id):
+        bank.is_validated = False
+        bank.validation_status = "FAILED"
+        db.commit()
+        
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid UPI ID format. Expected format: username@bankname"
+        )
+    
+    # For production: Add real UPI verification API call here
+    # Example: Razorpay, PayU, or NPCI UPI verification
+    
+    # Mark as validated (in production, only after API confirmation)
+    bank.is_validated = True
+    bank.validation_status = "VALIDATED"
+    db.commit()
+    
+    return {
+        "message": "✅ UPI ID validated successfully!",
+        "is_validated": True,
+        "validation_status": "VALIDATED",
+        "upi_id": bank.upi_id
+    }
+
+
+# ============================================================
 # HELPER: EXTRACT BANK DETAILS FROM CHEQUE USING OPENAI
 # ============================================================
 async def extract_bank_details_from_cheque(base64_image: str) -> dict:
@@ -183,7 +303,7 @@ async def extract_bank_details_from_cheque(base64_image: str) -> dict:
     """
     try:
         response = openai.chat.completions.create(
-            model="gpt-4o",  # or "gpt-4-vision-preview"
+            model="gpt-4o",
             messages=[
                 {
                     "role": "user",
@@ -225,22 +345,18 @@ Do not include any additional text, explanations, or formatting - ONLY the JSON 
                 }
             ],
             max_tokens=500,
-            temperature=0  # More deterministic output
+            temperature=0
         )
         
-        # Parse the response
         content = response.choices[0].message.content.strip()
-        
         print(f"🤖 OpenAI Response: {content}")
         
-        # Extract JSON from the response
         json_start = content.find("{")
         json_end = content.rfind("}") + 1
         
         if json_start != -1 and json_end > json_start:
             json_str = content[json_start:json_end]
             extracted_data = json.loads(json_str)
-            
             print(f"✅ Extracted data: {extracted_data}")
             return extracted_data
         else:
@@ -252,44 +368,38 @@ Do not include any additional text, explanations, or formatting - ONLY the JSON 
 
 
 # ============================================================
-# HELPER: VALIDATE EXTRACTED DETAILS AGAINST STORED DETAILS
+# HELPER: VALIDATE EXTRACTED DETAILS
 # ============================================================
 def validate_extracted_details(extracted: dict, stored: dict) -> dict:
     """
     Compare extracted details with stored details
-    Returns validation result with specific error messages
     """
     errors = []
     matched_fields = []
     
-    # Normalize strings for comparison (remove spaces, special chars, convert to uppercase)
     def normalize(s):
         if not s or s == "NOT_FOUND":
             return None
-        # Remove all non-alphanumeric characters and convert to uppercase
         return re.sub(r'[^A-Z0-9]', '', str(s).upper())
     
-    # ========== VALIDATE ACCOUNT HOLDER NAME ==========
+    # Validate name
     extracted_name = normalize(extracted.get("account_holder_name", ""))
     stored_name = normalize(stored.get("account_holder_name", ""))
     
     if not extracted_name:
         errors.append("❌ Account holder name not found in cheque image")
     else:
-        # Calculate similarity (allow for minor OCR errors)
         similarity = calculate_similarity(extracted_name, stored_name)
-        
-        if similarity >= 0.75:  # 75% match threshold
+        if similarity >= 0.75:
             matched_fields.append("✅ Account holder name matched")
         else:
             errors.append(
                 f"❌ Account holder name mismatch\n"
                 f"   Expected: {stored['account_holder_name']}\n"
-                f"   Found in cheque: {extracted.get('account_holder_name')}\n"
-                f"   Similarity: {int(similarity * 100)}%"
+                f"   Found: {extracted.get('account_holder_name')}"
             )
     
-    # ========== VALIDATE ACCOUNT NUMBER ==========
+    # Validate account number
     extracted_account = normalize(extracted.get("account_number", ""))
     stored_account = normalize(stored.get("account_number", ""))
     
@@ -299,12 +409,12 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
         errors.append(
             f"❌ Account number mismatch\n"
             f"   Expected: {stored['account_number']}\n"
-            f"   Found in cheque: {extracted.get('account_number')}"
+            f"   Found: {extracted.get('account_number')}"
         )
     else:
         matched_fields.append("✅ Account number matched")
     
-    # ========== VALIDATE IFSC CODE ==========
+    # Validate IFSC
     extracted_ifsc = normalize(extracted.get("ifsc", ""))
     stored_ifsc = normalize(stored.get("ifsc", ""))
     
@@ -314,12 +424,11 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
         errors.append(
             f"❌ IFSC code mismatch\n"
             f"   Expected: {stored['ifsc']}\n"
-            f"   Found in cheque: {extracted.get('ifsc')}"
+            f"   Found: {extracted.get('ifsc')}"
         )
     else:
         matched_fields.append("✅ IFSC code matched")
     
-    # Determine if validation passed
     is_valid = len(errors) == 0
     
     return {
@@ -331,13 +440,9 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
     }
 
 
-# ============================================================
-# HELPER: CALCULATE STRING SIMILARITY (LEVENSHTEIN DISTANCE)
-# ============================================================
 def calculate_similarity(s1: str, s2: str) -> float:
     """
-    Calculate similarity between two strings using Levenshtein distance
-    Returns a float between 0 (completely different) and 1 (identical)
+    Calculate similarity using Levenshtein distance
     """
     if not s1 or not s2:
         return 0.0
@@ -345,13 +450,10 @@ def calculate_similarity(s1: str, s2: str) -> float:
     if s1 == s2:
         return 1.0
     
-    # Ensure s1 is shorter or equal length
     if len(s1) > len(s2):
         s1, s2 = s2, s1
     
     len1, len2 = len(s1), len(s2)
-    
-    # Initialize distance matrix
     current_row = list(range(len1 + 1))
     
     for i in range(1, len2 + 1):
@@ -364,10 +466,8 @@ def calculate_similarity(s1: str, s2: str) -> float:
                 change += 1
             current_row[j] = min(add, delete, change)
     
-    # Calculate similarity as 1 - (distance / max_length)
     distance = current_row[len1]
     max_len = max(len(s1), len(s2))
-    
     similarity = 1 - (distance / max_len) if max_len > 0 else 0.0
     
     return similarity

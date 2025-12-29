@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.database import get_db      # ✅ FIXED
-from backend.models import Wallet, Order, OrderItem, Bank, Transaction
+from database import get_db
+from models import Wallet, Order, OrderItem, Transaction, Bank
 import time
 from datetime import datetime
 
@@ -26,8 +26,7 @@ def wallet_balance(user_id: int, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(wallet)
 
-    # ✅ FIXED: 1 Point = ₹1 (was calculating wrong)
-    balance = wallet.points  # Direct 1:1 conversion
+    balance = wallet.points
 
     return {
         "points": wallet.points,
@@ -48,7 +47,6 @@ def wallet_summary(user_id: int, db: Session = Depends(get_db)):
 def get_wallet_transactions(user_id: int, limit: int = 10, db: Session = Depends(get_db)):
     """Get voucher redemption history (eGV wallet transactions)"""
     
-    # Get all orders for this user
     orders = db.query(Order).filter(
         Order.user_id == user_id
     ).order_by(Order.created_at.desc()).limit(limit).all()
@@ -56,18 +54,14 @@ def get_wallet_transactions(user_id: int, limit: int = 10, db: Session = Depends
     transactions = []
     
     for order in orders:
-        # Get order items (products/vouchers)
         items = db.query(OrderItem).filter(
             OrderItem.order_id == order.order_id
         ).all()
         
-        # For voucher items, generate voucher code and PIN
         for item in items:
-            # Check if this is a voucher (based on category)
             is_voucher = item.category and "voucher" in item.category.lower()
             
             if is_voucher:
-                # Generate voucher code and PIN
                 voucher_code = f"VCH{order.order_id[-6:]}"
                 voucher_pin = f"{hash(order.order_id) % 10000:04d}"
                 
@@ -84,7 +78,6 @@ def get_wallet_transactions(user_id: int, limit: int = 10, db: Session = Depends
                     "date_of_redemption": order.created_at.strftime("%d %b %Y") if order.created_at else None
                 })
             else:
-                # Regular product redemption
                 transactions.append({
                     "transaction_id": order.order_id,
                     "order_id": order.order_id,
@@ -136,8 +129,7 @@ def redeem_points(user_id: int, points: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(wallet)
 
-    # ✅ FIXED: Calculate new balance (1 Point = ₹1)
-    new_balance = wallet.points  # Direct 1:1 conversion
+    new_balance = wallet.points
 
     return {
         "success": True,
@@ -149,14 +141,19 @@ def redeem_points(user_id: int, points: int, db: Session = Depends(get_db)):
     }
 
 
-# ================= BANK TRANSFER =================
+# ================= BANK TRANSFER WITH 15% TDS =================
 @router.post("/wallet/bank-transfer")
 def bank_transfer(
     user_id: int,
     points: int,
     db: Session = Depends(get_db)
 ):
-    """Transfer points to bank account (1 Point = ₹1)"""
+    """
+    Transfer points to bank account with 15% TDS deduction
+    1 Point = ₹1
+    TDS = 15%
+    Net Amount = Gross Amount - (Gross Amount × 15%)
+    """
     
     # Get wallet
     wallet = db.query(Wallet).filter(Wallet.user_id == user_id).first()
@@ -174,24 +171,40 @@ def bank_transfer(
             detail=f"Insufficient points. Available: {wallet.points}, Required: {points}"
         )
     
-    # Check if bank details exist
+    # Check if bank/UPI details exist
     bank = db.query(Bank).filter(Bank.user_id == user_id).first()
     
     if not bank:
         raise HTTPException(
             status_code=404, 
-            detail="Bank details not found. Please add bank details first."
+            detail="Payment details not found. Please add bank or UPI details first."
         )
     
-    # ✅ FIXED: 1 Point = ₹1 (Direct conversion, no division or multiplication)
-    amount = points  # Simple 1:1 conversion
+    # Get payment method
+    payment_method = getattr(bank, 'payment_method', 'BANK')
+    
+    # ============ CALCULATE 15% TDS ============
+    TDS_PERCENTAGE = 15.0
+    gross_amount = points  # 1 point = ₹1
+    tds_amount = int((gross_amount * TDS_PERCENTAGE) / 100)
+    net_amount = gross_amount - tds_amount
     
     # Deduct points from wallet
     wallet.points -= points
     wallet.redeemed += points
     
-    # Create transaction record
+    # Create transaction ID
     transaction_id = f"TXN{int(time.time() * 1000) % 100000000}"
+    
+    # Get payment identifier for description
+    if payment_method == "UPI":
+        payment_identifier = getattr(bank, 'upi_id', 'UPI Account')
+        transaction_type = "UPI_TRANSFER"
+    else:
+        account_number = getattr(bank, 'account_number', 'XXXX')
+        bank_name = getattr(bank, 'bank_name', 'Bank')
+        payment_identifier = f"{bank_name} A/C ****{account_number[-4:]}" if account_number else "Bank Account"
+        transaction_type = "BANK_TRANSFER"
     
     # Create order entry for bank transfer
     bank_transfer_order = Order(
@@ -199,18 +212,22 @@ def bank_transfer(
         order_id=transaction_id,
         total_points=points,
         status="completed",
-        transaction_type="BANK_TRANSFER"
+        transaction_type=transaction_type
     )
     db.add(bank_transfer_order)
     
-    # Create transaction record
+    # Create transaction record with TDS details
     try:
         transaction = Transaction(
             user_id=user_id,
-            transaction_type="BANK_TRANSFER",
-            points=-points,
-            amount=amount,
-            description=f"Bank transfer of ₹{amount} to {bank.bank_name} A/C ****{bank.account_number[-4:]}"
+            transaction_type=transaction_type,
+            points=points,
+            amount=gross_amount,
+            tds_percentage=int(TDS_PERCENTAGE),
+            tds_amount=tds_amount,
+            net_amount=net_amount,
+            description=f"Transfer to {payment_identifier} | Gross: ₹{gross_amount} | TDS (15%): ₹{tds_amount} | Net: ₹{net_amount}",
+            status="COMPLETED"
         )
         db.add(transaction)
     except Exception as e:
@@ -221,15 +238,17 @@ def bank_transfer(
     
     return {
         "success": True,
-        "message": f"₹{amount} transferred successfully to your {bank.bank_name} account",
-        "transaction_id": transaction_id,
-        "points_deducted": points,
-        "amount_transferred": amount,
-        "remaining_points": wallet.points,
-        "bank_details": {
-            "bank_name": bank.bank_name,
-            "account_number": f"****{bank.account_number[-4:]}",
-            "account_holder_name": bank.account_holder_name
+        "message": f"Transfer successful",
+        "transaction_details": {
+            "transaction_id": transaction_id,
+            "payment_method": payment_method,
+            "payment_to": payment_identifier,
+            "points_deducted": points,
+            "gross_amount": gross_amount,
+            "tds_percentage": 15,
+            "tds_amount": tds_amount,
+            "net_amount": net_amount,
+            "remaining_points": wallet.points
         }
     }
 
@@ -242,7 +261,6 @@ def add_money(user_id: int, amount: float, type: str = "DEMO_CREDIT", db: Sessio
     wallet = db.query(Wallet).filter(Wallet.user_id == user_id).first()
     
     if not wallet:
-        # Create wallet if doesn't exist
         wallet = Wallet(
             user_id=user_id,
             points=6000,
@@ -250,16 +268,13 @@ def add_money(user_id: int, amount: float, type: str = "DEMO_CREDIT", db: Sessio
         )
         db.add(wallet)
     
-    # ✅ FIXED: Convert amount to points (1 Point = ₹1)
-    points_to_add = int(amount)  # Direct 1:1 conversion
-    
+    points_to_add = int(amount)
     wallet.points += points_to_add
     
     db.commit()
     db.refresh(wallet)
     
-    # Calculate new balance
-    new_balance = wallet.points  # Direct 1:1 conversion
+    new_balance = wallet.points
     
     return {
         "success": True,
