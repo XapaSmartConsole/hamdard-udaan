@@ -423,5 +423,3 @@ async function checkoutRewards() {
 
   loadWalletSummary(); // refresh from backend
 }
-/ /   U p d a t e d  
- 
