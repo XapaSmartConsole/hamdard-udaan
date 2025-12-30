@@ -14,18 +14,14 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="RSPL Demo Platform")
 
 # Add CORS middleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://hamdard-udaan.vercel.app",  # Your Vercel frontend
-        "http://localhost:5500",  # Local development with Live Server
-        "http://127.0.0.1:5500",  # Local development alternative
-    ],
+    allow_origins=["*"],  # Allow all origins - perfect for demo!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # Root endpoint
 @app.get("/")
 def root():
