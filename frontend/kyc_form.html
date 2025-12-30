@@ -98,7 +98,9 @@
 </div>
 
 <script>
-const API_BASE = "http://127.0.0.1:8001/api";
+const API = window.location.hostname === 'localhost' 
+    ? "http://127.0.0.1:8001/api"
+    : "https://hamdard-udaan-1.onrender.com/api";
 
 const docType = document.getElementById("docType");
 const docNumber = document.getElementById("docNumber");
