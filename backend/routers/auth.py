@@ -79,13 +79,13 @@ def send_otp(phone: str, db: Session = Depends(get_db)):
     user.otp = otp
     db.commit()
 
-    # 🔥 DEMO MODE - Log OTP in console
+    # 🔥 DEMO MODE - Log OTP (for development)
     print("=" * 50)
     print(f"📱 OTP SENT TO: {phone}")
     print(f"🔐 OTP CODE: {otp}")
     print("=" * 50)
     
-    # ⚠️ Return OTP in response (ONLY FOR DEMO)
+    # Return success message only (no OTP in response)
     return {"message": "OTP sent successfully", "demo_otp": otp}
 
 
