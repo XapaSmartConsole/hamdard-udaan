@@ -2,7 +2,14 @@
 // RSPL DEMO – COMMON JS LOGIC (PORT 8001)
 // =====================================================
 
-const API_BASE = "http://127.0.0.1:8001/api";
+console.log('🔌 Current hostname:', window.location.hostname);
+console.log('🔌 Is localhost?', window.location.hostname === 'localhost');
+
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? "http://127.0.0.1:8001/api"  // Local development
+    : "https://hamdard-udaan-1.onrender.com/api";  // Production on Vercel
+
+console.log('🔌 API_BASE:', API_BASE);
 const isKycPage = window.location.pathname.includes("kyc.html");
 let AVAILABLE_POINTS = 0;
 let REDEEMED_POINTS = 0;   
