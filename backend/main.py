@@ -1,28 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine
-from . import models
-
+from .database import engine  # Add dot here
+from . import models  # Add dot here
+from .routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders  # Add dot here
 from dotenv import load_dotenv
-from .routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders
-
 
 load_dotenv()
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
 
-# Create FastAPI app (only once!)
+# Create FastAPI app
 app = FastAPI(title="RSPL Demo Platform")
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-        "*"  # Allow all origins for development
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
