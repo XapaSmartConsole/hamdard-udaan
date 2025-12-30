@@ -11,45 +11,33 @@ router = APIRouter(prefix="/api/kyc", tags=["KYC"])
 # ============================================================
 # ✅ COMPLETE KYC (OCR BASED – MAIN ENDPOINT)
 # ============================================================
-@router.post("/complete")
-def complete_kyc(
-    user_id: int = Form(...),
-    document_type: str = Form(...),
-    document_number: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    # Validate user
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Check if this document type already exists for user
-    existing_kyc = db.query(KYC).filter(
-        KYC.user_id == user_id,
-        KYC.document_type == document_type
-    ).first()
-
-    if existing_kyc:
-        # Update existing document
-        existing_kyc.document_number = document_number
-        existing_kyc.status = "COMPLETED"
-    else:
-        # Create new KYC document record
-        kyc = KYC(
-            user_id=user_id,
-            document_type=document_type,
-            document_number=document_number,
-            status="COMPLETED"
-        )
-        db.add(kyc)
-
-    db.commit()
-
+# ============================================================
+# KYC SUMMARY (FOR DASHBOARD)
+# ============================================================
+@router.get("/summary")
+def get_kyc_summary(db: Session = Depends(get_db)):
+    """Get summary statistics of all KYC submissions"""
+    
+    total_users = db.query(User).count()
+    
+    # Count users with at least 3 documents (COMPLETED)
+    completed_query = text("""
+        SELECT COUNT(DISTINCT user_id) as count
+        FROM kyc
+        GROUP BY user_id
+        HAVING COUNT(*) >= 3
+    """)
+    completed_result = db.execute(completed_query).scalar()
+    completed = completed_result if completed_result else 0
+    
+    # Pending = total - completed
+    pending = total_users - completed
+    
     return {
-        "status": "success",
-        "message": f"{document_type} document submitted successfully"
+        "total": total_users,
+        "completed": completed,
+        "pending": pending
     }
-
 
 # ============================================================
 # GET ALL SUBMITTED DOCUMENTS FOR A USER
