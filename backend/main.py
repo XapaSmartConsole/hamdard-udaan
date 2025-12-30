@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine  # Add dot here
-from . import models  # Add dot here
-from .routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders  # Add dot here
+from database import engine
+import models
+from routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders
 from dotenv import load_dotenv
 
 load_dotenv()
