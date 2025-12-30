@@ -107,25 +107,36 @@ async function loadWalletSummary() {
     // =====================================================
     // SEND OTP
     // =====================================================
-    // ================= SEND OTP =================
-    const sendOtpBtn = document.getElementById("send-otp-btn");
-    if (sendOtpBtn) {
-    sendOtpBtn.addEventListener("click", async () => {
-        const phone = document.getElementById("phone").value.trim();
-        if (!phone) return alert("Enter mobile number");
+const sendOtpBtn = document.getElementById("send-otp-btn");
+if (sendOtpBtn) {
+  sendOtpBtn.addEventListener("click", async () => {
+    const phone = document.getElementById("phone").value.trim();
+    if (!phone) return alert("Enter mobile number");
 
-        await fetch(`${API_BASE}/send-otp?phone=${phone}`, { method: "POST" });
+    try {
+      const response = await fetch(`${API_BASE}/send-otp?phone=${phone}`, { method: "POST" });
+      const data = await response.json();
 
+      // 🔥 Show OTP in alert for demo mode
+      if (data.demo_otp) {
+        alert(`✅ OTP Sent Successfully!\n\n🔐 Your OTP: ${data.demo_otp}\n\n📝 Enter this code to login\n\n⚠️ Note: In production, OTP would be sent via SMS`);
+      } else {
         alert("OTP sent successfully");
+      }
 
-        // 🔥 SHOW OTP FIELD + CONTINUE BUTTON
-        document.getElementById("otp").style.display = "block";
-        document.getElementById("verify-otp-btn").style.display = "block";
+      // Show OTP input field and verify button
+      document.getElementById("otp").style.display = "block";
+      document.getElementById("verify-otp-btn").style.display = "block";
 
-        // OPTIONAL: hide send button
-        sendOtpBtn.style.display = "none";
-    });
+      // Hide send OTP button
+      sendOtpBtn.style.display = "none";
+
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("❌ Failed to send OTP. Please try again.");
     }
+  });
+}
 
 
     // =====================================================

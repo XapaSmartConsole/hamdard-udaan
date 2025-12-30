@@ -79,8 +79,14 @@ def send_otp(phone: str, db: Session = Depends(get_db)):
     user.otp = otp
     db.commit()
 
-    print(f"🔐 OTP for {phone} is {otp}")  # DEMO MODE
-    return {"message": "OTP sent"}
+    # 🔥 DEMO MODE - Log OTP
+    print(f"=" * 50)
+    print(f"📱 OTP SENT TO: {phone}")
+    print(f"🔐 OTP CODE: {otp}")
+    print(f"=" * 50)
+    
+    # ⚠️ Return OTP in response (ONLY FOR DEMO - Remove in production!)
+    return {"message": "OTP sent successfully", "demo_otp": otp}
 
 
 @router.post("/verify-otp")
