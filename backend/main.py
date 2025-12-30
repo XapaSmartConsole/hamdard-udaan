@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine  # NO DOT
-import models  # NO DOT
-from routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders  # NO DOT
+from database import engine
+import models
+from routers import auth, kyc, bank, wallet, kyc_ocr, cart, orders
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,7 +16,11 @@ app = FastAPI(title="RSPL Demo Platform")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://hamdard-udaan.vercel.app",  # Your Vercel frontend
+        "http://localhost:5500",  # Local development with Live Server
+        "http://127.0.0.1:5500",  # Local development alternative
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
