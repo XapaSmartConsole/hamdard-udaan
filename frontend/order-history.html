@@ -424,7 +424,7 @@ if (!userId) {
 
 async function loadOrderHistory() {
   try {
-    const response = await fetch(`${API}/orders/user?user_id=${userId}`);
+    const response = await fetch(`${API_BASE}/orders/user?user_id=${userId}`);
     const orders = await response.json();
     
     const loadingState = document.getElementById("loading-state");
