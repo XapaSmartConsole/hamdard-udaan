@@ -36,6 +36,7 @@ def get_kyc_summary(db: Session = Depends(get_db)):
         "pending": pending
     }
 
+
 # ============================================================
 # GET ALL SUBMITTED DOCUMENTS FOR A USER
 # ============================================================
