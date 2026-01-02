@@ -245,3 +245,6 @@ ADD COLUMN net_amount INT DEFAULT 0 AFTER tds_amount;
 
 -- Verify
 DESCRIBE transactions;
+
+ALTER TABLE bank_details MODIFY COLUMN cheque_image LONGTEXT;
+ALTER TABLE bank_details MODIFY COLUMN upi_qr_code LONGTEXT;
