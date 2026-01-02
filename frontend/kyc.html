@@ -793,7 +793,7 @@ function showTab(tab) {
 
 // ============ BANK DETAILS FUNCTIONS ============
 function loadBankDetails() {
-  fetch(`${API}/bank?user_id=${userId}`)
+  fetch(`${API_BASE}/bank?user_id=${userId}`)
     .then(res => {
       if (!res.ok) throw new Error("Bank details not found");
       return res.json();
@@ -994,7 +994,7 @@ async function validateBankAccount() {
   validateBtn.innerText = "🔄 Validating...";
 
   try {
-    const res = await fetch(`${API}/bank/validate?user_id=${userId}`, {
+    const res = await fetch(`${API_BASE}/bank/validate?user_id=${userId}`, {
       method: "POST"
     });
 
@@ -1075,7 +1075,7 @@ function handleAddressTypeChange() {
 }
 
 function loadSubmittedDocuments() {
-  fetch(`${API}/kyc/documents?user_id=${userId}`)
+  fetch(`${API_BASE}/kyc/documents?user_id=${userId}`)
     .then(res => {
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();
@@ -1170,7 +1170,7 @@ async function extractDocument(fileInput, numberInput, statusDiv, badgeId, docKe
   formData.append("file", file);
 
   try {
-    const res = await fetch(`${API}/kyc/extract-number`, {
+    const res = await fetch(`${API_BASE}/kyc/extract-number`, {
       method: "POST",
       body: formData
     });
@@ -1386,7 +1386,7 @@ async function submitSingleDocument(docType, docNumber, docKey) {
   formData.append("document_type", docType);
   formData.append("document_number", docNumber);
 
-  const res = await fetch(`${API}/kyc/complete`, {
+  const res = await fetch(`${API_BASE}/kyc/complete`, {
     method: "POST",
     body: formData
   });
