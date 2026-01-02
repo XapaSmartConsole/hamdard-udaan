@@ -660,6 +660,13 @@
       <span class="verification-badge verified hidden" id="bank-verified-badge">✓ Verified</span>
       <span class="verification-badge pending hidden" id="bank-pending-badge">⏳ Pending</span>
     </h3>
+
+    <label style="margin-top:12px;">Preferred Payment Method</label>
+<select id="preferredPayment" onchange="togglePaymentMethod()">
+  <option value="BANK">🏦 Bank Transfer</option>
+  <option value="UPI">📱 UPI</option>
+</select>
+
     
     <!-- Bank Display (when details exist) -->
     <div id="bank-display" class="hidden">
@@ -736,6 +743,23 @@
 
 </div>
 
+<!-- ================= UPI FORM ================= -->
+<div id="upi-form" class="hidden">
+
+  <label>UPI ID</label>
+  <input type="text" id="upiId" placeholder="example@bank">
+
+  <label>Upload UPI QR Code (Optional)</label>
+  <input type="file" id="upiQrFile" accept="image/*" style="display:none;">
+  <label for="upiQrFile" class="upload-btn">📷 Upload QR</label>
+
+  <div id="upiQrPreview" class="image-preview hidden">
+    <img id="upiQrImg">
+  </div>
+
+</div>
+
+
 <div class="bottom-nav">
   <a href="home.html">
     <div class="icon-wrapper"><span>🏠</span></div>
@@ -791,6 +815,9 @@ function showTab(tab) {
   }
 }
 
+
+
+
 // ============ BANK DETAILS FUNCTIONS ============
 function loadBankDetails() {
   fetch(`${API_BASE}/bank?user_id=${userId}`)
@@ -809,6 +836,38 @@ function loadBankDetails() {
 }
 
 function displayBankDetails(data) {
+
+  // =========================
+  // ✅ UPI HANDLING (TOP)
+  // =========================
+  if (data.payment_method === "UPI") {
+    document.getElementById("bank-display").classList.remove("hidden");
+    document.getElementById("bank-form").classList.add("hidden");
+    document.getElementById("bank-empty").classList.add("hidden");
+
+    document.getElementById("display-holder-name").innerText = "—";
+    document.getElementById("display-bank-name").innerText = "UPI";
+    document.getElementById("display-account-number").innerText = data.upi_id || "-";
+    document.getElementById("display-ifsc").innerText = "—";
+
+    // Badges & buttons
+    document.getElementById("bank-verified-badge").classList.remove("hidden");
+    document.getElementById("bank-verified-badge").innerText = "✓ UPI Linked";
+    document.getElementById("bank-pending-badge").classList.add("hidden");
+
+    document.getElementById("validate-btn").style.display = "none";
+
+    const statusDiv = document.getElementById("validation-status-display");
+    statusDiv.className = "validation-status success";
+    statusDiv.innerText = "✓ UPI payment method saved successfully";
+    statusDiv.classList.remove("hidden");
+
+    return; // ⛔ Stop here (do NOT run bank logic)
+  }
+
+  // =========================
+  // 🏦 EXISTING BANK LOGIC (UNCHANGED)
+  // =========================
   document.getElementById("bank-display").classList.remove("hidden");
   document.getElementById("bank-form").classList.add("hidden");
   document.getElementById("bank-empty").classList.add("hidden");
@@ -818,24 +877,26 @@ function displayBankDetails(data) {
   document.getElementById("display-account-number").innerText = `****${data.account_number.slice(-4)}`;
   document.getElementById("display-ifsc").innerText = data.ifsc;
 
-  // Show validation status
   const isValidated = data.is_validated || false;
   const validationStatus = data.validation_status || "PENDING";
-  
+
+  document.getElementById("validate-btn").style.display = "inline-block";
+
   if (isValidated) {
     document.getElementById("bank-verified-badge").classList.remove("hidden");
     document.getElementById("bank-pending-badge").classList.add("hidden");
     document.getElementById("validate-btn").disabled = true;
     document.getElementById("validate-btn").innerText = "✓ Verified";
     document.getElementById("validate-btn").style.background = "#10b981";
-    
+
     const statusDiv = document.getElementById("validation-status-display");
     statusDiv.className = "validation-status success";
     statusDiv.innerText = "✓ Bank account verified successfully";
     statusDiv.classList.remove("hidden");
+
   } else {
     document.getElementById("bank-verified-badge").classList.add("hidden");
-    
+
     if (validationStatus === "FAILED") {
       document.getElementById("bank-pending-badge").classList.remove("hidden");
       document.getElementById("bank-pending-badge").className = "verification-badge failed";
@@ -845,19 +906,21 @@ function displayBankDetails(data) {
       document.getElementById("bank-pending-badge").className = "verification-badge pending";
       document.getElementById("bank-pending-badge").innerText = "⏳ Pending";
     }
-    
+
     document.getElementById("validate-btn").disabled = false;
     document.getElementById("validate-btn").innerText = "✓ Validate Account";
     document.getElementById("validate-btn").style.background = "#b11226";
-    
+
     const statusDiv = document.getElementById("validation-status-display");
     statusDiv.className = `validation-status ${validationStatus === "FAILED" ? "error" : "pending"}`;
-    statusDiv.innerText = validationStatus === "FAILED" 
-      ? "❌ Validation failed - Please check your details" 
-      : "⏳ Account validation pending - Click 'Validate Account' to verify";
+    statusDiv.innerText =
+      validationStatus === "FAILED"
+        ? "❌ Validation failed - Please check your details"
+        : "⏳ Account validation pending - Click 'Validate Account' to verify";
     statusDiv.classList.remove("hidden");
   }
 }
+
 
 function showEmptyBankState() {
   document.getElementById("bank-display").classList.add("hidden");
@@ -885,26 +948,47 @@ function showBankForm() {
 
 function editBankDetails() {
   if (!currentBankData) return;
-  
+
   isEditMode = true;
+
+  // 🔹 UPI MODE
+  if (currentBankData.payment_method === "UPI") {
+    document.getElementById("preferredPayment").value = "UPI";
+    togglePaymentMethod();
+
+    document.getElementById("upiId").value = currentBankData.upi_id || "";
+
+    if (currentBankData.upi_qr_code) {
+      document.getElementById("upiQrImg").src = currentBankData.upi_qr_code;
+      document.getElementById("upiQrPreview").classList.remove("hidden");
+    }
+
+    document.getElementById("bank-display").classList.add("hidden");
+    document.getElementById("submit-bank-btn").innerText = "Update Payment Details";
+    return; // ⛔ stop bank prefill
+  }
+
+  // 🔹 BANK MODE (unchanged)
+  document.getElementById("preferredPayment").value = "BANK";
+  togglePaymentMethod();
+
   document.getElementById("bank-display").classList.add("hidden");
   document.getElementById("bank-form").classList.remove("hidden");
-  
-  // Pre-fill form with current data
+
   document.getElementById("accountHolderName").value = currentBankData.account_holder_name;
   document.getElementById("bankName").value = currentBankData.bank_name;
   document.getElementById("accountNumber").value = currentBankData.account_number;
   document.getElementById("confirmAccountNumber").value = currentBankData.account_number;
   document.getElementById("ifscCode").value = currentBankData.ifsc;
-  
-  // Show existing cheque if available
+
   if (currentBankData.cheque_image) {
     document.getElementById("chequeImg").src = currentBankData.cheque_image;
     document.getElementById("chequePreview").classList.remove("hidden");
   }
-  
+
   document.getElementById("submit-bank-btn").innerText = "Update Bank Details";
 }
+
 
 function cancelBankEdit() {
   if (currentBankData) {
@@ -914,6 +998,14 @@ function cancelBankEdit() {
   }
 }
 
+function togglePaymentMethod() {
+  const method = document.getElementById("preferredPayment").value;
+  document.getElementById("bank-form").classList.toggle("hidden", method !== "BANK");
+  document.getElementById("upi-form").classList.toggle("hidden", method !== "UPI");
+}
+
+
+
 async function submitBankDetails() {
   const holderName = document.getElementById("accountHolderName").value.trim();
   const bankName = document.getElementById("bankName").value;
@@ -922,25 +1014,24 @@ async function submitBankDetails() {
   const ifsc = document.getElementById("ifscCode").value.trim().toUpperCase();
   const chequeFile = document.getElementById("chequeFile").files[0];
 
-  // Validation
-  if (!holderName || !bankName || !accountNumber || !confirmAccount || !ifsc) {
-    alert("⚠️ Please fill all required fields");
-    return;
-  }
+  const paymentMethod = document.getElementById("preferredPayment").value;
 
-  if (accountNumber !== confirmAccount) {
-    alert("⚠️ Account numbers do not match");
-    return;
-  }
+  // ✅ BANK VALIDATION ONLY
+  if (paymentMethod === "BANK") {
+    if (!holderName || !bankName || !accountNumber || !confirmAccount || !ifsc) {
+      alert("⚠️ Please fill all bank details");
+      return;
+    }
 
-  if (ifsc.length !== 11) {
-    alert("⚠️ IFSC code must be 11 characters");
-    return;
-  }
+    if (accountNumber !== confirmAccount) {
+      alert("⚠️ Account numbers do not match");
+      return;
+    }
 
-  if (!chequeFile && !currentBankData) {
-    alert("⚠️ Please upload cancelled cheque image");
-    return;
+    if (ifsc.length !== 11) {
+      alert("⚠️ IFSC code must be 11 characters");
+      return;
+    }
   }
 
   const submitBtn = document.getElementById("submit-bank-btn");
@@ -949,32 +1040,59 @@ async function submitBankDetails() {
 
   try {
     let chequeImage = currentBankData?.cheque_image || "";
-    
-    // If new cheque uploaded, convert to base64
+
     if (chequeFile) {
       chequeImage = await fileToBase64(chequeFile);
     }
 
     const formData = new FormData();
     formData.append("user_id", userId);
-    formData.append("account_holder_name", holderName);
-    formData.append("bank_name", bankName);
-    formData.append("account_number", accountNumber);
-    formData.append("ifsc", ifsc);
-    formData.append("cheque_image", chequeImage);
+    formData.append("payment_method", paymentMethod);
 
+    // ✅ ADD BANK FIELDS ONLY WHEN BANK IS SELECTED
+    if (paymentMethod === "BANK") {
+      formData.append("account_holder_name", holderName);
+      formData.append("bank_name", bankName);
+      formData.append("account_number", accountNumber);
+      formData.append("ifsc", ifsc);
+      formData.append("cheque_image", chequeImage);
+    }
+
+    // ✅ ADD UPI FIELDS ONLY WHEN UPI IS SELECTED
+    if (paymentMethod === "UPI") {
+      const upiId = document.getElementById("upiId").value.trim();
+      const upiQrFile = document.getElementById("upiQrFile")?.files[0];
+
+      if (!upiId) {
+        alert("⚠️ Please enter UPI ID");
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Save Bank Details";
+        return;
+      }
+
+      let upiQrImage = "";
+      if (upiQrFile) {
+        upiQrImage = await fileToBase64(upiQrFile);
+      }
+
+      formData.append("upi_id", upiId);
+      if (upiQrImage) {
+        formData.append("upi_qr_code", upiQrImage);
+      }
+    }
+
+    // ✅ FINAL API CALL
     const res = await fetch(`${API_BASE}/bank/add`, {
       method: "POST",
       body: formData
     });
 
     const data = await res.json();
-
     if (!res.ok) {
       throw new Error(data.detail || "Failed to save bank details");
     }
 
-    alert("✅ Bank details saved successfully!");
+    alert("✅ Payment details saved successfully!");
     loadBankDetails();
 
   } catch (err) {
@@ -984,6 +1102,7 @@ async function submitBankDetails() {
     submitBtn.innerText = isEditMode ? "Update Bank Details" : "Save Bank Details";
   }
 }
+
 
 async function validateBankAccount() {
   if (!currentBankData) return;
@@ -1036,6 +1155,7 @@ function fileToBase64(file) {
 }
 
 // Cheque file upload preview
+// Cheque file upload preview
 document.getElementById("chequeFile")?.addEventListener("change", function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -1044,7 +1164,7 @@ document.getElementById("chequeFile")?.addEventListener("change", function(e) {
       e.target.value = "";
       return;
     }
-    
+
     const reader = new FileReader();
     reader.onload = function(event) {
       document.getElementById("chequeImg").src = event.target.result;
@@ -1053,6 +1173,18 @@ document.getElementById("chequeFile")?.addEventListener("change", function(e) {
     reader.readAsDataURL(file);
   }
 });
+document.getElementById("upiQrFile")?.addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    document.getElementById("upiQrImg").src = event.target.result;
+    document.getElementById("upiQrPreview").classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+});
+
 
 // ============ DOCUMENT FUNCTIONS ============
 function handleAddressTypeChange() {

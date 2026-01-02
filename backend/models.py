@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
 from datetime import datetime
+from sqlalchemy.dialects.mysql import LONGTEXT
 
 
 # =======================
@@ -71,28 +72,26 @@ class KYC(Base):
 # =======================
 class Bank(Base):
     __tablename__ = "bank_details"
-
+    
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
-
-    # Payment method selector
-    payment_method = Column(String(20), default="BANK")  # 'BANK' or 'UPI'
+    user_id = Column(Integer, index=True)
+    payment_method = Column(String(10), default="BANK")
     
-    # Bank fields (nullable for UPI users)
-    account_holder_name = Column(String(100), nullable=True)
-    bank_name = Column(String(50), nullable=True)
-    account_number = Column(String(20), nullable=True)
-    ifsc = Column(String(15), nullable=True)
-    cheque_image = Column(Text, nullable=True)
+    # Bank fields
+    account_holder_name = Column(String(255))
+    bank_name = Column(String(255))
+    account_number = Column(String(50))
+    ifsc = Column(String(11))
+    cheque_image = Column(LONGTEXT)  # ✅ CHANGE THIS
     
-    # UPI fields (nullable for bank users)
-    upi_id = Column(String(100), nullable=True)
-    upi_qr_code = Column(Text, nullable=True)
+    # UPI fields
+    upi_id = Column(String(255))
+    upi_qr_code = Column(LONGTEXT)  # ✅ AND THIS
     
-    # Validation fields
+    # Validation
     is_validated = Column(Boolean, default=False)
     validation_status = Column(String(20), default="PENDING")
-    created_at = Column(DateTime, default=lambda: datetime.now())
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 
 # =======================
