@@ -253,7 +253,7 @@ if (!userId) {
 }
 
 // Load user profile for address
-fetch(`${API}/user/profile?user_id=${userId}`)
+fetch(`${API_BASE}/user/profile?user_id=${userId}`)
   .then(res => res.json())
   .then(user => {
     let addressHTML = '';
@@ -290,7 +290,7 @@ fetch(`${API}/user/profile?user_id=${userId}`)
   });
 
 // Load cart items
-fetch(`${API}/cart?user_id=${userId}`)
+fetch(`${API_BASE}/cart?user_id=${userId}`)
   .then(res => res.json())
   .then(data => {
     const items = data.items || [];
@@ -321,7 +321,7 @@ function confirmOrder() {
   const btn = document.getElementById("confirmBtn");
   
   // Check if address is set
-  fetch(`${API}/user/profile?user_id=${userId}`)
+  fetch(`${API_BASE}/user/profile?user_id=${userId}`)
     .then(res => res.json())
     .then(user => {
       if (!user.address) {
@@ -345,7 +345,7 @@ function confirmOrder() {
       const mobile = user.phone || '';
 
       // ✅ CRITICAL FIX: Use /cart/checkout endpoint (this deducts points!)
-      fetch(`${API}/cart/checkout?user_id=${userId}&delivery_address=${encodeURIComponent(deliveryAddress)}&mobile=${mobile}`, {
+      fetch(`${API_BASE}/cart/checkout?user_id=${userId}&delivery_address=${encodeURIComponent(deliveryAddress)}&mobile=${mobile}`, {
         method: "POST"
       })
         .then(res => res.json())
