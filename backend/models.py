@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 from database import Base
 from datetime import datetime
 from sqlalchemy.dialects.mysql import LONGTEXT
-from datetime import datetime
+
 
 
 
@@ -69,32 +69,32 @@ class KYC(Base):
 # =======================
 # BANK
 # =======================
-# =======================
-# BANK
-# =======================
 class Bank(Base):
     __tablename__ = "bank_details"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+
     payment_method = Column(String(10), default="BANK")
-    
+
     # Bank fields
     account_holder_name = Column(String(255))
     bank_name = Column(String(255))
     account_number = Column(String(50))
     ifsc = Column(String(11))
-    cheque_image = Column(LONGTEXT)  # ✅ CHANGE THIS
-    
+    cheque_image = Column(LONGTEXT)
+
     # UPI fields
     upi_id = Column(String(255))
-    upi_qr_code = Column(LONGTEXT)  # ✅ AND THIS
-    
+    upi_qr_code = Column(LONGTEXT)
+
     # Validation
     is_validated = Column(Boolean, default=False)
     validation_status = Column(String(20), default="PENDING")
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 
 
