@@ -407,13 +407,13 @@
         
         <!-- TDS Breakdown -->
         <div id="tds-breakdown" class="tds-breakdown hidden">
-          <div class="tds-breakdown-title">💰 Transfer Breakdown (15% TDS)</div>
+          <div class="tds-breakdown-title">💰 Transfer Breakdown (10% TDS)</div>
           <div class="tds-row">
             <span class="tds-row-label">Gross Amount:</span>
             <span class="tds-row-value">₹<span id="gross-amount">0</span></span>
           </div>
           <div class="tds-row deduction">
-            <span class="tds-row-label">TDS (15%):</span>
+            <span class="tds-row-label">TDS (10%):</span>
             <span class="tds-row-value">- ₹<span id="tds-amount">0</span></span>
           </div>
           <div class="tds-row total">
@@ -603,7 +603,7 @@ function calculateTDS() {
   
   if (points > 0) {
     const grossAmount = points;
-    const tdsAmount = Math.floor((grossAmount * 15) / 100);
+    const tdsAmount = Math.floor((grossAmount * 10) / 100);
     const netAmount = grossAmount - tdsAmount;
     
     document.getElementById("gross-amount").innerText = grossAmount;
@@ -663,7 +663,7 @@ function submitTransfer() {
         ? paymentData.upi_id 
         : `${paymentData.account_holder_name} (${paymentData.bank_name})`;
       
-      alert(`✅ Transfer Successful!\n\n💰 Transaction Details:\nGross Amount: ₹${details.gross_amount}\nTDS (15%): -₹${details.tds_amount}\nNet Amount Credited: ₹${details.net_amount}\n\n${methodText} transfer to ${identifier} initiated.\n\nTransaction ID: ${details.transaction_id}`);
+      alert(`✅ Transfer Successful!\n\n💰 Transaction Details:\nGross Amount: ₹${details.gross_amount}\nTDS (10%): -₹${details.tds_amount}\nNet Amount Credited: ₹${details.net_amount}\n\n${methodText} transfer to ${identifier} initiated.\n\nTransaction ID: ${details.transaction_id}`);
       location.href = "order-history.html";
     } else {
       throw new Error(result.message || "Transfer failed");
