@@ -256,6 +256,23 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
         "reason": "\n".join(errors)
     }
 
+@router.post("/update-method")
+def update_payment_method(
+    user_id: int = Form(...),
+    payment_method: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Update only the active payment method"""
+    bank = db.query(Bank).filter(Bank.user_id == user_id).first()
+    
+    if not bank:
+        raise HTTPException(status_code=404, detail="Payment details not found")
+    
+    bank.payment_method = payment_method
+    db.commit()
+    
+    return {"success": True, "payment_method": payment_method}
+
 def calculate_similarity(s1: str, s2: str) -> float:
     """
     Calculate similarity using Levenshtein distance
