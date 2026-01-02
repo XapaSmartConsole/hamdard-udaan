@@ -10,16 +10,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-router = APIRouter(prefix="/api", tags=["Bank"])
+router = APIRouter(prefix="/api/bank", tags=["Bank"])
 openai.api_key = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
+
 
 # ============================================================
 # ADD / UPDATE BANK OR UPI DETAILS
 # ============================================================
-@router.post("/bank/add")
+@router.post("/add")
 def add_or_update_payment_method(
     user_id: int = Form(...),
-    payment_method: str = Form(...),  # 'BANK' or 'UPI'
+    payment_method: str = Form(default="BANK"),  # 'BANK' or 'UPI'
     
     # Bank fields (optional if UPI)
     account_holder_name: str = Form(None),
@@ -120,7 +121,7 @@ def add_or_update_payment_method(
 # ============================================================
 # GET PAYMENT DETAILS (BANK OR UPI)
 # ============================================================
-@router.get("/bank")
+@router.get("")
 def get_payment_details(
     user_id: int,
     db: Session = Depends(get_db)
@@ -159,7 +160,7 @@ def get_payment_details(
 # ============================================================
 # VALIDATE PAYMENT METHOD (BANK OR UPI)
 # ============================================================
-@router.post("/bank/validate")
+@router.post("/validate")
 async def validate_payment_method(
     user_id: int,
     db: Session = Depends(get_db)
