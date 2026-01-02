@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
+
 
 # Create FastAPI app
 app = FastAPI(title="RSPL Demo Platform")
