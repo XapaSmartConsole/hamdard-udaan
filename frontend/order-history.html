@@ -111,7 +111,6 @@
       border-left: 4px solid #b11226;
     }
 
-    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer {
       border-left-color: #10b981;
     }
@@ -182,7 +181,6 @@
       color: #b11226;
     }
 
-    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer .item-points {
       color: #10b981;
     }
@@ -213,7 +211,6 @@
       color: #b11226;
     }
 
-    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer .total-points {
       color: #10b981;
     }
@@ -445,22 +442,18 @@ async function loadOrderHistory() {
     totalOrdersElement.innerText = orders.length;
 
     ordersList.innerHTML = orders.map(order => {
-      // ✅ Determine transaction type and styling
       const transactionType = order.transaction_type || "PRODUCT";
       let transactionClass = "product";
       
-      // ✅ UPDATED: Bank Transfer and Cashout = Green (no badge)
       if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
         transactionClass = "bank-transfer";
       } else {
         transactionClass = "product";
       }
       
-      // ✅ Build items list based on transaction type
       let itemsHTML = '';
       
       if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
-        // ✅ Just show "Bank Transfer" without any badge
         itemsHTML = `
           <div class="order-item">
             <span class="item-name">Bank Transfer</span>
@@ -468,7 +461,6 @@ async function loadOrderHistory() {
           </div>
         `;
       } else {
-        // Product redemption - show items
         if (order.items && order.items.length > 0) {
           itemsHTML = order.items.map(item => `
             <div class="order-item">
