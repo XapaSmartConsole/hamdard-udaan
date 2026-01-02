@@ -346,7 +346,7 @@ if (!userId) {
 // Load Wallet Balance
 async function loadWalletData() {
   try {
-    const response = await fetch(`${API}/wallet/balance?user_id=${userId}`);
+    const response = await fetch(`${API_BASE}/wallet/balance?user_id=${userId}`);
     const data = await response.json();
     
     if (response.ok) {
@@ -363,7 +363,7 @@ async function loadWalletData() {
 // Load ONLY Voucher Transactions
 async function loadTransactions() {
   try {
-    const response = await fetch(`${API}/wallet/transactions?user_id=${userId}&limit=20`);
+    const response = await fetch(`${API_BASE}/wallet/transactions?user_id=${userId}&limit=20`);
     const transactions = await response.json();
     
     const listContainer = document.getElementById('transaction-list');
