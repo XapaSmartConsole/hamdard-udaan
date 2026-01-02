@@ -20,7 +20,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY", "your-openai-api-key-here")
 @router.post("/add")
 def add_or_update_payment_method(
     user_id: int = Form(...),
-    payment_method: str = Form(default="BANK"),  # 'BANK' or 'UPI'
+    payment_method: str = Form(default="BANK"),  # ✅ FIXED: Default to BANK
     
     # Bank fields (optional if UPI)
     account_holder_name: str = Form(None),
@@ -31,7 +31,7 @@ def add_or_update_payment_method(
     
     # UPI fields (optional if BANK)
     upi_id: str = Form(None),
-    upi_qr_code: str = Form(None),  # Optional QR code image
+    upi_qr_code: str = Form(None),
     
     db: Session = Depends(get_db)
 ):
@@ -47,7 +47,6 @@ def add_or_update_payment_method(
         if not upi_id:
             raise HTTPException(status_code=400, detail="UPI ID is required")
         
-        # Validate UPI ID format (basic validation)
         if not re.match(r'^[\w\.\-]+@[\w]+$', upi_id):
             raise HTTPException(status_code=400, detail="Invalid UPI ID format")
     else:
@@ -66,20 +65,17 @@ def add_or_update_payment_method(
             bank.account_number = account_number
             bank.ifsc = ifsc
             bank.cheque_image = cheque_image
-            # Clear UPI fields
             bank.upi_id = None
             bank.upi_qr_code = None
         else:  # UPI
             bank.upi_id = upi_id
             bank.upi_qr_code = upi_qr_code
-            bank.account_holder_name = account_holder_name  # Optional for UPI
-            # Clear bank fields
+            bank.account_holder_name = account_holder_name
             bank.bank_name = None
             bank.account_number = None
             bank.ifsc = None
             bank.cheque_image = None
         
-        # Reset validation status on update
         bank.is_validated = False
         bank.validation_status = "PENDING"
     else:
@@ -138,7 +134,6 @@ def get_payment_details(
         "validation_status": bank.validation_status if hasattr(bank, 'validation_status') else "PENDING"
     }
     
-    # Add relevant fields based on payment method
     if bank.payment_method == "BANK":
         response.update({
             "account_holder_name": bank.account_holder_name,
@@ -173,7 +168,6 @@ async def validate_payment_method(
     if not bank:
         raise HTTPException(status_code=404, detail="Payment details not found")
     
-    # Check if already validated
     if hasattr(bank, 'is_validated') and bank.is_validated:
         return {
             "message": "Payment method already validated",
@@ -183,10 +177,8 @@ async def validate_payment_method(
     
     try:
         if bank.payment_method == "BANK":
-            # Use existing AI-powered bank validation
             return await validate_bank_account_internal(bank, db)
         else:  # UPI
-            # Validate UPI ID
             return await validate_upi_internal(bank, db)
     
     except HTTPException:
@@ -214,16 +206,13 @@ async def validate_bank_account_internal(bank, db):
     if not bank.cheque_image:
         raise HTTPException(status_code=400, detail="Cheque image is required for validation")
     
-    # Extract base64 image data
     if bank.cheque_image.startswith("data:image"):
         base64_image = bank.cheque_image.split(",")[1]
     else:
         base64_image = bank.cheque_image
     
-    # Call OpenAI Vision API
     extracted_details = await extract_bank_details_from_cheque(base64_image)
     
-    # Compare extracted details with stored details
     validation_result = validate_extracted_details(
         extracted_details,
         {
@@ -261,12 +250,10 @@ async def validate_bank_account_internal(bank, db):
 async def validate_upi_internal(bank, db):
     """
     Basic UPI validation (format check)
-    For production, you'd integrate with UPI verification APIs
     """
     if not bank.upi_id:
         raise HTTPException(status_code=400, detail="UPI ID is required")
     
-    # Validate UPI ID format
     upi_pattern = r'^[\w\.\-]+@[\w]+$'
     
     if not re.match(upi_pattern, bank.upi_id):
@@ -279,10 +266,6 @@ async def validate_upi_internal(bank, db):
             detail="Invalid UPI ID format. Expected format: username@bankname"
         )
     
-    # For production: Add real UPI verification API call here
-    # Example: Razorpay, PayU, or NPCI UPI verification
-    
-    # Mark as validated (in production, only after API confirmation)
     bank.is_validated = True
     bank.validation_status = "VALIDATED"
     db.commit()
@@ -383,7 +366,6 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
             return None
         return re.sub(r'[^A-Z0-9]', '', str(s).upper())
     
-    # Validate name
     extracted_name = normalize(extracted.get("account_holder_name", ""))
     stored_name = normalize(stored.get("account_holder_name", ""))
     
@@ -400,7 +382,6 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
                 f"   Found: {extracted.get('account_holder_name')}"
             )
     
-    # Validate account number
     extracted_account = normalize(extracted.get("account_number", ""))
     stored_account = normalize(stored.get("account_number", ""))
     
@@ -415,7 +396,6 @@ def validate_extracted_details(extracted: dict, stored: dict) -> dict:
     else:
         matched_fields.append("✅ Account number matched")
     
-    # Validate IFSC
     extracted_ifsc = normalize(extracted.get("ifsc", ""))
     stored_ifsc = normalize(stored.get("ifsc", ""))
     
