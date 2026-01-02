@@ -684,80 +684,92 @@
     </div>
 
     <!-- Bank Form (for add/edit) -->
-    <div id="bank-form" class="hidden">
-      <label>Account Holder Name</label>
-      <input type="text" id="accountHolderName" placeholder="Enter full name as per bank">
+<div id="bankSection" class="card hidden">
 
-      <label>Bank Name</label>
-      <select id="bankName">
-        <option value="">-- Select Bank --</option>
-        <option value="State Bank of India">State Bank of India</option>
-        <option value="HDFC Bank">HDFC Bank</option>
-        <option value="ICICI Bank">ICICI Bank</option>
-        <option value="Axis Bank">Axis Bank</option>
-        <option value="Punjab National Bank">Punjab National Bank</option>
-        <option value="Bank of Baroda">Bank of Baroda</option>
-        <option value="Canara Bank">Canara Bank</option>
-        <option value="Union Bank of India">Union Bank of India</option>
-        <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
-        <option value="IndusInd Bank">IndusInd Bank</option>
-        <option value="Yes Bank">Yes Bank</option>
-        <option value="IDFC First Bank">IDFC First Bank</option>
-        <option value="Other">Other</option>
-      </select>
+  <h3>Bank Account Information</h3>
 
-      <label>Account Number</label>
-      <input type="text" id="accountNumber" placeholder="Enter account number" maxlength="18">
+  <label style="margin-top:12px;">Preferred Payment Method</label>
+  <select id="preferredPayment" onchange="togglePaymentMethod()">
+    <option value="BANK">🏦 Bank Transfer</option>
+    <option value="UPI">📱 UPI</option>
+  </select>
 
-      <label>Re-enter Account Number</label>
-      <input type="text" id="confirmAccountNumber" placeholder="Re-enter account number" maxlength="18">
+  <!-- ================= BANK FORM ================= -->
+  <div id="bank-form" class="hidden">
+    <label>Account Holder Name</label>
+    <input type="text" id="accountHolderName" placeholder="Enter full name as per bank">
 
-      <label>IFSC Code</label>
-      <input type="text" id="ifscCode" placeholder="Enter IFSC code" maxlength="11" style="text-transform: uppercase;">
+    <label>Bank Name</label>
+    <select id="bankName">
+      <option value="">-- Select Bank --</option>
+      <option value="State Bank of India">State Bank of India</option>
+      <option value="HDFC Bank">HDFC Bank</option>
+      <option value="ICICI Bank">ICICI Bank</option>
+      <option value="Axis Bank">Axis Bank</option>
+      <option value="Punjab National Bank">Punjab National Bank</option>
+      <option value="Bank of Baroda">Bank of Baroda</option>
+      <option value="Canara Bank">Canara Bank</option>
+      <option value="Union Bank of India">Union Bank of India</option>
+      <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+      <option value="IndusInd Bank">IndusInd Bank</option>
+      <option value="Yes Bank">Yes Bank</option>
+      <option value="IDFC First Bank">IDFC First Bank</option>
+    </select>
 
-      <label>Upload Cancelled Cheque</label>
-      <input type="file" id="chequeFile" accept="image/*,.pdf" style="display: none;">
-      <label for="chequeFile" class="upload-btn">📷 Upload Cheque Image</label>
-      <div id="chequePreview" class="image-preview hidden">
-        <img id="chequeImg" src="" alt="Cancelled Cheque">
-      </div>
+    <label>Account Number</label>
+    <input type="text" id="accountNumber" maxlength="18">
 
-      <div id="bank-form-status" class="status"></div>
+    <label>Re-enter Account Number</label>
+    <input type="text" id="confirmAccountNumber" maxlength="18">
 
-      <button class="btn-submit-all" onclick="submitBankDetails()" id="submit-bank-btn">
-        Save Bank Details
-      </button>
-      <button class="btn-secondary" onclick="cancelBankEdit()" id="cancel-bank-btn">
-        Cancel
-      </button>
+    <label>IFSC Code</label>
+    <input type="text" id="ifscCode" maxlength="11" style="text-transform: uppercase;">
+
+    <label>Upload Cancelled Cheque</label>
+    <input type="file" id="chequeFile" accept="image/*,.pdf" hidden>
+    <label for="chequeFile" class="upload-btn">📷 Upload Cheque Image</label>
+
+    <div id="chequePreview" class="image-preview hidden">
+      <img id="chequeImg">
     </div>
 
-    <!-- No Bank Details -->
-    <div id="bank-empty" class="hidden">
-      <div style="text-align: center; padding: 20px;">
-        <p style="color: #6b7280; margin-bottom: 16px;">No bank details found</p>
-        <button onclick="showBankForm()" class="btn-submit-all">+ Add Bank Details</button>
-      </div>
+    <button class="btn-submit-all" onclick="submitBankDetails()">
+      Save Bank Details
+    </button>
+  </div>
+
+  <!-- ================= UPI FORM ================= -->
+  <div id="upi-form" class="hidden">
+    <label>UPI ID</label>
+    <input type="text" id="upiId" placeholder="example@bank">
+
+    <label>Upload UPI QR Code (Optional)</label>
+    <input type="file" id="upiQrFile" accept="image/*" hidden>
+    <label for="upiQrFile" class="upload-btn">📷 Upload QR</label>
+
+    <div id="upiQrPreview" class="image-preview hidden">
+      <img id="upiQrImg">
     </div>
+
+    <button class="btn-submit-all" onclick="submitBankDetails()">
+      Save UPI Details
+    </button>
+  </div>
+
+  <!-- ================= EMPTY STATE ================= -->
+  <div id="bank-empty" class="hidden">
+    <p>No bank details found</p>
+    <button onclick="showBankForm()" class="btn-submit-all">
+      + Add Bank Details
+    </button>
   </div>
 
 </div>
 
-<!-- ================= UPI FORM ================= -->
-<div id="upi-form" class="hidden">
-
-  <label>UPI ID</label>
-  <input type="text" id="upiId" placeholder="example@bank">
-
-  <label>Upload UPI QR Code (Optional)</label>
-  <input type="file" id="upiQrFile" accept="image/*" style="display:none;">
-  <label for="upiQrFile" class="upload-btn">📷 Upload QR</label>
-
-  <div id="upiQrPreview" class="image-preview hidden">
-    <img id="upiQrImg">
-  </div>
 
 </div>
+
+
 
 
 <div class="bottom-nav">
