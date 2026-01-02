@@ -374,11 +374,11 @@
       
       <!-- ✅ PAYMENT METHOD SELECTOR -->
       <div class="payment-method-selector">
-        <div class="payment-method-option" id="bank-option" onclick="selectPaymentMethod('BANK')">
+        <div class="payment-method-option" id="bank-option" onclick="selectPaymentMethod('BANK', true)">
           <div class="icon">🏦</div>
           <div class="label">Bank Transfer</div>
         </div>
-        <div class="payment-method-option" id="upi-option" onclick="selectPaymentMethod('UPI')">
+        <div class="payment-method-option" id="upi-option" onclick="selectPaymentMethod('UPI', true)">
           <div class="icon">📱</div>
           <div class="label">UPI</div>
         </div>
@@ -503,9 +503,9 @@ function loadPaymentDetails() {
     .then(data => {
       paymentData = data;
       
-      // ✅ Auto-select active payment method
+      // ✅ Auto-select active payment method (don't show alert on load)
       selectedMethod = data.payment_method || "BANK";
-      selectPaymentMethod(selectedMethod);
+      selectPaymentMethod(selectedMethod, false);
       
       // Show transfer section
       document.getElementById("no-payment-message").classList.add("hidden");
@@ -519,10 +519,13 @@ function loadPaymentDetails() {
 }
 
 // ============ SELECT PAYMENT METHOD ============
-function selectPaymentMethod(method) {
+function selectPaymentMethod(method, isUserClick = false) {
+  // Only show alert if user manually clicked, not on auto-load
   if (!paymentData) {
-    alert("⚠️ Please add payment details in KYC section first");
-    location.href = "kyc.html";
+    if (isUserClick) {
+      alert("⚠️ Please add payment details in KYC section first");
+      location.href = "kyc.html";
+    }
     return;
   }
 
@@ -538,8 +541,10 @@ function selectPaymentMethod(method) {
   
   if (method === 'BANK') {
     if (!paymentData.account_number) {
-      alert("⚠️ Bank details not found. Please add them in KYC section.");
-      location.href = "kyc.html";
+      if (isUserClick) {
+        alert("⚠️ Bank details not found. Please add them in KYC section.");
+        location.href = "kyc.html";
+      }
       return;
     }
     
@@ -567,8 +572,10 @@ function selectPaymentMethod(method) {
     `;
   } else {
     if (!paymentData.upi_id) {
-      alert("⚠️ UPI details not found. Please add them in KYC section.");
-      location.href = "kyc.html";
+      if (isUserClick) {
+        alert("⚠️ UPI details not found. Please add them in KYC section.");
+        location.href = "kyc.html";
+      }
       return;
     }
     
