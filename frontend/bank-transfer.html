@@ -607,7 +607,7 @@ function selectPaymentMethod(method) {
 }
 
 function loadPaymentDetails() {
-  fetch(`${API}/bank?user_id=${userId}`)
+  fetch(`${API_BASE}/bank?user_id=${userId}`)
     .then(res => {
       if (!res.ok) throw new Error("Payment details not found");
       return res.json();
@@ -814,7 +814,8 @@ function savePaymentDetails() {
   saveBtn.disabled = true;
   saveBtn.innerText = "Saving...";
   
-  fetch(`${API}/bank/add`, {
+  fetch(`${API_BASE}/bank/add`, {
+
     method: "POST",
     body: formData
   })
@@ -836,7 +837,8 @@ function savePaymentDetails() {
 }
 
 // Load available points
-fetch(`${API}/wallet/balance?user_id=${userId}`)
+fetch(`${API_BASE}/wallet/balance?user_id=${userId}`)
+
   .then(res => res.json())
   .then(data => {
     availablePoints = data.points || 6000;
@@ -875,7 +877,8 @@ function submitTransfer() {
   submitBtn.disabled = true;
   submitBtn.innerText = "PROCESSING...";
   
-  fetch(`${API}/wallet/bank-transfer?user_id=${userId}&points=${points}`, {
+  fetch(`${API_BASE}/wallet/bank-transfer?user_id=${userId}&points=${points}`, {
+
     method: "POST"
   })
   .then(res => res.json())
