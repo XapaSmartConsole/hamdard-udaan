@@ -9,9 +9,6 @@ router = APIRouter(prefix="/api/kyc", tags=["KYC"])
 
 
 # ============================================================
-# ✅ COMPLETE KYC (OCR BASED – MAIN ENDPOINT)
-# ============================================================
-# ============================================================
 # KYC SUMMARY (FOR DASHBOARD)
 # ============================================================
 @router.get("/summary")
@@ -42,7 +39,7 @@ def get_kyc_summary(db: Session = Depends(get_db)):
 # ============================================================
 # GET ALL SUBMITTED DOCUMENTS FOR A USER
 # ============================================================
-@router.get("/documents")  # This will be /api/kyc/documents
+@router.get("/documents")
 def get_user_documents(user_id: int, db: Session = Depends(get_db)):
     """Get all submitted KYC documents for a user"""
     
@@ -182,6 +179,62 @@ def get_specific_document(
         "document_number": doc.document_number,
         "status": doc.status,
         "submitted_at": doc.created_at.isoformat() if doc.created_at else None
+    }
+
+
+# ============================================================
+# COMPLETE KYC SUBMISSION (MANUAL ENTRY)
+# ============================================================
+@router.post("/complete")
+def complete_kyc(
+    user_id: int = Form(...),
+    document_type: str = Form(...),
+    document_number: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Submit a KYC document with manually entered number"""
+    
+    # Validate user exists
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if document already exists
+    existing = db.query(KYC).filter(
+        KYC.user_id == user_id,
+        KYC.document_type == document_type
+    ).first()
+    
+    if existing:
+        # Update existing document
+        existing.document_number = document_number
+        existing.status = "SUBMITTED"
+        db.commit()
+        
+        return {
+            "status": "success",
+            "message": f"{document_type} updated successfully",
+            "document_type": document_type,
+            "document_number": document_number
+        }
+    
+    # Create new KYC record
+    new_kyc = KYC(
+        user_id=user_id,
+        document_type=document_type,
+        document_number=document_number,
+        status="SUBMITTED"
+    )
+    
+    db.add(new_kyc)
+    db.commit()
+    db.refresh(new_kyc)
+    
+    return {
+        "status": "success",
+        "message": f"{document_type} submitted successfully",
+        "document_type": document_type,
+        "document_number": document_number
     }
 
 
