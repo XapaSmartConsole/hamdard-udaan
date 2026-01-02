@@ -247,7 +247,6 @@
       background: #fef2f2;
     }
 
-    /* Document styles remain unchanged */
     .doc-section {
       margin-bottom: 28px;
       padding-bottom: 28px;
@@ -431,7 +430,6 @@
       color: #92400e;
     }
 
-    /* NEW: Payment form section styles */
     .form-section {
       margin-top: 24px;
       padding-top: 20px;
@@ -544,9 +542,143 @@
 
 <div class="content-wrapper">
 
-  <!-- DOCUMENTS SECTION (Keep your existing document section unchanged) -->
+  <!-- DOCUMENTS SECTION -->
   <div id="documentsSection" class="card">
-    <!-- Your existing document verification code here -->
+    <h3>Document Verification</h3>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">🏠</span>
+        Address Proof <span class="mandatory">*Mandatory</span>
+        <span class="verification-badge verified hidden" id="address-badge">✓ Submitted</span>
+      </div>
+
+      <div id="address-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">Document Type</span>
+            <span class="doc-type-badge" id="address-type-display">-</span>
+          </div>
+          <div class="doc-display-row">
+            <span class="doc-display-label">Document Number</span>
+            <span class="doc-display-value" id="address-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="address-upload">
+        <label>Select Address Proof Type</label>
+        <select id="addressType" onchange="handleAddressTypeChange()">
+          <option value="">-- Select Document --</option>
+          <option value="AADHAAR">Aadhaar Card</option>
+          <option value="VOTER_ID">Voter ID</option>
+          <option value="PASSPORT">Passport</option>
+          <option value="DRIVING_LICENSE">Driving License</option>
+          <option value="ELECTRICITY_BILL">Electricity Bill</option>
+          <option value="TELEPHONE_BILL">Telephone Bill</option>
+          <option value="RATION_CARD">Ration Card</option>
+        </select>
+
+        <label>Document Number</label>
+        <input id="addressNumber" readonly placeholder="Auto-filled after upload">
+
+        <div id="single-upload" class="hidden">
+          <label>Upload Document Image</label>
+          <input type="file" id="addressFile" accept="image/*,.pdf" style="display: none;">
+          <label for="addressFile" class="upload-btn">📷 Choose Image</label>
+          <div id="addressPreview" class="image-preview hidden">
+            <img id="addressImg" src="" alt="Document">
+          </div>
+        </div>
+
+        <div id="double-upload" class="hidden">
+          <div class="upload-grid">
+            <div class="upload-item">
+              <span class="upload-label">Front Side</span>
+              <input type="file" id="aadhaarFront" accept="image/*" style="display: none;">
+              <label for="aadhaarFront" class="upload-btn">📷 Front</label>
+              <div id="aadhaarFrontPreview" class="image-preview hidden">
+                <img id="aadhaarFrontImg" src="" alt="Aadhaar Front">
+              </div>
+            </div>
+            <div class="upload-item">
+              <span class="upload-label">Back Side</span>
+              <input type="file" id="aadhaarBack" accept="image/*" style="display: none;">
+              <label for="aadhaarBack" class="upload-btn">📷 Back</label>
+              <div id="aadhaarBackPreview" class="image-preview hidden">
+                <img id="aadhaarBackImg" src="" alt="Aadhaar Back">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="addressStatus" class="status"></div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">💳</span>
+        PAN Card <span class="mandatory">*Mandatory</span>
+        <span class="verification-badge verified hidden" id="pan-badge">✓ Submitted</span>
+      </div>
+
+      <div id="pan-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">PAN Number</span>
+            <span class="doc-display-value" id="pan-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="pan-upload">
+        <label>PAN Number</label>
+        <input id="panNumber" readonly placeholder="Auto-filled after upload">
+
+        <label>Upload PAN Card Image</label>
+        <input type="file" id="panFile" accept="image/*,.pdf" style="display: none;">
+        <label for="panFile" class="upload-btn">📷 Choose Image</label>
+        <div id="panPreview" class="image-preview hidden">
+          <img id="panImg" src="" alt="PAN Card">
+        </div>
+        <div id="panStatus" class="status"></div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-title">
+        <span class="icon">📄</span>
+        GST Number <span style="color: #6b7280; font-size: 11px; margin-left: 4px;">(Optional)</span>
+        <span class="verification-badge verified hidden" id="gst-badge">✓ Submitted</span>
+      </div>
+
+      <div id="gst-display" class="hidden">
+        <div class="doc-display">
+          <div class="doc-display-row">
+            <span class="doc-display-label">GST Number</span>
+            <span class="doc-display-value" id="gst-number-display">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="gst-upload">
+        <label>GST Number</label>
+        <input id="gstNumber" readonly placeholder="Auto-filled after upload">
+
+        <label>Upload GST Certificate Image</label>
+        <input type="file" id="gstFile" accept="image/*,.pdf" style="display: none;">
+        <label for="gstFile" class="upload-btn">📷 Choose Image</label>
+        <div id="gstPreview" class="image-preview hidden">
+          <img id="gstImg" src="" alt="GST Certificate">
+        </div>
+        <div id="gstStatus" class="status"></div>
+      </div>
+    </div>
+
+    <button class="btn-submit-all" id="submitAllBtn" onclick="submitAllDocuments()">
+      Submit Documents
+    </button>
   </div>
 
   <!-- BANK SECTION -->
@@ -557,7 +689,6 @@
       <span class="verification-badge pending hidden" id="bank-pending-badge">⏳ Pending</span>
     </h3>
 
-    <!-- Display saved details -->
     <div id="bank-display" class="hidden">
       <label style="margin-top:0;">Select Active Payment Method</label>
       <select id="activePaymentMethod" onchange="updatePaymentMethod()">
@@ -581,10 +712,8 @@
       </div>
     </div>
 
-    <!-- Combined payment form -->
     <div id="payment-form" class="hidden">
       
-      <!-- Bank Details Section -->
       <div class="form-section">
         <div class="form-section-title">
           🏦 Bank Account Details <span class="mandatory">*Required</span>
@@ -627,7 +756,6 @@
         </div>
       </div>
 
-      <!-- UPI Details Section -->
       <div class="form-section">
         <div class="form-section-title">
           📱 UPI Details <span class="optional-badge">(Optional)</span>
@@ -644,7 +772,6 @@
         </div>
       </div>
 
-      <!-- Preferred Method Selection -->
       <div class="form-section">
         <label>Preferred Payment Method <span class="mandatory">*</span></label>
         <select id="preferredPaymentMethod">
@@ -661,7 +788,6 @@
       </button>
     </div>
 
-    <!-- Empty state -->
     <div id="bank-empty" class="hidden">
       <div style="text-align: center; padding: 20px;">
         <p style="color: #6b7280; margin-bottom: 16px;">No payment details found</p>
@@ -670,7 +796,7 @@
     </div>
   </div>
 
-</div> <!-- Close content-wrapper -->
+</div>
 
 <div class="bottom-nav">
   <a href="home.html">
@@ -711,7 +837,6 @@ let documentsReady = {
 let currentBankData = null;
 let isEditMode = false;
 
-// ============ TAB SWITCHING ============
 function showTab(tab) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
@@ -727,7 +852,6 @@ function showTab(tab) {
   }
 }
 
-// ============ BANK DETAILS FUNCTIONS ============
 function loadBankDetails() {
   fetch(`${API_BASE}/bank?user_id=${userId}`)
     .then(res => {
@@ -749,17 +873,14 @@ function displayBankDetails(data) {
   document.getElementById("bank-empty").classList.add("hidden");
   document.getElementById("bank-display").classList.remove("hidden");
 
-  // Set active payment method
   document.getElementById("activePaymentMethod").value = data.payment_method || "BANK";
   
-  // Show all saved info
   document.getElementById("display-holder-name").innerText = data.account_holder_name || "—";
   document.getElementById("display-bank-name").innerText = data.bank_name || "—";
   document.getElementById("display-account-number").innerText = data.account_number ? `****${data.account_number.slice(-4)}` : "—";
   document.getElementById("display-ifsc").innerText = data.ifsc || "—";
   document.getElementById("display-upi-id").innerText = data.upi_id || "—";
 
-  // Handle validation display
   const isValidated = data.is_validated || false;
   const validateBtn = document.getElementById("validate-btn");
 
@@ -776,7 +897,6 @@ function displayBankDetails(data) {
     validateBtn.innerText = "✓ Validate Account";
     validateBtn.style.background = "#b11226";
   } else {
-    // UPI active
     document.getElementById("bank-verified-badge").classList.remove("hidden");
     document.getElementById("bank-verified-badge").innerText = "✓ UPI Active";
     document.getElementById("bank-pending-badge").classList.add("hidden");
@@ -789,7 +909,6 @@ function updatePaymentMethod() {
   
   if (!currentBankData) return;
   
-  // Check if user has the selected payment method details
   if (newMethod === "UPI" && !currentBankData.upi_id) {
     alert("⚠️ Please add UPI details first");
     document.getElementById("activePaymentMethod").value = currentBankData.payment_method;
@@ -802,7 +921,6 @@ function updatePaymentMethod() {
     return;
   }
 
-  // Update payment method
   const formData = new FormData();
   formData.append("user_id", userId);
   formData.append("payment_method", newMethod);
@@ -837,7 +955,6 @@ function showPaymentForm() {
   document.getElementById("bank-empty").classList.add("hidden");
   document.getElementById("payment-form").classList.remove("hidden");
   
-  // Clear form
   document.getElementById("accountHolderName").value = "";
   document.getElementById("bankName").value = "";
   document.getElementById("accountNumber").value = "";
@@ -856,7 +973,6 @@ function editBankDetails() {
   document.getElementById("bank-display").classList.add("hidden");
   document.getElementById("payment-form").classList.remove("hidden");
 
-  // Pre-fill all fields
   document.getElementById("accountHolderName").value = currentBankData.account_holder_name || "";
   document.getElementById("bankName").value = currentBankData.bank_name || "";
   document.getElementById("accountNumber").value = currentBankData.account_number || "";
@@ -900,7 +1016,6 @@ async function submitPaymentDetails() {
   
   const preferredMethod = document.getElementById("preferredPaymentMethod").value;
 
-  // Validate bank details (mandatory)
   if (!holderName || !bankName || !accountNumber || !confirmAccount || !ifsc) {
     alert("⚠️ Please fill all bank account details");
     return;
@@ -916,7 +1031,6 @@ async function submitPaymentDetails() {
     return;
   }
 
-  // If UPI is preferred but not filled
   if (preferredMethod === "UPI" && !upiId) {
     alert("⚠️ Please enter UPI ID or select Bank Transfer as preferred method");
     return;
@@ -941,14 +1055,12 @@ async function submitPaymentDetails() {
     formData.append("user_id", userId);
     formData.append("payment_method", preferredMethod);
     
-    // Bank details
     formData.append("account_holder_name", holderName);
     formData.append("bank_name", bankName);
     formData.append("account_number", accountNumber);
     formData.append("ifsc", ifsc);
     formData.append("cheque_image", chequeImage);
     
-    // UPI details (if provided)
     if (upiId) {
       formData.append("upi_id", upiId);
     }
@@ -1047,8 +1159,347 @@ document.getElementById("upiQrFile")?.addEventListener("change", function(e) {
   reader.readAsDataURL(file);
 });
 
-// Keep your document functions unchanged
-// ... (all your existing document-related functions)
+function handleAddressTypeChange() {
+  const addressType = document.getElementById("addressType").value;
+  const singleUpload = document.getElementById("single-upload");
+  const doubleUpload = document.getElementById("double-upload");
+  
+  singleUpload.classList.add("hidden");
+  doubleUpload.classList.add("hidden");
+  
+  document.getElementById("addressPreview").classList.add("hidden");
+  document.getElementById("aadhaarFrontPreview").classList.add("hidden");
+  document.getElementById("aadhaarBackPreview").classList.add("hidden");
+  
+  if (addressType === "AADHAAR") {
+    doubleUpload.classList.remove("hidden");
+  } else if (addressType) {
+    singleUpload.classList.remove("hidden");
+  }
+}
+
+function loadSubmittedDocuments() {
+  fetch(`${API_BASE}/kyc/documents?user_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
+    .then(docs => {
+      if (!Array.isArray(docs)) {
+        console.error("Expected array, got:", docs);
+        return;
+      }
+      
+      resetAllDocumentSections();
+      
+      docs.forEach(doc => {
+        const docType = doc.document_type.toUpperCase();
+        
+        if (['AADHAAR', 'VOTER_ID', 'PASSPORT', 'DRIVING_LICENSE', 
+             'ELECTRICITY_BILL', 'TELEPHONE_BILL', 'RATION_CARD'].includes(docType)) {
+          documentsReady.address.submitted = true;
+          documentsReady.address.type = doc.document_type;
+          documentsReady.address.number = doc.document_number;
+          showDocumentDisplay('address', doc.document_type, doc.document_number);
+        } 
+        else if (docType === 'PAN') {
+          documentsReady.pan.submitted = true;
+          documentsReady.pan.number = doc.document_number;
+          showDocumentDisplay('pan', null, doc.document_number);
+        }
+        else if (docType === 'GST') {
+          documentsReady.gst.submitted = true;
+          documentsReady.gst.number = doc.document_number;
+          showDocumentDisplay('gst', null, doc.document_number);
+        }
+      });
+      
+      updateSubmitButton();
+    })
+    .catch(err => {
+      console.error("Error loading documents:", err);
+      resetAllDocumentSections();
+    });
+}
+
+function resetAllDocumentSections() {
+  ['address', 'pan', 'gst'].forEach(docKey => {
+    const uploadSection = document.getElementById(`${docKey}-upload`);
+    const displaySection = document.getElementById(`${docKey}-display`);
+    const badge = document.getElementById(`${docKey}-badge`);
+    
+    if (uploadSection) uploadSection.classList.remove("hidden");
+    if (displaySection) displaySection.classList.add("hidden");
+    if (badge) badge.classList.add("hidden");
+    
+    documentsReady[docKey].submitted = false;
+    documentsReady[docKey].uploaded = false;
+    documentsReady[docKey].hasImages = false;
+  });
+}
+
+function showDocumentDisplay(docKey, docType, docNumber) {
+  const uploadSection = document.getElementById(`${docKey}-upload`);
+  const displaySection = document.getElementById(`${docKey}-display`);
+  const badge = document.getElementById(`${docKey}-badge`);
+  
+  if (uploadSection) uploadSection.classList.add("hidden");
+  if (displaySection) displaySection.classList.remove("hidden");
+  if (badge) badge.classList.remove("hidden");
+  
+  if (docKey === 'address') {
+    const typeDisplay = document.getElementById("address-type-display");
+    const numberDisplay = document.getElementById("address-number-display");
+    if (typeDisplay) typeDisplay.innerText = docType;
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  } else if (docKey === 'pan') {
+    const numberDisplay = document.getElementById("pan-number-display");
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  } else if (docKey === 'gst') {
+    const numberDisplay = document.getElementById("gst-number-display");
+    if (numberDisplay) numberDisplay.innerText = docNumber;
+  }
+}
+
+async function extractDocument(fileInput, numberInput, statusDiv, badgeId, docKey, docType) {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  numberInput.value = "Extracting...";
+  statusDiv.innerText = "Uploading document for verification...";
+  statusDiv.className = "status";
+
+  const formData = new FormData();
+  formData.append("document_type", docType);
+  formData.append("file", file);
+
+  try {
+    const res = await fetch(`${API_BASE}/kyc/extract-number`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail);
+
+    const docNumber = data.document_number || "Not detected";
+    numberInput.value = docNumber;
+    statusDiv.innerText = "✅ Document verified successfully";
+    statusDiv.className = "status success";
+
+    documentsReady[docKey].uploaded = true;
+    documentsReady[docKey].number = docNumber;
+    
+    if (docKey === 'address') {
+      documentsReady[docKey].type = docType;
+    }
+
+    updateSubmitButton();
+  } catch (err) {
+    console.error(err);
+    numberInput.value = "Not detected";
+    statusDiv.innerText = "❌ Failed to extract document number";
+    statusDiv.className = "status error";
+    documentsReady[docKey].uploaded = false;
+  }
+}
+
+function updateSubmitButton() {
+  const submitBtn = document.getElementById("submitAllBtn");
+  const pendingDocs = Object.values(documentsReady).filter(doc => doc.uploaded && !doc.submitted);
+  
+  if (pendingDocs.length === 0) {
+    submitBtn.innerText = "No Pending Documents";
+    submitBtn.disabled = true;
+  } else if (pendingDocs.length === 1) {
+    submitBtn.innerText = `Submit ${pendingDocs.length} Document`;
+    submitBtn.disabled = false;
+  } else {
+    submitBtn.innerText = `Submit ${pendingDocs.length} Documents`;
+    submitBtn.disabled = false;
+  }
+}
+
+document.getElementById("addressFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("addressImg").src = event.target.result;
+      document.getElementById("addressPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    const addressType = document.getElementById("addressType").value;
+    if (!addressType) {
+      alert("Please select address proof type first");
+      e.target.value = "";
+      return;
+    }
+    extractDocument(
+      document.getElementById("addressFile"),
+      document.getElementById("addressNumber"),
+      document.getElementById("addressStatus"),
+      "address-badge",
+      "address",
+      addressType
+    );
+  }
+});
+
+document.getElementById("aadhaarFront")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("aadhaarFrontImg").src = event.target.result;
+      document.getElementById("aadhaarFrontPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("aadhaarFront"),
+      document.getElementById("addressNumber"),
+      document.getElementById("addressStatus"),
+      "address-badge",
+      "address",
+      "AADHAAR"
+    );
+  }
+});
+
+document.getElementById("aadhaarBack")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("aadhaarBackImg").src = event.target.result;
+      document.getElementById("aadhaarBackPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    documentsReady.address.hasImages = true;
+  }
+});
+
+document.getElementById("panFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("panImg").src = event.target.result;
+      document.getElementById("panPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("panFile"),
+      document.getElementById("panNumber"),
+      document.getElementById("panStatus"),
+      "pan-badge",
+      "pan",
+      "PAN"
+    );
+  }
+});
+
+document.getElementById("gstFile")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      document.getElementById("gstImg").src = event.target.result;
+      document.getElementById("gstPreview").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+    
+    extractDocument(
+      document.getElementById("gstFile"),
+      document.getElementById("gstNumber"),
+      document.getElementById("gstStatus"),
+      "gst-badge",
+      "gst",
+      "GST"
+    );
+  }
+});
+
+async function submitAllDocuments() {
+  if (!documentsReady.address.uploaded) {
+    alert("⚠️ Address Proof is mandatory. Please upload your document.");
+    return;
+  }
+  
+  if (!documentsReady.pan.uploaded) {
+    alert("⚠️ PAN Card is mandatory. Please upload your PAN card.");
+    return;
+  }
+  
+  const pendingDocs = Object.entries(documentsReady).filter(([key, doc]) => doc.uploaded && !doc.submitted);
+  
+  if (pendingDocs.length === 0) {
+    alert("ℹ️ No new documents to submit.");
+    return;
+  }
+
+  const submitBtn = document.getElementById("submitAllBtn");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
+
+  try {
+    const submissions = [];
+    
+    if (documentsReady.address.uploaded && !documentsReady.address.submitted) {
+      submissions.push(submitSingleDocument(
+        documentsReady.address.type, 
+        documentsReady.address.number,
+        'address'
+      ));
+    }
+    
+    if (documentsReady.pan.uploaded && !documentsReady.pan.submitted) {
+      submissions.push(submitSingleDocument("PAN", documentsReady.pan.number, 'pan'));
+    }
+    
+    if (documentsReady.gst.uploaded && !documentsReady.gst.submitted) {
+      submissions.push(submitSingleDocument("GST", documentsReady.gst.number, 'gst'));
+    }
+
+    await Promise.all(submissions);
+
+    const docCount = pendingDocs.length;
+    const docText = docCount === 1 ? "document" : "documents";
+    alert(`✅ ${docCount} ${docText} submitted successfully!`);
+    
+    loadSubmittedDocuments();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to submit some documents. Please try again.");
+    
+    submitBtn.disabled = false;
+    updateSubmitButton();
+  }
+}
+
+async function submitSingleDocument(docType, docNumber, docKey) {
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("document_type", docType);
+  formData.append("document_number", docNumber);
+
+  const res = await fetch(`${API_BASE}/kyc/complete`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.detail || "Submission failed");
+  }
+
+  documentsReady[docKey].submitted = true;
+  return res.json();
+}
 
 loadSubmittedDocuments();
 </script>
