@@ -65,201 +65,209 @@ async function loadWalletSummary() {
 // =====================================================
 // DOM READY
 // =====================================================
-    document.addEventListener("DOMContentLoaded", () => {
-        loadWalletSummary();
-        loadKycStatus();
+document.addEventListener("DOMContentLoaded", () => {
+  loadWalletSummary();
+  loadKycStatus();
 
-    // =====================================================
-    // SIGNUP
-    // =====================================================
-    const signupForm = document.getElementById("signup-form");
-    if (signupForm) {
-        signupForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  // =====================================================
+  // SIGNUP
+  // =====================================================
+  const signupForm = document.getElementById("signup-form");
+  if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-        const full_name = document.getElementById("full_name").value.trim();
-        const phone = document.getElementById("phone").value.trim();
+      const full_name = document.getElementById("full_name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
 
-        if (!full_name || !phone) {
-            return showMessage("Please enter full name and mobile number");
-        }
-
-        try {
-            const res = await fetch(
-            `${API_BASE}/signup?full_name=${encodeURIComponent(full_name)}&phone=${phone}`,
-            { method: "POST" }
-            );
-            const data = await res.json();
-
-            if (data.status === "exists") {
-            showMessage("User already registered. Please login.");
-            } else {
-            showMessage("Account created successfully.");
-            }
-
-            window.location.href = "index.html";
-        } catch {
-            showMessage("Signup failed");
-        }
-        });
-    }
-
-    // =====================================================
-    // SEND OTP
-    // =====================================================
-const sendOtpBtn = document.getElementById("send-otp-btn");
-if (sendOtpBtn) {
-  sendOtpBtn.addEventListener("click", async () => {
-    const phone = document.getElementById("phone").value.trim();
-    if (!phone) return alert("Enter mobile number");
-
-    try {
-      const response = await fetch(`${API_BASE}/send-otp?phone=${phone}`, { method: "POST" });
-      const data = await response.json();
-
-      // 🔥 Show OTP in alert for demo mode
-      if (data.demo_otp) {
-        alert(`✅ OTP Sent Successfully!\n\n🔐 Your OTP: ${data.demo_otp}\n\n📝 Enter this code to login\n\n⚠️ Note: In production, OTP would be sent via SMS`);
-      } else {
-        alert("OTP sent successfully");
+      if (!full_name || !phone) {
+        return showMessage("Please enter full name and mobile number");
       }
 
-      // Show OTP input field and verify button
-      document.getElementById("otp").style.display = "block";
-      document.getElementById("verify-otp-btn").style.display = "block";
-
-      // Hide send OTP button
-      sendOtpBtn.style.display = "none";
-
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      alert("❌ Failed to send OTP. Please try again.");
-    }
-  });
-}
-
-
-    // =====================================================
-    // VERIFY OTP
-    // =====================================================
-    const verifyOtpBtn = document.getElementById("verify-otp-btn");
-    if (verifyOtpBtn) {
-    verifyOtpBtn.addEventListener("click", async () => {
-        const phone = document.getElementById("phone").value.trim();
-        const otp = document.getElementById("otp").value.trim();
-
-        if (!phone || !otp) return alert("Enter OTP");
-
+      try {
         const res = await fetch(
+          `${API_BASE}/signup?full_name=${encodeURIComponent(full_name)}&phone=${phone}`,
+          { method: "POST" }
+        );
+        const data = await res.json();
+
+        if (data.status === "exists") {
+          showMessage("User already registered. Please login.");
+        } else {
+          showMessage("Account created successfully.");
+        }
+
+        window.location.href = "index.html";
+      } catch {
+        showMessage("Signup failed");
+      }
+    });
+  }
+
+  // =====================================================
+  // SEND OTP (🔥 FIXED FOR MOBILE)
+  // =====================================================
+  const sendOtpBtn = document.getElementById("send-otp-btn");
+  if (sendOtpBtn) {
+    sendOtpBtn.addEventListener("click", async () => {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) return alert("Enter mobile number");
+
+      try {
+        const response = await fetch(`${API_BASE}/send-otp?phone=${phone}`, { method: "POST" });
+        const data = await response.json();
+
+        // 🔥 FIX 1: Update DOM FIRST (before alert)
+        const otpInput = document.getElementById("otp");
+        const verifyBtn = document.getElementById("verify-otp-btn");
+        
+        // Show OTP input field and verify button
+        otpInput.style.display = "block";
+        verifyBtn.style.display = "block";
+        
+        // Hide send OTP button
+        sendOtpBtn.style.display = "none";
+
+        // 🔥 FIX 2: Force DOM update with requestAnimationFrame
+        requestAnimationFrame(() => {
+          // 🔥 FIX 3: Focus on OTP input (opens keyboard on mobile)
+          otpInput.focus();
+          
+          // 🔥 FIX 4: Show alert AFTER DOM updates
+          setTimeout(() => {
+            if (data.demo_otp) {
+              alert(`✅ OTP Sent Successfully!\n\n🔐 Your OTP: ${data.demo_otp}\n\n📝 Enter this code to login\n\n⚠️ Note: In production, OTP would be sent via SMS`);
+            } else {
+              alert("OTP sent successfully");
+            }
+            
+            // Re-focus after alert closes
+            otpInput.focus();
+          }, 100);
+        });
+
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        alert("❌ Failed to send OTP. Please try again.");
+      }
+    });
+  }
+
+  // =====================================================
+  // VERIFY OTP
+  // =====================================================
+  const verifyOtpBtn = document.getElementById("verify-otp-btn");
+  if (verifyOtpBtn) {
+    verifyOtpBtn.addEventListener("click", async () => {
+      const phone = document.getElementById("phone").value.trim();
+      const otp = document.getElementById("otp").value.trim();
+
+      if (!phone || !otp) return alert("Enter OTP");
+
+      const res = await fetch(
         `${API_BASE}/verify-otp?phone=${phone}&otp=${otp}`,
         { method: "POST" }
-        );
-        const data = await res.json();
+      );
+      const data = await res.json();
 
-        if (!data.success) return alert("Invalid OTP");
+      if (!data.success) return alert("Invalid OTP");
 
-        localStorage.setItem("user_id", data.user_id);
-        window.location.href = "home.html";
+      localStorage.setItem("user_id", data.user_id);
+      window.location.href = "home.html";
     });
-    }
+  }
 
+  // =====================================================
+  // DASHBOARD KYC SUMMARY
+  // =====================================================
+  if (document.getElementById("kyc-total")) {
+    fetch(`${API_BASE}/kyc/summary`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("kyc-total").innerText = data.total;
+        document.getElementById("kyc-completed").innerText = data.completed;
+        document.getElementById("kyc-pending").innerText = data.pending;
+      });
+  }
 
-    // =====================================================
-    // DASHBOARD KYC SUMMARY
-    // =====================================================
-    if (document.getElementById("kyc-total")) {
-        fetch(`${API_BASE}/kyc/summary`)
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById("kyc-total").innerText = data.total;
-            document.getElementById("kyc-completed").innerText = data.completed;
-            document.getElementById("kyc-pending").innerText = data.pending;
-        });
-    }
+  // =====================================================
+  // KYC SUBMISSION
+  // =====================================================
+  const kycForm = document.getElementById("kyc-form");
+  if (kycForm) {
+    kycForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    // =====================================================
-    // KYC SUBMISSION
-    // =====================================================
-    const kycForm = document.getElementById("kyc-form");
-    if (kycForm) {
-        kycForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      const aadhaar = document.getElementById("aadhaar").value.trim();
+      const pan = document.getElementById("pan").value.trim();
 
-        const aadhaar = document.getElementById("aadhaar").value.trim();
-        const pan = document.getElementById("pan").value.trim();
+      if (!aadhaar || !pan) return showMessage("Enter Aadhaar and PAN");
 
-        if (!aadhaar || !pan) return showMessage("Enter Aadhaar and PAN");
+      await fetch(
+        `${API_BASE}/kyc?user_id=${getUserId()}&aadhaar=${aadhaar}&pan=${pan}`,
+        { method: "POST" }
+      );
 
-        await fetch(
-            `${API_BASE}/kyc?user_id=${getUserId()}&aadhaar=${aadhaar}&pan=${pan}`,
-            { method: "POST" }
-        );
-
-        showMessage("✅ KYC Completed Successfully");
-        window.location.reload();
-        });
-    }
-
-    // =====================================================
-    // BANK DETAILS (KYC PROTECTED)
-    // =====================================================
-    const bankForm = document.getElementById("bank-form");
-    if (bankForm) {
-        bankForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const userId = getUserId();
-        if (!userId) return showMessage("User not logged in");
-
-        const kycRes = await fetch(`${API_BASE}/kyc/status?user_id=${userId}`);
-        const kycData = await kycRes.json();
-
-        if (kycData.kyc_status !== "COMPLETED") {
-            return showMessage("❌ Please complete KYC before bank transfer");
-        }
-
-        const holder = document.getElementById("holder").value.trim();
-        const bank = document.getElementById("bank").value.trim();
-        const acc = document.getElementById("acc").value.trim();
-        const ifsc = document.getElementById("ifsc").value.trim();
-
-        if (!holder || !bank || !acc || !ifsc) {
-            return showMessage("Please enter all bank details");
-        }
-
-        await fetch(
-            `${API_BASE}/bank?user_id=${userId}&account_holder_name=${encodeURIComponent(holder)}&bank_name=${encodeURIComponent(bank)}&account_number=${acc}&ifsc=${ifsc}`,
-            { method: "POST" }
-        );
-
-        showMessage("✅ Bank details saved successfully");
-        });
-    }
-
-    // =====================================================
-    // ADD AMOUNT
-    // =====================================================
-    const addAmountBtn = document.getElementById("add-amount-btn");
-    if (addAmountBtn) {
-        addAmountBtn.addEventListener("click", async () => {
-        const amount = document.getElementById("amount").value.trim();
-        if (!amount || isNaN(amount)) return showMessage("Enter valid amount");
-
-        const res = await fetch(
-            `${API_BASE}/wallet?user_id=${getUserId()}&amount=${amount}`,
-            { method: "POST" }
-        );
-        const data = await res.json();
-
-        showMessage(`₹${amount} added → ${data.points} points credited`);
-        loadWalletSummary();
-        document.addEventListener("DOMContentLoaded", () => {
-        loadWalletSummary();
-          // 🔥 THIS WAS MISSING
+      showMessage("✅ KYC Completed Successfully");
+      window.location.reload();
     });
+  }
 
-        });
-    }
+  // =====================================================
+  // BANK DETAILS (KYC PROTECTED)
+  // =====================================================
+  const bankForm = document.getElementById("bank-form");
+  if (bankForm) {
+    bankForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const userId = getUserId();
+      if (!userId) return showMessage("User not logged in");
+
+      const kycRes = await fetch(`${API_BASE}/kyc/status?user_id=${userId}`);
+      const kycData = await kycRes.json();
+
+      if (kycData.kyc_status !== "COMPLETED") {
+        return showMessage("❌ Please complete KYC before bank transfer");
+      }
+
+      const holder = document.getElementById("holder").value.trim();
+      const bank = document.getElementById("bank").value.trim();
+      const acc = document.getElementById("acc").value.trim();
+      const ifsc = document.getElementById("ifsc").value.trim();
+
+      if (!holder || !bank || !acc || !ifsc) {
+        return showMessage("Please enter all bank details");
+      }
+
+      await fetch(
+        `${API_BASE}/bank?user_id=${userId}&account_holder_name=${encodeURIComponent(holder)}&bank_name=${encodeURIComponent(bank)}&account_number=${acc}&ifsc=${ifsc}`,
+        { method: "POST" }
+      );
+
+      showMessage("✅ Bank details saved successfully");
+    });
+  }
+
+  // =====================================================
+  // ADD AMOUNT
+  // =====================================================
+  const addAmountBtn = document.getElementById("add-amount-btn");
+  if (addAmountBtn) {
+    addAmountBtn.addEventListener("click", async () => {
+      const amount = document.getElementById("amount").value.trim();
+      if (!amount || isNaN(amount)) return showMessage("Enter valid amount");
+
+      const res = await fetch(
+        `${API_BASE}/wallet?user_id=${getUserId()}&amount=${amount}`,
+        { method: "POST" }
+      );
+      const data = await res.json();
+
+      showMessage(`₹${amount} added → ${data.points} credited`);
+      loadWalletSummary();
+    });
+  }
 
   // =====================================================
   // REDEEM POINTS
@@ -320,6 +328,7 @@ if (isKycPage) {
       document.getElementById("kyc-pending").innerText = pending;
     });
 }
+
 // =====================================================
 // LOAD KYC STATUS (FOR HOME DASHBOARD)
 // =====================================================
@@ -355,13 +364,10 @@ function saveCart(cart) {
   localStorage.setItem(getCartKey(), JSON.stringify(cart));
 }
 
-
-
 // =====================================================
 // ADD TO CART (POINTS CHECK)
 // =====================================================
 function addToCart(productName, requiredPoints) {
-
   if (REDEEMED_POINTS < requiredPoints) {
     return alert("❌ Not enough redeemed points");
   }
@@ -382,18 +388,14 @@ function addToCart(productName, requiredPoints) {
   alert(`✅ ${productName} added to cart`);
 }
 
-
-
 // =====================================================
 // VIEW PRODUCT
 // =====================================================
 function viewProduct(productName, requiredPoints) {
   alert(
-    `🎁 ${productName}\n\nPoints Required: ${requiredPoints}\n\nRedeemed Points Available: ${REDEEMED_POINTS}
-`
+    `🎁 ${productName}\n\nPoints Required: ${requiredPoints}\n\nRedeemed Points Available: ${REDEEMED_POINTS}`
   );
 }
-
 
 // =====================================================
 // FINAL REDEEM (CHECKOUT)
