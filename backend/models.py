@@ -4,6 +4,8 @@ from sqlalchemy.sql import func
 from database import Base
 from datetime import datetime
 from sqlalchemy.dialects.mysql import LONGTEXT
+from datetime import datetime
+
 
 
 # =======================
@@ -91,7 +93,9 @@ class Bank(Base):
     # Validation
     is_validated = Column(Boolean, default=False)
     validation_status = Column(String(20), default="PENDING")
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 
 # =======================
