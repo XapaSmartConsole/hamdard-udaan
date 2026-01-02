@@ -172,32 +172,6 @@
       color: #6b7280;
     }
 
-    .upload-section {
-      margin-top: 16px;
-      padding: 20px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 2px dashed #d1d5db;
-      text-align: center;
-    }
-
-    .upload-section input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 12px;
-      border: none;
-      background: #fff;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
-    .cheque-preview, .qr-preview {
-      max-width: 100%;
-      max-height: 200px;
-      margin: 12px 0;
-      border-radius: 8px;
-    }
-
     .btn-submit {
       width: 100%;
       margin-top: 28px;
@@ -226,12 +200,6 @@
 
     .hidden {
       display: none !important;
-    }
-
-    .validation-icon {
-      display: inline-block;
-      margin-left: 8px;
-      font-size: 18px;
     }
 
     .amount-hint {
@@ -269,16 +237,6 @@
       font-size: 14px;
       color: #111827;
       font-weight: 600;
-    }
-
-    .upi-info {
-      background: #fef3c7;
-      border: 1px solid #fcd34d;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 8px;
-      font-size: 12px;
-      color: #92400e;
     }
 
     /* TDS Breakdown Styles */
@@ -412,94 +370,37 @@
   <!-- BANK TRANSFER TAB -->
   <div id="transferSection">
     <div class="card">
-      <div class="card-title">Payment Details</div>
+      <div class="card-title">Select Payment Method</div>
       
-      <!-- Saved Payment Details Display -->
+      <!-- ✅ PAYMENT METHOD SELECTOR -->
+      <div class="payment-method-selector">
+        <div class="payment-method-option" id="bank-option" onclick="selectPaymentMethod('BANK')">
+          <div class="icon">🏦</div>
+          <div class="label">Bank Transfer</div>
+        </div>
+        <div class="payment-method-option" id="upi-option" onclick="selectPaymentMethod('UPI')">
+          <div class="icon">📱</div>
+          <div class="label">UPI</div>
+        </div>
+      </div>
+
+      <!-- ✅ DISPLAY SELECTED PAYMENT DETAILS -->
       <div id="payment-details-display" class="hidden">
-        <div class="payment-details-display">
-          <div class="payment-details-row">
-            <span class="payment-details-label">Payment Method</span>
-            <span class="payment-details-value" id="display-payment-method">—</span>
-          </div>
-          <div id="bank-details-rows">
-            <!-- Bank details will be inserted here -->
-          </div>
-          <div id="upi-details-rows">
-            <!-- UPI details will be inserted here -->
-          </div>
+        <div class="payment-details-display" id="payment-info">
+          <!-- Details populated by JS -->
         </div>
-        <button class="btn-submit" onclick="changePaymentMethod()" style="background: #6b7280; margin-top: 12px;">
-          Change Payment Method
+      </div>
+
+      <!-- ⚠️ NO PAYMENT DETAILS MESSAGE -->
+      <div id="no-payment-message" class="hidden" style="text-align: center; padding: 20px; color: #6b7280;">
+        <p>Please add payment details in KYC section first</p>
+        <button class="btn-submit" onclick="location.href='kyc.html'" style="margin-top: 16px; background: #b11226;">
+          Go to KYC Details
         </button>
       </div>
 
-      <!-- Payment Method Selection & Form -->
-      <div id="payment-details-form">
-        <!-- Payment Method Selector -->
-        <div class="payment-method-selector">
-          <div class="payment-method-option selected" id="bank-option" onclick="selectPaymentMethod('BANK')">
-            <div class="icon">🏦</div>
-            <div class="label">Bank Transfer</div>
-          </div>
-          <div class="payment-method-option" id="upi-option" onclick="selectPaymentMethod('UPI')">
-            <div class="icon">📱</div>
-            <div class="label">UPI</div>
-          </div>
-        </div>
-
-        <!-- BANK DETAILS FORM -->
-        <div id="bank-form">
-          <label>Enter Bank Details*</label>
-          <input type="text" id="bank-name-input" placeholder="Bank Name">
-          
-          <label>Enter Account Holder Name*</label>
-          <input type="text" id="account-holder-input" placeholder="Account Holder Name">
-          
-          <label>Bank Account Number*</label>
-          <input type="text" id="account-number-input" placeholder="Account Number">
-          <span class="validation-icon" id="account-validation"></span>
-          
-          <label>IFSC Code*</label>
-          <input type="text" id="ifsc-input" placeholder="IFSC Code">
-          <span class="validation-icon" id="ifsc-validation"></span>
-          
-          <div class="upload-section">
-            <div id="cheque-preview-container" class="hidden">
-              <img id="cheque-preview" class="cheque-preview" src="" alt="Cheque">
-            </div>
-            <div>📷 Upload Cancelled Cheque Image</div>
-            <input type="file" id="cheque-upload" accept="image/*">
-          </div>
-        </div>
-
-        <!-- UPI DETAILS FORM -->
-        <div id="upi-form" class="hidden">
-          <label>Enter UPI ID*</label>
-          <input type="text" id="upi-id-input" placeholder="yourname@bankname">
-          <span class="validation-icon" id="upi-validation"></span>
-          <div class="upi-info">
-            💡 Enter your UPI ID (e.g., 9876543210@paytm, user@oksbi)
-          </div>
-
-          <label>Account Holder Name (Optional)</label>
-          <input type="text" id="upi-holder-input" placeholder="Name as per UPI">
-          
-          <div class="upload-section">
-            <div id="qr-preview-container" class="hidden">
-              <img id="qr-preview" class="qr-preview" src="" alt="UPI QR">
-            </div>
-            <div>📷 Upload UPI QR Code (Optional)</div>
-            <input type="file" id="qr-upload" accept="image/*">
-          </div>
-        </div>
-        
-        <button class="btn-submit" id="savePaymentBtn" onclick="savePaymentDetails()" style="background: #b11226; margin-top: 20px;">
-          Save Payment Details
-        </button>
-      </div>
-
-      <!-- Transfer Amount Section with TDS Breakdown -->
-      <div id="transfer-amount-section" style="margin-top: 24px; padding-top: 24px; border-top: 2px solid #e5e7eb;">
+      <!-- Transfer Amount Section -->
+      <div id="transfer-amount-section" class="hidden">
         <label>Enter amount to be transferred*</label>
         <input type="number" id="amount-input" placeholder="Enter amount" min="1" step="1" oninput="calculateTDS()">
         <div class="amount-hint">Available Points: <span id="available-points">—</span> pts</div>
@@ -562,11 +463,8 @@ const API_BASE = window.location.hostname === 'localhost'
     ? "http://127.0.0.1:8001/api"
     : "https://hamdard-udaan-1.onrender.com/api";
 const userId = localStorage.getItem("user_id");
-let paymentDetailsExist = false;
 let paymentData = null;
-let selectedPaymentMethod = 'BANK';
-let chequeImageBase64 = null;
-let qrCodeBase64 = null;
+let selectedMethod = null;
 let availablePoints = 0;
 
 if (!userId) {
@@ -595,147 +493,104 @@ function showTab(tab) {
   }
 }
 
+// ============ LOAD PAYMENT DATA ============
+function loadPaymentDetails() {
+  fetch(`${API_BASE}/bank?user_id=${userId}`)
+    .then(res => {
+      if (!res.ok) throw new Error("No payment details");
+      return res.json();
+    })
+    .then(data => {
+      paymentData = data;
+      
+      // ✅ Auto-select active payment method
+      selectedMethod = data.payment_method || "BANK";
+      selectPaymentMethod(selectedMethod);
+      
+      // Show transfer section
+      document.getElementById("no-payment-message").classList.add("hidden");
+      document.getElementById("transfer-amount-section").classList.remove("hidden");
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("no-payment-message").classList.remove("hidden");
+      document.getElementById("transfer-amount-section").classList.add("hidden");
+    });
+}
+
+// ============ SELECT PAYMENT METHOD ============
 function selectPaymentMethod(method) {
-  selectedPaymentMethod = method;
+  if (!paymentData) {
+    alert("⚠️ Please add payment details in KYC section first");
+    location.href = "kyc.html";
+    return;
+  }
+
+  selectedMethod = method;
   
   // Update UI
   document.getElementById('bank-option').classList.toggle('selected', method === 'BANK');
   document.getElementById('upi-option').classList.toggle('selected', method === 'UPI');
   
-  document.getElementById('bank-form').classList.toggle('hidden', method !== 'BANK');
-  document.getElementById('upi-form').classList.toggle('hidden', method !== 'UPI');
-}
-
-function loadPaymentDetails() {
-  fetch(`${API_BASE}/bank?user_id=${userId}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Payment details not found");
-      return res.json();
-    })
-    .then(data => {
-      paymentDetailsExist = true;
-      paymentData = data;
-      
-      document.getElementById("payment-details-display").classList.remove("hidden");
-      document.getElementById("payment-details-form").classList.add("hidden");
-      
-      document.getElementById("display-payment-method").innerText = 
-        data.payment_method === 'UPI' ? '📱 UPI' : '🏦 Bank Transfer';
-      
-      const bankDetailsRows = document.getElementById("bank-details-rows");
-      const upiDetailsRows = document.getElementById("upi-details-rows");
-      
-      bankDetailsRows.innerHTML = '';
-      upiDetailsRows.innerHTML = '';
-      
-      if (data.payment_method === 'BANK') {
-        bankDetailsRows.innerHTML = `
-          <div class="payment-details-row">
-            <span class="payment-details-label">Account Holder</span>
-            <span class="payment-details-value">${data.account_holder_name}</span>
-          </div>
-          <div class="payment-details-row">
-            <span class="payment-details-label">Bank</span>
-            <span class="payment-details-value">${data.bank_name}</span>
-          </div>
-          <div class="payment-details-row">
-            <span class="payment-details-label">Account Number</span>
-            <span class="payment-details-value">****${data.account_number.slice(-4)}</span>
-          </div>
-          <div class="payment-details-row">
-            <span class="payment-details-label">IFSC</span>
-            <span class="payment-details-value">${data.ifsc}</span>
-          </div>
-        `;
-      } else {
-        upiDetailsRows.innerHTML = `
-          <div class="payment-details-row">
-            <span class="payment-details-label">UPI ID</span>
-            <span class="payment-details-value">${data.upi_id}</span>
-          </div>
-          ${data.account_holder_name ? `
-          <div class="payment-details-row">
-            <span class="payment-details-label">Account Holder</span>
-            <span class="payment-details-value">${data.account_holder_name}</span>
-          </div>` : ''}
-        `;
-      }
-    })
-    .catch(err => {
-      paymentDetailsExist = false;
-      document.getElementById("payment-details-display").classList.add("hidden");
-      document.getElementById("payment-details-form").classList.remove("hidden");
-    });
-}
-
-function changePaymentMethod() {
-  if (confirm("Do you want to change your payment method? This will require re-verification.")) {
-    document.getElementById("payment-details-display").classList.add("hidden");
-    document.getElementById("payment-details-form").classList.remove("hidden");
+  // Display details
+  const paymentInfo = document.getElementById("payment-info");
+  document.getElementById("payment-details-display").classList.remove("hidden");
+  
+  if (method === 'BANK') {
+    if (!paymentData.account_number) {
+      alert("⚠️ Bank details not found. Please add them in KYC section.");
+      location.href = "kyc.html";
+      return;
+    }
+    
+    paymentInfo.innerHTML = `
+      <div class="payment-details-row">
+        <span class="payment-details-label">Payment Method</span>
+        <span class="payment-details-value">🏦 Bank Transfer</span>
+      </div>
+      <div class="payment-details-row">
+        <span class="payment-details-label">Account Holder</span>
+        <span class="payment-details-value">${paymentData.account_holder_name}</span>
+      </div>
+      <div class="payment-details-row">
+        <span class="payment-details-label">Bank</span>
+        <span class="payment-details-value">${paymentData.bank_name}</span>
+      </div>
+      <div class="payment-details-row">
+        <span class="payment-details-label">Account Number</span>
+        <span class="payment-details-value">****${paymentData.account_number.slice(-4)}</span>
+      </div>
+      <div class="payment-details-row">
+        <span class="payment-details-label">IFSC</span>
+        <span class="payment-details-value">${paymentData.ifsc}</span>
+      </div>
+    `;
+  } else {
+    if (!paymentData.upi_id) {
+      alert("⚠️ UPI details not found. Please add them in KYC section.");
+      location.href = "kyc.html";
+      return;
+    }
+    
+    paymentInfo.innerHTML = `
+      <div class="payment-details-row">
+        <span class="payment-details-label">Payment Method</span>
+        <span class="payment-details-value">📱 UPI</span>
+      </div>
+      <div class="payment-details-row">
+        <span class="payment-details-label">UPI ID</span>
+        <span class="payment-details-value">${paymentData.upi_id}</span>
+      </div>
+      ${paymentData.account_holder_name ? `
+      <div class="payment-details-row">
+        <span class="payment-details-label">Account Holder</span>
+        <span class="payment-details-value">${paymentData.account_holder_name}</span>
+      </div>` : ''}
+    `;
   }
 }
 
-// File upload handlers
-document.getElementById("cheque-upload")?.addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      chequeImageBase64 = event.target.result;
-      document.getElementById("cheque-preview").src = chequeImageBase64;
-      document.getElementById("cheque-preview-container").classList.remove("hidden");
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-document.getElementById("qr-upload")?.addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      qrCodeBase64 = event.target.result;
-      document.getElementById("qr-preview").src = qrCodeBase64;
-      document.getElementById("qr-preview-container").classList.remove("hidden");
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// Validation handlers
-document.getElementById("account-number-input")?.addEventListener("input", function() {
-  const value = this.value.trim();
-  const validation = document.getElementById("account-validation");
-  if (value.length >= 9 && value.length <= 18) {
-    validation.innerText = "✅";
-  } else {
-    validation.innerText = "";
-  }
-});
-
-document.getElementById("ifsc-input")?.addEventListener("input", function() {
-  const value = this.value.trim().toUpperCase();
-  this.value = value;
-  const validation = document.getElementById("ifsc-validation");
-  if (/^[A-Z]{4}0[A-Z0-9]{6}$/.test(value)) {
-    validation.innerText = "✅";
-  } else {
-    validation.innerText = "";
-  }
-});
-
-document.getElementById("upi-id-input")?.addEventListener("input", function() {
-  const value = this.value.trim();
-  this.value = value;
-  const validation = document.getElementById("upi-validation");
-  if (/^[\w\.\-]+@[\w]+$/.test(value)) {
-    validation.innerText = "✅";
-  } else {
-    validation.innerText = "";
-  }
-});
-
-// ============ CALCULATE 15% TDS BREAKDOWN ============
+// ============ CALCULATE TDS ============
 function calculateTDS() {
   const points = parseInt(document.getElementById("amount-input").value) || 0;
   
@@ -753,106 +608,10 @@ function calculateTDS() {
   }
 }
 
-function savePaymentDetails() {
-  const formData = new FormData();
-  formData.append("user_id", userId);
-  formData.append("payment_method", selectedPaymentMethod);
-  
-  if (selectedPaymentMethod === 'BANK') {
-    const bankName = document.getElementById("bank-name-input").value.trim();
-    const accountHolder = document.getElementById("account-holder-input").value.trim();
-    const accountNumber = document.getElementById("account-number-input").value.trim();
-    const ifscCode = document.getElementById("ifsc-input").value.trim();
-    
-    if (!bankName || !accountHolder || !accountNumber || !ifscCode) {
-      alert("⚠️ Please fill all bank details");
-      return;
-    }
-    
-    if (accountNumber.length < 9) {
-      alert("⚠️ Please enter valid account number");
-      return;
-    }
-    
-    if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode)) {
-      alert("⚠️ Please enter valid IFSC code");
-      return;
-    }
-    
-    if (!chequeImageBase64) {
-      alert("⚠️ Please upload cancelled cheque image");
-      return;
-    }
-    
-    formData.append("account_holder_name", accountHolder);
-    formData.append("bank_name", bankName);
-    formData.append("account_number", accountNumber);
-    formData.append("ifsc", ifscCode);
-    formData.append("cheque_image", chequeImageBase64);
-    
-  } else {
-    // UPI
-    const upiId = document.getElementById("upi-id-input").value.trim();
-    const upiHolder = document.getElementById("upi-holder-input").value.trim();
-    
-    if (!upiId) {
-      alert("⚠️ Please enter UPI ID");
-      return;
-    }
-    
-    if (!/^[\w\.\-]+@[\w]+$/.test(upiId)) {
-      alert("⚠️ Please enter valid UPI ID (e.g., name@bank)");
-      return;
-    }
-    
-    formData.append("upi_id", upiId);
-    if (upiHolder) formData.append("account_holder_name", upiHolder);
-    if (qrCodeBase64) formData.append("upi_qr_code", qrCodeBase64);
-  }
-  
-  const saveBtn = document.getElementById("savePaymentBtn");
-  saveBtn.disabled = true;
-  saveBtn.innerText = "Saving...";
-  
-  fetch(`${API_BASE}/bank/add`, {
-
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert(`✅ ${data.payment_method === 'UPI' ? 'UPI' : 'Bank'} details saved successfully!`);
-      loadPaymentDetails();
-    } else {
-      throw new Error(data.detail || "Failed to save");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("❌ Failed to save payment details");
-    saveBtn.disabled = false;
-    saveBtn.innerText = "Save Payment Details";
-  });
-}
-
-// Load available points
-fetch(`${API_BASE}/wallet/balance?user_id=${userId}`)
-
-  .then(res => res.json())
-  .then(data => {
-    availablePoints = data.points || 6000;
-    document.getElementById("available-points").innerText = availablePoints;
-  })
-  .catch(() => {
-    availablePoints = 6000;
-    document.getElementById("available-points").innerText = "6000";
-  });
-
-// ============ SUBMIT TRANSFER WITH 15% TDS ============
+// ============ SUBMIT TRANSFER ============
 function submitTransfer() {
-  if (!paymentDetailsExist) {
-    alert("⚠️ Please save your payment details first");
+  if (!selectedMethod) {
+    alert("⚠️ Please select a payment method");
     return;
   }
   
@@ -868,29 +627,36 @@ function submitTransfer() {
     return;
   }
   
-  // Calculate TDS
-  const grossAmount = points;
-  const tdsAmount = Math.floor((grossAmount * 15) / 100);
-  const netAmount = grossAmount - tdsAmount;
-  
   const submitBtn = document.getElementById("submitBtn");
   submitBtn.disabled = true;
   submitBtn.innerText = "PROCESSING...";
   
-  fetch(`${API_BASE}/wallet/bank-transfer?user_id=${userId}&points=${points}`, {
-
-    method: "POST"
+  // ✅ UPDATE PAYMENT METHOD BEFORE TRANSFER
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("payment_method", selectedMethod);
+  
+  fetch(`${API_BASE}/bank/update-method`, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(() => {
+    // Now process transfer
+    return fetch(`${API_BASE}/wallet/bank-transfer?user_id=${userId}&points=${points}`, {
+      method: "POST"
+    });
   })
   .then(res => res.json())
   .then(result => {
     if (result.success) {
       const details = result.transaction_details;
-      const paymentMethod = paymentData.payment_method === 'UPI' ? 'UPI' : 'Bank';
-      const identifier = paymentData.payment_method === 'UPI' 
+      const methodText = selectedMethod === 'UPI' ? 'UPI' : 'Bank Transfer';
+      const identifier = selectedMethod === 'UPI' 
         ? paymentData.upi_id 
         : `${paymentData.account_holder_name} (${paymentData.bank_name})`;
       
-      alert(`✅ Transfer Successful!\n\n💰 Transaction Details:\nGross Amount: ₹${details.gross_amount}\nTDS (15%): -₹${details.tds_amount}\nNet Amount Credited: ₹${details.net_amount}\n\n${paymentMethod} transfer to ${identifier} initiated.\n\nTransaction ID: ${details.transaction_id}`);
+      alert(`✅ Transfer Successful!\n\n💰 Transaction Details:\nGross Amount: ₹${details.gross_amount}\nTDS (15%): -₹${details.tds_amount}\nNet Amount Credited: ₹${details.net_amount}\n\n${methodText} transfer to ${identifier} initiated.\n\nTransaction ID: ${details.transaction_id}`);
       location.href = "order-history.html";
     } else {
       throw new Error(result.message || "Transfer failed");
@@ -904,6 +670,17 @@ function submitTransfer() {
   });
 }
 
+// Load available points
+fetch(`${API_BASE}/wallet/balance?user_id=${userId}`)
+  .then(res => res.json())
+  .then(data => {
+    availablePoints = data.points || 0;
+    document.getElementById("available-points").innerText = availablePoints;
+  })
+  .catch(() => {
+    availablePoints = 0;
+    document.getElementById("available-points").innerText = "0";
+  });
 
 loadPaymentDetails();
 </script>
