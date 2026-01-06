@@ -62,6 +62,33 @@
       text-align: center;
       display: none;
     }
+
+    /* 🔥 DEMO OTP DISPLAY BOX */
+    .demo-otp-box {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      display: none;
+    }
+
+    .demo-otp-label {
+      font-size: 12px;
+      color: #856404;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .demo-otp-code {
+      font-size: 24px;
+      font-weight: 700;
+      color: #b11226;
+      letter-spacing: 4px;
+      font-family: monospace;
+    }
   </style>
 </head>
 
@@ -96,6 +123,12 @@
       <button class="btn-primary" type="button" id="send-otp-btn">
         Send OTP
       </button>
+
+      <!-- 🔥 DEMO OTP DISPLAY BOX -->
+      <div class="demo-otp-box" id="demo-otp-box">
+        <div class="demo-otp-label">🔐 Demo OTP (For Testing)</div>
+        <div class="demo-otp-code" id="demo-otp-display">------</div>
+      </div>
 
       <!-- OTP INPUT (HIDDEN INITIALLY) -->
       <input
@@ -164,12 +197,19 @@
       btn.disabled = true;
       btn.innerText = "Sending...";
 
-      fetch(`${API_BASE}/send-otp`, {
+      // ✅ FIXED: Send as query parameter
+      fetch(`${API_BASE}/send-otp?phone=${phone}`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `phone=${phone}`
+        headers: { 
+          "Content-Type": "application/json"
+        }
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.error) {
           showError(data.error);
@@ -180,6 +220,13 @@
 
         // Show success message
         showSuccess("OTP sent successfully!");
+
+        // 🔥 DISPLAY OTP ON FRONTEND (DEMO MODE)
+        if (data.demo_otp) {
+          document.getElementById("demo-otp-display").innerText = data.demo_otp;
+          document.getElementById("demo-otp-box").style.display = "block";
+          console.log("🔐 DEMO OTP:", data.demo_otp);
+        }
 
         // Show OTP field and verify button
         document.getElementById("otp").style.display = "block";
@@ -197,13 +244,9 @@
 
         // Focus on OTP input
         document.getElementById("otp").focus();
-
-        // ✅ DEMO: Show OTP in console
-        if (data.demo_otp) {
-          console.log("🔐 DEMO OTP:", data.demo_otp);
-        }
       })
       .catch(err => {
+        console.error("Send OTP Error:", err);
         showError("Failed to send OTP. Please try again.");
         btn.disabled = false;
         btn.innerText = "Send OTP";
@@ -224,12 +267,19 @@
       btn.disabled = true;
       btn.innerText = "Verifying...";
 
-      fetch(`${API_BASE}/verify-otp`, {
+      // ✅ FIXED: Send as query parameters
+      fetch(`${API_BASE}/verify-otp?phone=${phone}&otp=${otp}`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `phone=${phone}&otp=${otp}`
+        headers: { 
+          "Content-Type": "application/json"
+        }
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success) {
           localStorage.setItem("user_id", data.user_id);
@@ -250,6 +300,7 @@
         }
       })
       .catch(err => {
+        console.error("Verify OTP Error:", err);
         showError("Verification failed. Please try again.");
         btn.disabled = false;
         btn.innerText = "Continue";
@@ -265,12 +316,19 @@
       this.disabled = true;
       this.innerText = "Sending...";
 
-      fetch(`${API_BASE}/send-otp`, {
+      // ✅ FIXED: Send as query parameter
+      fetch(`${API_BASE}/send-otp?phone=${phone}`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `phone=${phone}`
+        headers: { 
+          "Content-Type": "application/json"
+        }
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.error) {
           showError(data.error);
@@ -280,6 +338,13 @@
         }
 
         showSuccess("OTP resent successfully!");
+
+        // 🔥 UPDATE OTP DISPLAY ON FRONTEND
+        if (data.demo_otp) {
+          document.getElementById("demo-otp-display").innerText = data.demo_otp;
+          document.getElementById("demo-otp-box").style.display = "block";
+          console.log("🔐 DEMO OTP:", data.demo_otp);
+        }
         
         // Clear OTP input
         document.getElementById("otp").value = "";
@@ -287,24 +352,22 @@
 
         // Start timer again
         startResendTimer();
-
-        // ✅ DEMO: Show OTP in console
-        if (data.demo_otp) {
-          console.log("🔐 DEMO OTP:", data.demo_otp);
-        }
       })
       .catch(err => {
+        console.error("Resend OTP Error:", err);
         showError("Failed to resend OTP. Please try again.");
         this.disabled = false;
         this.innerText = "Resend OTP";
       });
     });
 
-    // ========== RESEND TIMER ==========
+    // ========== RESEND TIMER (COMPLETE) ==========
     function startResendTimer() {
       resendCountdown = 30;
       const resendBtn = document.getElementById("resend-otp-btn");
       const timerSpan = document.getElementById("resend-timer");
+
+      if (!resendBtn || !timerSpan) return; // Safety check
 
       resendBtn.disabled = true;
       
@@ -327,26 +390,30 @@
       const errorDiv = document.getElementById("error-message");
       const successDiv = document.getElementById("success-message");
       
-      successDiv.style.display = "none";
-      errorDiv.innerText = message;
-      errorDiv.style.display = "block";
+      if (successDiv) successDiv.style.display = "none";
+      if (errorDiv) {
+        errorDiv.innerText = message;
+        errorDiv.style.display = "block";
 
-      setTimeout(() => {
-        errorDiv.style.display = "none";
-      }, 5000);
+        setTimeout(() => {
+          errorDiv.style.display = "none";
+        }, 5000);
+      }
     }
 
     function showSuccess(message) {
       const errorDiv = document.getElementById("error-message");
       const successDiv = document.getElementById("success-message");
       
-      errorDiv.style.display = "none";
-      successDiv.innerText = message;
-      successDiv.style.display = "block";
+      if (errorDiv) errorDiv.style.display = "none";
+      if (successDiv) {
+        successDiv.innerText = message;
+        successDiv.style.display = "block";
 
-      setTimeout(() => {
-        successDiv.style.display = "none";
-      }, 3000);
+        setTimeout(() => {
+          successDiv.style.display = "none";
+        }, 3000);
+      }
     }
 
     // ========== ENTER KEY SUPPORT ==========
