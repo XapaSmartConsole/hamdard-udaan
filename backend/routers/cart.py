@@ -1,11 +1,83 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from database import get_db
 from models import Cart, Wallet, Order, OrderItem
 from datetime import datetime
 import time
+import re
 
 router = APIRouter(prefix="/api", tags=["Cart"])
+
+
+# ================= HELPER: EXTRACT BRAND FROM PRODUCT NAME =================
+def extract_brand(product_name: str) -> str:
+    """Extract brand name from product name (first word/brand identifier)"""
+    # Common brand patterns
+    brands = [
+        'PORTRONICS', 'BAJAJ', 'Amkette', 'HP', 'JBL', 'BOAT', 'SanDisk', 'Havells',
+        'PIGEON', 'ATLASWARE', 'ambrane', 'LOGITECH', 'NOISE', 'realme', 'Sony',
+        'TIMEX', 'USHA', 'ZEBRONICS', 'Morphy Richards', 'Polycab', 'ARCADIO',
+        'OnePlus', 'Redmi', 'POCO', 'Samsung', 'acer', 'GUESS', 'TVS', 'Yakuza',
+        'Honda', 'Zomato', 'Shoppers Stop', 'Apollo', 'Healthians', 'Bikanervala',
+        'McDonalds', 'Vaango', 'Bigbasket', 'Reliance', 'Zepto', 'Eazydiner',
+        'Flipkart', 'Domino', 'Archies', 'Bata', 'Hush Puppies', 'Ferns N Petals',
+        'PVR', 'Surat Diamonds', 'Timezone', 'LENSKART', 'Machaan', 'Mainland China',
+        'Nykaa', 'Third Wave Coffee', 'Costa Coffee', 'Relaxo', 'BookMyShow',
+        'Lifestyle', 'OLA', 'Uber', 'Westside', 'Amazon', 'KFC', 'Pizza Hut',
+        'Behrouz', 'Birkenstock', 'Pantaloons', 'Marks & Spencer', 'Beer Cafe',
+        'Safari', 'Cleartrip', 'Skechers', 'Woodland', 'FirstCry', 'Hamleys',
+        'Decathlon', 'Lakme', 'Spencer', 'Vijay Sales', 'American Tourister',
+        'Air India', 'Barbeque Nation', 'Blackberry', 'Fastrack', 'Makemytrip',
+        'Wrangler', 'IRCTC', 'Welspun', 'WILDCRAFT', 'VIP', 'PC Jeweller',
+        'Tanishq', 'Rangoli', 'Mia', 'Lenovo', 'ASUS', 'Green Sunny', 'Onix',
+        'WONDERCHEF', 'My Bento', 'Prabha', 'Wonderchef', 'TUPPERWARE', 'Butterfly',
+        'Milton', 'MYBENTO', 'SOWBAGHYA', 'BOROSIL', 'Berry', 'Kent', 'IMPEX',
+        'Murugan', 'PRESTIGE', 'Crompton', 'KENSTAR', 'V GUARD', 'hindware',
+        'LIFELONG', 'Orient', 'Maharaja Whiteline', 'AGARO', 'Whirlpool', 'LG',
+        'Voltas', 'Carrier', 'Lloyd', 'Lifelong', 'Omron'
+    ]
+    
+    for brand in brands:
+        if product_name.upper().startswith(brand.upper()):
+            return brand
+    
+    # Fallback: return first word
+    return product_name.split()[0] if product_name else "Unknown"
+
+
+# ================= GET PRODUCT ANALYTICS =================
+@router.get("/products/analytics")
+def get_product_analytics(category: str = None, db: Session = Depends(get_db)):
+    """Get product redemption counts and analytics for filtering"""
+    
+    query = db.query(
+        OrderItem.product_name,
+        OrderItem.product_code,
+        OrderItem.brand,
+        func.sum(OrderItem.quantity).label('total_redeemed'),
+        func.max(OrderItem.order.created_at).label('last_redeemed')
+    ).join(Order)
+    
+    if category:
+        query = query.filter(OrderItem.category == category)
+    
+    results = query.group_by(
+        OrderItem.product_name,
+        OrderItem.product_code,
+        OrderItem.brand
+    ).all()
+    
+    analytics = {}
+    for row in results:
+        analytics[row.product_name] = {
+            'total_redeemed': row.total_redeemed,
+            'product_code': row.product_code,
+            'brand': row.brand,
+            'last_redeemed': row.last_redeemed.isoformat() if row.last_redeemed else None
+        }
+    
+    return analytics
 
 
 # ================= GET CART =================
@@ -44,6 +116,7 @@ def add_to_cart(
     points: int,
     product_image: str = "",
     category: str = "",
+    product_code: str = "",
     quantity: int = 1,
     db: Session = Depends(get_db)
 ):
@@ -193,15 +266,19 @@ def checkout_cart(
     db.add(order)
     print(f"📦 Order created: {order_id}")
     
-    # Create order items
+    # Create order items with brand extraction
     for cart_item in cart_items:
+        brand = extract_brand(cart_item.product_name)
+        
         order_item = OrderItem(
             order_id=order_id,
             product_name=cart_item.product_name,
             product_image=cart_item.product_image,
             points=cart_item.points,
             quantity=cart_item.quantity,
-            category=cart_item.category
+            category=cart_item.category,
+            product_code=getattr(cart_item, 'product_code', ''),
+            brand=brand  # ✅ NEW: Extract and save brand
         )
         db.add(order_item)
     
