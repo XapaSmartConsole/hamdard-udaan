@@ -97,7 +97,8 @@ def get_cart(user_id: int, db: Session = Depends(get_db)):
             "product_image": item.product_image,
             "points": item.points,
             "quantity": item.quantity,
-            "category": item.category
+            "category": item.category,
+            "description": getattr(item, 'description', '')  # ✅ ADD THIS
         })
         total_points += item.points * item.quantity
     
@@ -117,6 +118,7 @@ def add_to_cart(
     product_image: str = "",
     category: str = "",
     product_code: str = "",
+    description: str = "",  # ✅ ADD THIS PARAMETER
     quantity: int = 1,
     db: Session = Depends(get_db)
 ):
@@ -152,7 +154,8 @@ def add_to_cart(
         product_image=product_image,
         points=points,
         quantity=quantity,
-        category=category
+        category=category,
+        description=description  # ✅ ADD THIS
     )
     
     db.add(cart_item)
