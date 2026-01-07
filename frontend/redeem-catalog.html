@@ -1047,8 +1047,12 @@ function addToCart(event, productName, points, productCode) {
     .querySelector('img').src;
 
   const category = currentCategory;
+  
+  // ✅ GET DESCRIPTION FROM PRODUCT
+  const product = allProducts.find(p => p.name === productName);
+  const description = product?.description || '';
 
-  fetch(`${API_BASE}/cart/add?user_id=${userId}&product_name=${encodeURIComponent(productName)}&points=${points}&product_image=${encodeURIComponent(productImage)}&category=${category}&product_code=${productCode}`, {
+  fetch(`${API_BASE}/cart/add?user_id=${userId}&product_name=${encodeURIComponent(productName)}&points=${points}&product_image=${encodeURIComponent(productImage)}&category=${category}&product_code=${productCode}&description=${encodeURIComponent(description)}`, {
     method: "POST"
   })
   .then(res => res.json())
