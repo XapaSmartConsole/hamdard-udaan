@@ -26,7 +26,6 @@
       flex-direction: column;
     }
 
-    /* ================= HEADER ================= */
     .app-header {
       background: linear-gradient(135deg, #b11226, #d32f2f);
       color: #fff;
@@ -52,7 +51,6 @@
       flex: 1;
     }
 
-    /* ================= HERO IMAGE ================= */
     .hero-image {
       width: 100%;
       height: 200px;
@@ -61,7 +59,6 @@
       flex-shrink: 0;
     }
 
-    /* ================= CONTENT ================= */
     .content-wrapper {
       flex: 1;
       overflow-y: auto;
@@ -74,7 +71,6 @@
       display: none;
     }
 
-    /* ================= CART ITEM ================= */
     .cart-item {
       background: #fff;
       border-radius: 16px;
@@ -105,11 +101,17 @@
       margin-bottom: 6px;
     }
 
+    .item-description {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
     .item-points {
       font-size: 16px;
       font-weight: 700;
       color: #fbbf24;
-      margin-bottom: 8px;
     }
 
     .remove-btn {
@@ -121,7 +123,6 @@
       padding: 4px;
     }
 
-    /* ================= TOTAL BOX ================= */
     .total-box {
       background: #fff;
       border-radius: 16px;
@@ -145,7 +146,6 @@
       color: #fbbf24;
     }
 
-    /* ================= CHECKOUT BUTTON ================= */
     .checkout-btn {
       width: 100%;
       margin-top: 16px;
@@ -187,16 +187,13 @@
 
 <body>
 
-<!-- HEADER -->
 <div class="app-header">
   <button class="back-btn" onclick="location.href='redeem-catalog.html'">←</button>
   <h2>Cart Details</h2>
 </div>
 
-<!-- HERO IMAGE -->
 <div class="hero-image"></div>
 
-<!-- CONTENT -->
 <div class="content-wrapper">
   <div id="cart-items"></div>
   
@@ -249,7 +246,8 @@ function loadCart() {
           <img src="${item.product_image}" class="item-image" onerror="this.src='https://via.placeholder.com/80/b11226/FFFFFF?text=P'">
           <div class="item-details">
             <div class="item-name">${item.product_name}</div>
-            <div class="item-points">${item.points} pts</div>
+            ${item.description ? `<div class="item-description">${item.description}</div>` : ''}
+            <div class="item-points">${item.points} pts × ${item.quantity}</div>
           </div>
           <button class="remove-btn" onclick="removeItem(${item.id})">🗑️</button>
         </div>
@@ -282,10 +280,7 @@ function removeItem(itemId) {
 }
 
 function proceedToConfirm() {
-  // ✅ Store total points in localStorage for confirm page
   localStorage.setItem("cart_total_points", cartTotalPoints);
-  
-  // ✅ Navigate to confirmation page
   location.href = "confirm-address.html";
 }
 
