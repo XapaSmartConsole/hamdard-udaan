@@ -142,6 +142,7 @@ class Transaction(Base):
 # =======================
 # CART
 # =======================
+
 class Cart(Base):
     __tablename__ = "carts"
 
@@ -152,6 +153,7 @@ class Cart(Base):
     points = Column(Integer)
     quantity = Column(Integer, default=1)
     category = Column(String(100))
+    description = Column(Text, nullable=True)  # ✅ ADD THIS LINE
     created_at = Column(DateTime, default=lambda: datetime.now())
 
     user = relationship("User", back_populates="cart_items")
