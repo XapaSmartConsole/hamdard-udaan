@@ -5,7 +5,7 @@
   <title>Hamdard | Order History</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <style>
+<style>
     * { 
       box-sizing: border-box;
       margin: 0;
@@ -27,7 +27,7 @@
     }
 
     .app-header {
-      background: linear-gradient(135deg, #b11226, #d32f2f);
+      background: linear-gradient(135deg, #0066B2, #004D8C);
       color: #fff;
       padding: 14px 16px 60px;
       border-bottom-left-radius: 30px;
@@ -87,7 +87,7 @@
     .summary-row strong {
       font-size: 18px;
       font-weight: 700;
-      color: #b11226;
+      color: #0066B2;
     }
 
     .orders-container {
@@ -108,9 +108,10 @@
       padding: 16px;
       margin-bottom: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      border-left: 4px solid #b11226;
+      border-left: 4px solid #0066B2;
     }
 
+    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer {
       border-left-color: #10b981;
     }
@@ -120,7 +121,7 @@
     }
 
     .order-card.product {
-      border-left-color: #b11226;
+      border-left-color: #0066B2;
     }
 
     .order-header {
@@ -178,9 +179,10 @@
     }
 
     .order-card.product .item-points {
-      color: #b11226;
+      color: #0066B2;
     }
 
+    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer .item-points {
       color: #10b981;
     }
@@ -208,9 +210,10 @@
     }
 
     .order-card.product .total-points {
-      color: #b11226;
+      color: #0066B2;
     }
 
+    /* ✅ UPDATED: Green for bank transfers */
     .order-card.bank-transfer .total-points {
       color: #10b981;
     }
@@ -246,7 +249,7 @@
     .btn-primary {
       display: inline-block;
       padding: 12px 24px;
-      background: #b11226;
+      background: #0066B2;
       color: #fff;
       text-decoration: none;
       border-radius: 12px;
@@ -256,7 +259,7 @@
     }
 
     .btn-primary:active {
-      background: #991b1b;
+      background: #004D8C;
       transform: scale(0.98);
     }
 
@@ -270,7 +273,7 @@
       width: 40px;
       height: 40px;
       border: 4px solid #f3f4f6;
-      border-top-color: #b11226;
+      border-top-color: #0066B2;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin: 0 auto 16px;
@@ -334,13 +337,13 @@
     }
 
     .bottom-nav a.active {
-      color: #b11226;
+      color: #0066B2;
       font-weight: 600;
     }
 
     .bottom-nav a.active .icon-wrapper {
-      background: #b11226;
-      box-shadow: 0 4px 12px rgba(177, 18, 38, 0.4);
+      background: #0066B2;
+      box-shadow: 0 4px 12px rgba(0, 102, 178, 0.4);
       transform: translateY(-8px);
     }
 
@@ -442,18 +445,22 @@ async function loadOrderHistory() {
     totalOrdersElement.innerText = orders.length;
 
     ordersList.innerHTML = orders.map(order => {
+      // ✅ Determine transaction type and styling
       const transactionType = order.transaction_type || "PRODUCT";
       let transactionClass = "product";
       
+      // ✅ UPDATED: Bank Transfer and Cashout = Green (no badge)
       if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
         transactionClass = "bank-transfer";
       } else {
         transactionClass = "product";
       }
       
+      // ✅ Build items list based on transaction type
       let itemsHTML = '';
       
       if (transactionType === "BANK_TRANSFER" || transactionType === "CASHOUT") {
+        // ✅ Just show "Bank Transfer" without any badge
         itemsHTML = `
           <div class="order-item">
             <span class="item-name">Bank Transfer</span>
@@ -461,6 +468,7 @@ async function loadOrderHistory() {
           </div>
         `;
       } else {
+        // Product redemption - show items
         if (order.items && order.items.length > 0) {
           itemsHTML = order.items.map(item => `
             <div class="order-item">

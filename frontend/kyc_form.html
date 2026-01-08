@@ -5,7 +5,7 @@
   <title>Hamdard | Complete KYC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
+<style>
     body {
       margin: 0;
       font-family: system-ui, sans-serif;
@@ -13,7 +13,7 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #b11226, #d32f2f);
+      background: linear-gradient(135deg, #0066B2, #004D8C);
       color: white;
       padding: 18px;
       border-bottom-left-radius: 26px;
@@ -44,6 +44,11 @@
       font-size: 14px;
     }
 
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0066B2;
+    }
+
     input[readonly] {
       background: #f9fafb;
     }
@@ -58,13 +63,24 @@
       width: 100%;
       margin-top: 22px;
       padding: 14px;
-      background: #b11226;
+      background: #0066B2;
       color: white;
       border: none;
       border-radius: 16px;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:active {
+      background: #004D8C;
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
     }
   </style>
 </head>
