@@ -1,10 +1,10 @@
 /* =====================================================
-   CSS VARIABLES (REQUIRED)
+   CSS VARIABLES (UPDATED FOR GREAVES COTTON)
 ===================================================== */
 :root {
-  --hamdard-red: #c4161c;
-  --hamdard-red-dark: #a81217;
-  --hamdard-bg: #f6f6f6;
+  --greaves-blue: #0066B2;
+  --greaves-blue-dark: #004D8C;
+  --greaves-bg: #f6f6f6;
 
   --text-dark: #111827;
   --text-muted: #6b7280;
@@ -19,19 +19,19 @@
 }
 
 /* =====================================================
-   HAMDARD MOBILE AUTH (LOGIN / SIGNUP)
+   GREAVES COTTON MOBILE AUTH (LOGIN / SIGNUP)
 ===================================================== */
 
 body.auth-page {
   margin: 0;
-  background: var(--hamdard-bg);
+  background: var(--greaves-bg);
   font-family: "Segoe UI", system-ui, sans-serif;
 }
 
-/* Red curved header */
+/* Blue curved header */
 .auth-header {
   height: 240px;
-  background: #c4161c;
+  background: linear-gradient(135deg, #0066B2, #004D8C);
   border-bottom-left-radius: 70px;
   border-bottom-right-radius: 70px;
 
@@ -40,7 +40,7 @@ body.auth-page {
   justify-content: center;    /* 👈 horizontal center */
 }
 
-/* Brand text */
+/* Brand logo/text */
 .auth-brand-text {
   color: #ffffff;
   font-size: 30px;
@@ -48,6 +48,14 @@ body.auth-page {
   letter-spacing: 3px;
   font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
 }
+
+/* ✅ NEW: Logo image support */
+.auth-brand-logo {
+  max-width: 220px;
+  height: auto;
+  display: block;
+}
+
 /* White card */
 .auth-container {
   margin-top: -50px;   /* 👈 NOT -70 */
@@ -86,10 +94,16 @@ body.auth-page {
   font-size: 15px;
 }
 
+.auth-container input:focus {
+  outline: none;
+  border-color: var(--greaves-blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 178, 0.1);
+}
+
 /* Button */
 .btn-primary {
   width: 100%;
-  background: var(--hamdard-red);
+  background: linear-gradient(135deg, #0066B2, #004D8C);
   color: white;
   border: none;
   padding: 14px;
@@ -98,11 +112,26 @@ body.auth-page {
   font-weight: 600;
   margin-top: 10px;
   margin-bottom: 6px;   /* ✅ space from email field */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 102, 178, 0.25);
 }
 
-
 .btn-primary:hover {
-  background: var(--hamdard-red-dark);
+  background: var(--greaves-blue-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 102, 178, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Switch text */
@@ -113,9 +142,14 @@ body.auth-page {
 }
 
 .switch-text a {
-  color: var(--hamdard-red);
+  color: var(--greaves-blue);
   font-weight: 600;
   text-decoration: none;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+  color: var(--greaves-blue-dark);
 }
 
 /* Mobile only */
@@ -126,11 +160,11 @@ body.auth-page {
 }
 
 /* =====================================================
-   HAMDARD MOBILE HOME DASHBOARD
+   GREAVES COTTON MOBILE HOME DASHBOARD
 ===================================================== */
 
 .home-header {
-  background: var(--hamdard-red);
+  background: linear-gradient(135deg, #0066B2, #004D8C);
   padding: 26px 20px 40px;
   color: white;
   border-bottom-left-radius: 28px;
@@ -174,7 +208,7 @@ body.auth-page {
 .wallet-card h2 {
   margin: 6px 0 0;
   font-size: 26px;
-  color: var(--hamdard-red);
+  color: var(--greaves-blue);
 }
 
 /* Actions */
@@ -191,6 +225,12 @@ body.auth-page {
   border-radius: 16px;
   box-shadow: 0 8px 22px rgba(0,0,0,0.06);
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 102, 178, 0.15);
 }
 
 .action-card h4 {
@@ -215,6 +255,10 @@ body.auth-page {
   .auth-brand-text {
     font-size: 24px;
     letter-spacing: 2px;
+  }
+
+  .auth-brand-logo {
+    max-width: 180px;
   }
 
   .auth-container {
