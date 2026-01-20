@@ -17,6 +17,7 @@ app = FastAPI(title="RSPL Demo Platform")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://greaves-cotton.vercel.app",   # ✅ ADD THIS
         "https://hamdard-udaan.vercel.app",
         "http://localhost:3000",
         "http://127.0.0.1:5500"
@@ -25,6 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Root endpoint
 @app.get("/")
